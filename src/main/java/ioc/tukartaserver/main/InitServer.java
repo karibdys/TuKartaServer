@@ -84,15 +84,7 @@ public InitServer() {
     }// </editor-fold>//GEN-END:initComponents
 
   private void buttonOnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOnActionPerformed
-  try {
-    try {
-      server.startServer();
-    } catch (SQLException ex) {
-      Logger.getLogger(InitServer.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  } catch (IOException ex) {
-       System.err.println("ERROR: "+ex.getMessage());
-  }
+    server.startServer();
   }//GEN-LAST:event_buttonOnActionPerformed
 
   private void ButtonOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonOffActionPerformed

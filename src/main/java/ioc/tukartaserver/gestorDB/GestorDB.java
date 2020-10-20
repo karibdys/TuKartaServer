@@ -13,64 +13,70 @@ import java.sql.Statement;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Usuario;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class GestorDB {
 private static final String clase = "org.postgresql.Driver";
-//private String url = "jdbc:postgresql://localhost:5432/TuKarta";
-private String urlAmazamon ="jdbc:postgresql://tukarta.ciq1mt081nsj.eu-west-3.rds.amazonaws.com:5432/tukarta";
+private String url = "jdbc:postgresql://localhost:5432/TuKarta";                     
+//private String urlAmazamon ="jdbc:postgresql://tukarta.ciq1mt081nsj.eu-west-3.rds.amazonaws.com:5432/tukarta";
 private String user = "postgres";
-private String pass = "TuKartaP4$$"; 
+private String pass = "19Pariaseeven83"; 
 private static final String TABLA_USERS = "usuario";
-private static final String CAMPO_MAIL = "email";
-
+private static final String BD ="GESTOR BD: ";
 
 private Connection con;
 
-private static final String BD ="GESTOR BD: ";
+
 public GestorDB() {
   try{
-    Class.forName(clase);
-    con = DriverManager.getConnection(urlAmazamon,user,pass);    
+    Class.forName(clase);    
+    con = DriverManager.getConnection(url,user,pass);    
+    System.out.println(BD+"Conexión establecida");
   }catch (ClassNotFoundException e) {
     System.err.println(BD+"Clase no encontrada");
   } catch (SQLException e) {
     System.err.println(BD+"Error conectando con la base de datos");
+    System.err.println(e.getMessage());
   }
-  System.out.println(BD+"Conexión establecida");
+  
 }
 
-public Codes login (String mail, String pass) throws SQLException {
-  Codes ret=null;   
-  
-  String sentencia = "select * from  "+TABLA_USERS+" where email=\'"+mail+"\'";
-  System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
-  Statement statement = con.createStatement();
-  
-  ResultSet result = statement.executeQuery(sentencia);
-  if (result.next()) {			 
-    System.out.println(BD+"Usuario encontrado");
-    if(pass.equals(result.getString("pwd"))) {
-      ret= new Codes(Codes.CODIGO_OK);
-      System.out.println(BD+"Contraseña correcta");				 
+public Codes login (String mail, String pass) {
+   Codes ret=null;
+   String sentencia = "select * from  "+TABLA_USERS+" where email=\'"+mail+"\'";
+   System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
+  try {              
+    Statement statement = con.createStatement();
+    System.out.println(BD+" Statement creado");
+    
+    ResultSet result = statement.executeQuery(sentencia);
+    if (result.next()) {
+      System.out.println(BD+"Usuario encontrado");
+      if(pass.equals(result.getString("pwd"))) {
+        ret= new Codes(Codes.CODIGO_OK);				 
+        System.out.println(BD+"Contraseña correcta");
+      }else {
+        System.out.println(BD+"Contraseña incorrecta");
+        ret = new Codes(Codes.CODIGO_ERR_PWD);
+      }
     }else {
-      System.out.println(BD+"Contraseña incorrecta");		
-      ret = new Codes(Codes.CODIGO_ERR_PWD);
+      System.out.println(BD+"El resultset es nulo");
+      ret = new Codes(Codes.CODIGO_ERR_USER);
     }
-  }else {
-    System.out.println(BD+"El resultset es nulo");
-    ret = new Codes(Codes.CODIGO_ERR_USER);
+    System.out.println (BD+"se devuelve el código:\n"+ret);
+    
+    result.close();
+    statement.close();
+    
+  } catch (Exception ex) {
+    ret = new Codes(Codes.CODIGO_ERR);
+    System.out.println(BD+ex.getMessage());
   }
-  System.out.println (BD+"se devuelve el código:\n"+ret);
-  
-  result.close();
-  statement.close();
   return ret;
 }
 
-public boolean singin(String[]datos) {
-  return true;
-}
 
 public Codes signIn(String mail, String pass, String userName, String realName, String realCognom) throws SQLException{
   Codes ret =null;
@@ -102,12 +108,12 @@ public Codes signIn(String mail, String pass, String userName, String realName, 
 public Codes modify(String email, String param, String value) throws SQLException{
   Codes ret = null;
   Statement statement = con.createStatement();
-  String sentencia = "UPDATE "+TABLA_USERS+" SET "+param+" = '"+value+"' WHERE "+CAMPO_MAIL+" = '"+email+"'";
+  String sentencia = "UPDATE "+TABLA_USERS+" SET "+param+" = '"+value+"' WHERE "+Usuario.EMAIL+" = '"+email+"'";
   System.out.println(BD+"SENTENCIA\n  --> "+sentencia);
   if(statement.executeUpdate(sentencia)!=0){
     //cambiar la fecha de modificación
     java.sql.Date sqlDate = convert(new Date());
-    sentencia = "UPDATE "+TABLA_USERS+" SET "+Usuario.FECHA_MOD+" = '"+sqlDate+"' WHERE "+CAMPO_MAIL+" = '"+email+"'";
+    sentencia = "UPDATE "+TABLA_USERS+" SET "+Usuario.FECHA_MOD+" = '"+sqlDate+"' WHERE "+Usuario.EMAIL+" = '"+email+"'";
     statement.executeUpdate(sentencia);
     ret = new Codes(Codes.CODIGO_OK);
   }else{

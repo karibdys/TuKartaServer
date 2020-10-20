@@ -9,22 +9,22 @@ import org.json.JSONObject;
  */
 public class Usuario {
 
-private String nomUsuario;
-private String password;
+private String usuario;
+private String pwd;
 private String email;
 private String nombre;
-private String apellido;
+private String apellidos;
 //private Restaurante[] restaurantes;
-private Date fechaAlta;
-private Date fechaUltimaMod;
-private Date fechaBaja;
+private Date fecha_alta;
+private Date fecha_modificacion;
+private Date fecha_baja;
 
 //nombres de los campos
 public static final String NOM_USUARIO = "usuario";
+public static final String PASSWORD = "pwd";
+public static final String EMAIL = "email";
 public static final String NOM_REAL = "nombre";
 public static final String APE_REAL = "apellidos";
-public static final String PASSWORD = "password";
-public static final String EMAIL = "email";
 public static final String FECHA_ALTA = "fecha_alta";
 public static final String FECHA_MOD = "fecha_modificacion";
 public static final String FECHA_BAJA = "fecha_baja";
@@ -33,7 +33,7 @@ public static final String FECHA_BAJA = "fecha_baja";
  * Constructor básico de un usuario sin parámetros. Incluye la fecha de creación.
  */
 public Usuario(){
- this.fechaAlta= this.fechaUltimaMod = new Date();    
+ this.fecha_alta= this.fecha_modificacion = new Date();    
 }
 /**
  * Constructor de la clase Usuario
@@ -44,20 +44,20 @@ public Usuario(){
  * @param apellidoReal 
  */
 public Usuario (String nombreUser, String pass, String email, String nombreReal, String apellidoReal){
-  this.nomUsuario=nombreUser;
-  this.password=pass;
+  this.usuario=nombreUser;
+  this.pwd=pass;
   this.email=email;
   this.nombre=nombreReal;
-  this.apellido=apellidoReal;
-  this.fechaAlta= this.fechaUltimaMod = new Date();  
+  this.apellidos=apellidoReal;
+  this.fecha_alta= this.fecha_modificacion = new Date();  
 }
 
 public Usuario(JSONObject json){
   if (json.has(NOM_USUARIO)){
-    this.nomUsuario=(String) json.get(NOM_USUARIO);
+    this.usuario=(String) json.get(NOM_USUARIO);
   };
   if (json.has(PASSWORD)){
-    this.password=(String) json.get(PASSWORD);
+    this.pwd=(String) json.get(PASSWORD);
   };
   if (json.has(EMAIL)){
     this.email=(String) json.get(EMAIL);
@@ -66,25 +66,25 @@ public Usuario(JSONObject json){
     this.nombre=(String) json.get(NOM_REAL);
   };
   if (json.has(APE_REAL)){
-    this.apellido=(String) json.get(APE_REAL);
+    this.apellidos=(String) json.get(APE_REAL);
   };
   if (json.has(FECHA_ALTA)){
-    this.fechaAlta= Utiles.ParseDate(json.getString(FECHA_ALTA));
+    this.fecha_alta= Utiles.ParseDate(json.getString(FECHA_ALTA));
   };
   if (json.has(FECHA_BAJA)){
-    this.fechaBaja= Utiles.ParseDate(json.getString(FECHA_BAJA));
+    this.fecha_baja= Utiles.ParseDate(json.getString(FECHA_BAJA));
   };
   if (json.has(FECHA_MOD)){
-    this.fechaUltimaMod= Utiles.ParseDate(json.getString(FECHA_MOD));
+    this.fecha_modificacion= Utiles.ParseDate(json.getString(FECHA_MOD));
   };
 }
 
   public String getNomUsuario() {
-    return nomUsuario;
+    return usuario;
   }
 
   public String getPassword() {
-    return password;
+    return pwd;
   }
 
   public String getEmail() {
@@ -96,7 +96,7 @@ public Usuario(JSONObject json){
   }
 
   public String getApellido() {
-    return apellido;
+    return apellidos;
   }
 
   /*
@@ -106,40 +106,40 @@ public Usuario(JSONObject json){
   */
 
   public Date getFechaAlta() {
-    return fechaAlta;
+    return fecha_alta;
   }
 
   public Date getFechaUltimaMod() {
-    return fechaUltimaMod;
+    return fecha_modificacion;
   }
 
   public Date getFechaBaja() {
-    return fechaBaja;
+    return fecha_baja;
   }
 
   public void setNomUsuario(String nomUsuario) {
-    this.nomUsuario = nomUsuario;
-    this.fechaUltimaMod= new Date();
+    this.usuario = nomUsuario;
+    this.fecha_modificacion= new Date();
   }
 
   public void setPassword(String password) {
-    this.password = password;
-    this.fechaUltimaMod= new Date();
+    this.pwd = password;
+    this.fecha_modificacion= new Date();
   }
 
   public void setEmail(String email) {
     this.email = email;
-    this.fechaUltimaMod= new Date();
+    this.fecha_modificacion= new Date();
   }
 
   public void setNombre(String nombre) {
     this.nombre = nombre;
-    this.fechaUltimaMod= new Date();
+    this.fecha_modificacion= new Date();
   }
 
   public void setApellido(String apellido) {
-    this.apellido = apellido;
-    this.fechaUltimaMod= new Date();
+    this.apellidos = apellido;
+    this.fecha_modificacion= new Date();
   }
   
   /*
@@ -150,12 +150,12 @@ public Usuario(JSONObject json){
   */
 
   public void setFechaUltimaMod(Date fechaUltimaMod) {
-    this.fechaUltimaMod = fechaUltimaMod;    
+    this.fecha_modificacion = fechaUltimaMod;    
   }
 
   public void setFechaBaja(Date fechaBaja) {
-    this.fechaBaja = fechaBaja;
-    this.fechaUltimaMod= new Date();
+    this.fecha_baja = fechaBaja;
+    this.fecha_modificacion= new Date();
   }
   
   /**
@@ -165,15 +165,15 @@ public Usuario(JSONObject json){
    */
   public JSONObject parseJSON(){
   JSONObject json = new JSONObject();
-  json.put(NOM_USUARIO, this.nomUsuario);
+  json.put(NOM_USUARIO, this.usuario);
   json.put(EMAIL, this.email);
-  json.put(PASSWORD, this.password);
+  json.put(PASSWORD, this.pwd);
   json.put(NOM_REAL, this.nombre);
-  json.put(APE_REAL, this.apellido);      
-  json.put(FECHA_ALTA, Utiles.ParseDate(this.fechaAlta));
-  json.put(FECHA_MOD, Utiles.ParseDate(this.fechaUltimaMod));
-  if (this.fechaBaja!=null){
-    json.put(FECHA_BAJA, Utiles.ParseDate(this.fechaBaja));
+  json.put(APE_REAL, this.apellidos);      
+  json.put(FECHA_ALTA, Utiles.ParseDate(this.fecha_alta));
+  json.put(FECHA_MOD, Utiles.ParseDate(this.fecha_modificacion));
+  if (this.fecha_baja!=null){
+    json.put(FECHA_BAJA, Utiles.ParseDate(this.fecha_baja));
   }    
   return json;
 }  
@@ -181,10 +181,10 @@ public Usuario(JSONObject json){
   @Override
   public String toString(){
     StringBuilder builder =new StringBuilder();
-    builder.append("usuario: "+this.nomUsuario);
-    builder.append("\npassword: "+this.password);
+    builder.append("usuario: "+this.usuario);
+    builder.append("\npassword: "+this.pwd);
     builder.append("\nnombre real: "+this.nombre);
-    builder.append("\napellido real: "+this.apellido);
+    builder.append("\napellido real: "+this.apellidos);
     builder.append("\nemail: "+this.email);
     
     return builder.toString();
