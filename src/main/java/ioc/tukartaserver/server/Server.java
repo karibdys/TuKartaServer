@@ -21,6 +21,7 @@ import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.security.GestorSesion;
+import ioc.tukartaserver.model.TokenSesion;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +45,9 @@ private GestorSesion sesiones;
 private Codes code = null;
 private Gson gson;
 
+private MensajeRespuesta respuesta;
+private MensajeSolicitud solicitud;
+
 public Server() {
   try {
     ss= new ServerSocket(PORT);  
@@ -63,19 +67,20 @@ public void startServer() {
   while (!endServer) {    
     try {
       cs = ss.accept();
-      System.out.println(SERVER+"Petición de cliente aceptada. Enviando mensaje de confirmación");	
+      System.out.println(SERVER+"Petición de cliente aceptada.");	
       //sacamos los canales
       in = new BufferedReader(new InputStreamReader(cs.getInputStream()));
       out = new PrintStream(cs.getOutputStream()); 
+      System.out.println(SERVER+"Canales abiertos.");
+      System.out.println(SERVER+"Enviando confirmación de conexión con el cliente.");
       sendCode(new Codes (Codes.CODIGO_OK), "Conexión");      
       //esperamos la petición del cliente    
+      System.out.println(SERVER+"Esperando petición de cliente.");
       mensajeIn = in.readLine();
     } catch (IOException ex) {
       sendCode(new Codes(Codes.CODIGO_ERR));
       System.out.println(SERVER+"Enviando código de error");
-    }         
-    //mandamos un mensaje conforme la conexión se ha establecido correctamente
-   
+    }                
     System.out.println(SERVER+": JSON recibido\n  -->"+mensajeIn);  
     MensajeSolicitud mensajeSol = gson.fromJson(mensajeIn, MensajeSolicitud.class);
     procesarPeticion(mensajeSol);
@@ -111,7 +116,6 @@ public void procesarPeticion(MensajeSolicitud mensaje){
     case Mensaje.FUNCION_LOGIN:
       //sacamos los datos que serán Usuarios
       Usuario userIn = gson.fromJson(data, Usuario.class);
-      System.out.println(SERVER+"Usuario: \n"+userIn);
       processLogin(userIn);
       break;
     default:
@@ -122,9 +126,9 @@ public void procesarPeticion(MensajeSolicitud mensaje){
 public void procesarPeticion(JSONObject json) throws IOException, SQLException {		
   //sacamos la petición que pide el cliente:
   String peticion = json.getString(Mensaje.ATT_PETICION);    
+  System.out.println("CLIENTE: petición de "+peticion);
   JSONObject userJson = json.getJSONObject("usuario");    
   Usuario user = new Usuario(userJson);
-
   System.out.println(SERVER+"email: "+user.getEmail());
   //preparación de los datos
   
@@ -143,7 +147,7 @@ public void procesarPeticion(JSONObject json) throws IOException, SQLException {
         System.out.println(SERVER+"El user no se ha introducido");
         sendCode(new Codes(Codes.CODIGO_NO_USER));
       }else{        
-        if (user.getPassword().isEmpty()){
+        if (user.getPwd().isEmpty()){
           System.out.println(SERVER+"La pass no se ha introducido");
           sendCode(new Codes(Codes.CODIGO_NO_PASS));        
         }else{          
@@ -200,24 +204,30 @@ public void procesarPeticion(JSONObject json) throws IOException, SQLException {
 
 
 public void processLogin(Usuario usuario){
-  System.out.println(SERVER+"Usuario recibido: \n"+usuario);
   System.out.println(SERVER+"Accediendo a la base de datos.");
-  code=gestorDB.login(usuario.getEmail(), usuario.getPassword());
+  code=gestorDB.login(usuario.getEmail(), usuario.getPwd());
   
   if(code.getCode()==Codes.CODIGO_OK) {
+    System.out.println(SERVER+" se recibe de la base de datos el código: \n"+code);
     //si todo es OK generamos el token      
-    String token = sesiones.generateToken();
-    //añadir la sesión al gestor de sesiones
-    sesiones.addSesion(usuario.getEmail(), token);
-    //preparar y enviar el código
-    JSONObject json = prepareCode(code);    
-    json.put(Mensaje.ATT_TOKEN, token);            
-    System.out.println(SERVER+"enviando\n  --> "+json);
-    send(json);
-    }else {
-      sendCode(code);			
-    }
-    sendCode(new Codes(Codes.END_CONNECTION));
+    TokenSesion token = new TokenSesion(usuario);
+    //comprobamos que el token se registra y si es así, lo mandamos
+    if (sesiones.addSesion(token)){
+      System.out.println(SERVER+"sesión añadida");
+      respuesta = new MensajeRespuesta(code, Mensaje.FUNCION_LOGIN, gson.toJson(token));
+      System.out.println(SERVER+"enviando\n  --> "+respuesta);
+      sendRespuesta(respuesta);
+    }else{
+      System.out.println(SERVER+"sesión no añadida");
+      //TODO comprobar el error de usuario no introducido en la sesión
+      sendCode(new Codes(Codes.CODIGO_ERR));
+      System.out.println("GESTOR SESIÓN: ERROR EN LA SESIÓN DE USUARIO");
+    }      
+
+  }else {
+    sendCode(code);			
+  }
+  endConnection();
 }
 
 public void processSignIn(Usuario user){
@@ -278,8 +288,8 @@ public void processLogOff(JSONObject json){
 }
 
 public void sendCode(Codes codigo, String peticion){
-  MensajeRespuesta mensaje = new MensajeRespuesta(codigo, peticion);
-  String mensajeJson = gson.toJson(mensaje);
+  respuesta = new MensajeRespuesta(codigo, peticion);
+  String mensajeJson = gson.toJson(respuesta);
   System.out.println(SERVER+"Enviando mensaje: \n  -->"+mensajeJson);
   out.println(mensajeJson);
   out.flush();  
@@ -290,6 +300,13 @@ public void sendCode(Codes codigo){
   out.println(jsonCode);
   out.flush();  
 }
+
+public void sendRespuesta (MensajeRespuesta res){
+  String mensajeJson = gson.toJson(res);
+  out.println(mensajeJson);
+  out.flush();
+}
+
 
 public void send(JSONObject json){
   out.println(json);
@@ -313,6 +330,8 @@ public String comprobarSesion(JSONObject json){
 }
 
 public void endConnection(){
-  sendCode(new Codes (Codes.END_CONNECTION));
+  MensajeRespuesta res = new MensajeRespuesta(new Codes(Codes.END_CONNECTION), "Conexión", "Gracias por todo");
+  System.out.println(SERVER+"mensaje enviado:\n"+res);
+  sendRespuesta(res);
 }
 }

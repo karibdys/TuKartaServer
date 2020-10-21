@@ -66,4 +66,14 @@ public MensajeRespuesta(Codes code, String peticion, Object data){
     this.data = data;
   }
   
+  @Override
+  public String toString(){
+    StringBuilder builder = new StringBuilder();
+    builder.append("------\nMENSAJE:");
+    builder.append("\nCódigo: "+code.getCode()+"//Mensaje: "+code.getMessage());
+    builder.append("\nPetición respondida: "+peticion);
+    builder.append("\nDatos extras: "+data);
+    
+    return builder.toString();
+  }
 }

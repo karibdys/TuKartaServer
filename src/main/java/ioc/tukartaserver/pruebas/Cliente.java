@@ -15,15 +15,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import org.json.JSONObject;
 
 public class Cliente {
-private int PORT =200;
-private final String HOST = "localhost";
-private final String HOST2 = "52.47.123.163";
-private final String HOST3 = "15.236.235.246";
+//accesos local
+private int LOCAL_PORT =200;
+private final String LOCAL_HOST = "localhost";
+//accesos internet
+private int NGROK_PORT =200;
+private final String NGROK_HOST = "http://c186bc351979.ngrok.io";
 
 private final String CLIENTE="CLIENTE: ";
 private Socket cs;
@@ -35,11 +38,14 @@ BufferedReader in;
 public Cliente() throws IOException{
   gson = new Gson();
   try{
-    cs = new Socket(HOST, PORT);
+    //*****activa esto para conectar por internet con el servidor
+    //cs = new Socket(NGROK_HOST, NGROK_PORT);
+    //*****activa esto para conectar en local con el servidor
+    cs = new Socket(LOCAL_HOST, LOCAL_PORT);
   }catch (Exception e) {    
     System.out.println(CLIENTE+"ERROR CREADO EL CLIENTE: "+e.getMessage());   
   }
-  System.out.println(CLIENTE+"Cliente creado para mandar al puerto: "+PORT);
+  System.out.println(CLIENTE+"Cliente creado.");
 }
 
 public void startClient() {
@@ -116,8 +122,9 @@ public void startClient() {
     }
     System.out.println(CLIENTE+"esperando al server..."); 
     String codigo="";
-    do{          
+    do{                
       mensajeString = in.readLine();
+      System.out.println(CLIENTE+"Recibiendo mensaje:");     
       mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);
       System.out.println("SEVER: "+mensajeRes);
       codigo = mensajeRes.getCode().getCode();
@@ -132,7 +139,7 @@ public void startClient() {
     }while (codigo!=Codes.END_CONNECTION);        
     
   }catch (Exception e) {
-    System.out.println(CLIENTE+"ERROR: "+e.getMessage());
+    System.out.println(CLIENTE+"ERROR EN CLIENTE: "+e.getMessage());
   }
 }
 

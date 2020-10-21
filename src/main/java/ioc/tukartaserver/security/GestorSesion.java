@@ -1,6 +1,7 @@
 package ioc.tukartaserver.security;
 
 
+import ioc.tukartaserver.model.TokenSesion;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -24,15 +25,16 @@ public HashMap<String, String> getSesion(){
   return this.sesiones;
 }
 
-public boolean addSesion(String user, String token){  
-  int sesiones = this.sesiones.size();
-  this.sesiones.put(token, user);        
-  int nuevasSesiones = this.sesiones.size();
-  Boolean added = false;
-  if (sesiones!=nuevasSesiones){
-    added=true;
+public boolean addSesion (TokenSesion token){
+  boolean ret = false;
+  int numSesion = sesiones.size();
+  this.sesiones.put(token.getToken(), token.getUsuario());
+  int numSesionAct = sesiones.size();
+  if(numSesion!=numSesionAct){
+    ret = true;
   }
-  return added;
+  
+  return ret;
 }
 
 public void removeSesion(String token){

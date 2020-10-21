@@ -79,11 +79,11 @@ public Usuario(JSONObject json){
   };
 }
 
-  public String getNomUsuario() {
+  public String getUsuario() {
     return usuario;
   }
 
-  public String getPassword() {
+  public String getPwd() {
     return pwd;
   }
 
@@ -105,24 +105,24 @@ public Usuario(JSONObject json){
   }
   */
 
-  public Date getFechaAlta() {
+  public Date getFecha_alta() {
     return fecha_alta;
   }
 
-  public Date getFechaUltimaMod() {
+  public Date getFecha_modificacion() {
     return fecha_modificacion;
   }
 
-  public Date getFechaBaja() {
+  public Date getFecha_baja() {
     return fecha_baja;
   }
 
-  public void setNomUsuario(String nomUsuario) {
+  public void setUsuario(String nomUsuario) {
     this.usuario = nomUsuario;
     this.fecha_modificacion= new Date();
   }
 
-  public void setPassword(String password) {
+  public void setPwd(String password) {
     this.pwd = password;
     this.fecha_modificacion= new Date();
   }
@@ -149,11 +149,11 @@ public Usuario(JSONObject json){
   }
   */
 
-  public void setFechaUltimaMod(Date fechaUltimaMod) {
+  public void setFecha_modificacion(Date fechaUltimaMod) {
     this.fecha_modificacion = fechaUltimaMod;    
   }
 
-  public void setFechaBaja(Date fechaBaja) {
+  public void setFecha_baja(Date fechaBaja) {
     this.fecha_baja = fechaBaja;
     this.fecha_modificacion= new Date();
   }

@@ -19,7 +19,10 @@ import java.util.logging.Logger;
 
 public class GestorDB {
 private static final String clase = "org.postgresql.Driver";
-private String url = "jdbc:postgresql://localhost:5432/TuKarta";                     
+
+private final String LOCAL_URL = "jdbc:postgresql://localhost:5432/TuKarta";    
+private final String NGROK_DIR ="2.tcp.ngrok.io:18135";
+private String NGROK_URL = "jdbc:postgresql://"+NGROK_DIR+"/TuKarta"; 
 //private String urlAmazamon ="jdbc:postgresql://tukarta.ciq1mt081nsj.eu-west-3.rds.amazonaws.com:5432/tukarta";
 private String user = "postgres";
 private String pass = "19Pariaseeven83"; 
@@ -32,7 +35,10 @@ private Connection con;
 public GestorDB() {
   try{
     Class.forName(clase);    
-    con = DriverManager.getConnection(url,user,pass);    
+    //conectar en local    
+    con = DriverManager.getConnection(LOCAL_URL,user,pass);    
+    //conectar en remoto
+    //con = DriverManager.getConnection(NGROK_URL,user,pass);    
     System.out.println(BD+"Conexión establecida");
   }catch (ClassNotFoundException e) {
     System.err.println(BD+"Clase no encontrada");
@@ -48,9 +54,7 @@ public Codes login (String mail, String pass) {
    String sentencia = "select * from  "+TABLA_USERS+" where email=\'"+mail+"\'";
    System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
   try {              
-    Statement statement = con.createStatement();
-    System.out.println(BD+" Statement creado");
-    
+    Statement statement = con.createStatement();    
     ResultSet result = statement.executeQuery(sentencia);
     if (result.next()) {
       System.out.println(BD+"Usuario encontrado");
