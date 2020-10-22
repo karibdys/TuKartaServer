@@ -21,37 +21,32 @@ public class GestorDB {
 private static final String clase = "org.postgresql.Driver";
 
 private final String LOCAL_URL = "jdbc:postgresql://localhost:5432/TuKarta";    
-private final String NGROK_DIR ="2.tcp.ngrok.io:18135";
-private String NGROK_URL = "jdbc:postgresql://"+NGROK_DIR+"/TuKarta"; 
+//private final String NGROK_DIR ="2.tcp.ngrok.io:18135";
+//private String NGROK_URL = "jdbc:postgresql://"+NGROK_DIR+"/TuKarta"; 
 //private String urlAmazamon ="jdbc:postgresql://tukarta.ciq1mt081nsj.eu-west-3.rds.amazonaws.com:5432/tukarta";
-private String user = "postgres";
-private String pass = "19Pariaseeven83"; 
+private String user = "tukarta";
+private String pass = "TuKartaP4$$"; 
 private static final String TABLA_USERS = "usuario";
 private static final String BD ="GESTOR BD: ";
 
 private Connection con;
 
 
-public GestorDB() {
-  try{
+public GestorDB() throws SQLException, ClassNotFoundException {
     Class.forName(clase);    
     //conectar en local    
     con = DriverManager.getConnection(LOCAL_URL,user,pass);    
     //conectar en remoto
     //con = DriverManager.getConnection(NGROK_URL,user,pass);    
-    System.out.println(BD+"Conexión establecida");
-  }catch (ClassNotFoundException e) {
-    System.err.println(BD+"Clase no encontrada");
-  } catch (SQLException e) {
-    System.err.println(BD+"Error conectando con la base de datos");
-    System.err.println(e.getMessage());
-  }
-  
+    System.out.println(BD+"Conexión establecida");  
 }
 
-public Codes login (String mail, String pass) {
+public Codes login (String mail, String pass, boolean isGestor) {
    Codes ret=null;
    String sentencia = "select * from  "+TABLA_USERS+" where email=\'"+mail+"\'";
+   if (isGestor){
+     sentencia+= "and isGestor='true'";
+   }
    System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
   try {              
     Statement statement = con.createStatement();    
@@ -73,15 +68,16 @@ public Codes login (String mail, String pass) {
     
     result.close();
     statement.close();
+    System.out.println (BD+"conexión finalizada");
     
   } catch (Exception ex) {
     ret = new Codes(Codes.CODIGO_ERR);
     System.out.println(BD+ex.getMessage());
-  }
+  } 
   return ret;
 }
 
-
+/*
 public Codes signIn(String mail, String pass, String userName, String realName, String realCognom) throws SQLException{
   Codes ret =null;
   
@@ -108,7 +104,8 @@ public Codes signIn(String mail, String pass, String userName, String realName, 
   }
   return ret ;
 }
-
+*/
+/*
 public Codes modify(String email, String param, String value) throws SQLException{
   Codes ret = null;
   Statement statement = con.createStatement();
@@ -125,6 +122,7 @@ public Codes modify(String email, String param, String value) throws SQLExceptio
   }  
   return ret;
 }
+*/
 
  private static java.sql.Date convert(java.util.Date uDate) {
    java.sql.Date sDate = new java.sql.Date(uDate.getTime());

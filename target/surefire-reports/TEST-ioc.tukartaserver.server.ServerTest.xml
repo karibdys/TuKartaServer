@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="16" failures="1" name="ioc.tukartaserver.server.ServerTest" time="1.293" errors="15" skipped="0">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="java.vm.version" value="11.0.2+9-LTS"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-11.0.2\bin"/>
+    <property name="maven.multiModuleProjectDirectory" value="D:\Documentos\NetBeansProjects\TuKartaServer"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="path.separator" value=";"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="user.script" value=""/>
+    <property name="user.country" value="ES"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="test" value="ioc.tukartaserver.server.ServerTest"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="D:\Documentos\NetBeansProjects\TuKartaServer"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="java.runtime.version" value="11.0.2+9-LTS"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="C:\Users\Manu\AppData\Local\Temp\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="maven.ext.class.path" value="D:\Archivos de Programa\NetBeans-11.1\netbeans\java\maven-nblib\netbeans-eventspy.jar"/>
+    <property name="classworlds.conf" value="D:\Archivos de Programa\NetBeans-11.1\netbeans\java\maven\bin\m2.conf"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-11.0.2\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;D:\Archivos de Programa\BaseX\bin;D:\Archivos de Programa\Git\cmd;C:\Program Files (x86)\QuickTime\QTSystem\;D:\Archivos de Programa\node\;C:\Program Files\Java\jdk1.8.0_201\bin;D:\apache-maven-3.6.3-bin\apache-maven-3.6.3\bin;C:\Program Files\PuTTY\;C:\Users\Manu\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;D:\Archivos de Programa\Microsoft VS Code\bin;C:\Users\Manu\AppData\Local\GitHubDesktop\bin;C:\Users\Manu\AppData\Local\Microsoft\WindowsApps;C:\Users\Manu\AppData\Roaming\npm;."/>
+    <property name="jdk.debug" value="release"/>
+    <property name="java.class.version" value="55.0"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="10.0"/>
+    <property name="user.home" value="C:\Users\Manu"/>
+    <property name="user.timezone" value="Europe/Paris"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.specification.version" value="11"/>
+    <property name="user.name" value="Manu"/>
+    <property name="java.class.path" value="D:\Archivos de Programa\NetBeans-11.1\netbeans\java\maven\boot\plexus-classworlds-2.5.2.jar"/>
+    <property name="java.vm.specification.version" value="11"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -Dtest=ioc.tukartaserver.server.ServerTest -Dmaven.ext.class.path=D:\Archivos de Programa\NetBeans-11.1\netbeans\java\maven-nblib\netbeans-eventspy.jar -Dfile.encoding=UTF-8 surefire:test"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-11.0.2"/>
+    <property name="user.language" value="es"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="11.0.2"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="D:\Archivos de Programa\NetBeans-11.1\netbeans\java\maven"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.version.date" value="2019-01-15"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.java.com/bugreport/"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="java.vendor.version" value="18.9"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+  </properties>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testProcesarPeticion_MensajeSolicitud" time="1.23">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.procesarPeticion(Server.java:114)
+	at ioc.tukartaserver.server.ServerTest.testProcesarPeticion_MensajeSolicitud(ServerTest.java:64)
+</error>
+    <system-out>procesarPeticion
+GESTOR BD: Conexión establecida
+GESTOR SESIÓN: Iniciado el registro de sesiones
+SERVER: creado el server para escuchar el puerto 200
+SERVER: USANDO NUEVO SISTEMA
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testProcessSignIn_Usuario" time="0">
+    <failure message="The test case is a prototype." type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: The test case is a prototype.
+	at junit.framework.Assert.fail(Assert.java:47)
+	at ioc.tukartaserver.server.ServerTest.testProcessSignIn_Usuario(ServerTest.java:102)
+</failure>
+    <system-out>processSignIn
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testComprobarSesion" time="0.016">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.comprobarSesion(Server.java:324)
+	at ioc.tukartaserver.server.ServerTest.testComprobarSesion(ServerTest.java:216)
+</error>
+    <system-out>comprobarSesion
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testProcesarPeticion_JSONObject" time="0.001">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.procesarPeticion(Server.java:128)
+	at ioc.tukartaserver.server.ServerTest.testProcesarPeticion_JSONObject(ServerTest.java:76)
+</error>
+    <system-out>procesarPeticion
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testSendCode_Codes_String" time="0.002">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendCode(Server.java:292)
+	at ioc.tukartaserver.server.ServerTest.testSendCode_Codes_String(ServerTest.java:153)
+</error>
+    <system-out>sendCode
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testProcessSignIn_5args" time="0">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.processSignIn(Server.java:239)
+	at ioc.tukartaserver.server.ServerTest.testProcessSignIn_5args(ServerTest.java:116)
+</error>
+    <system-out>processSignIn
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+SERVER: Accediendo a la base de datos.
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testProcessLogin" time="0.001">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.processLogin(Server.java:208)
+	at ioc.tukartaserver.server.ServerTest.testProcessLogin(ServerTest.java:88)
+</error>
+    <system-out>processLogin
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+SERVER: Accediendo a la base de datos.
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testStartServer" time="0.001">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.startServer(Server.java:69)
+	at ioc.tukartaserver.server.ServerTest.testStartServer(ServerTest.java:41)
+</error>
+    <system-out>startServer
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+SERVER: Iniciando server...
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testCloseServer" time="0.001">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.closeServer(Server.java:101)
+	at ioc.tukartaserver.server.ServerTest.testCloseServer(ServerTest.java:52)
+</error>
+    <system-out>closeServer
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testPrepareCode" time="0.005">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.prepareCode(Server.java:318)
+	at ioc.tukartaserver.server.ServerTest.testPrepareCode(ServerTest.java:202)
+</error>
+    <system-out>prepareCode
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testSendCode_Codes" time="0.003">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendCode(Server.java:299)
+	at ioc.tukartaserver.server.ServerTest.testSendCode_Codes(ServerTest.java:165)
+</error>
+    <system-out>sendCode
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testSend" time="0.002">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.send(Server.java:312)
+	at ioc.tukartaserver.server.ServerTest.testSend(ServerTest.java:189)
+</error>
+    <system-out>send
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testSendRespuesta" time="0.002">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendRespuesta(Server.java:305)
+	at ioc.tukartaserver.server.ServerTest.testSendRespuesta(ServerTest.java:177)
+</error>
+    <system-out>sendRespuesta
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testProcessModify" time="0.002">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.comprobarSesion(Server.java:324)
+	at ioc.tukartaserver.server.Server.processModify(Server.java:250)
+	at ioc.tukartaserver.server.ServerTest.testProcessModify(ServerTest.java:128)
+</error>
+    <system-out>processModify
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testProcessLogOff" time="0.002">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.comprobarSesion(Server.java:324)
+	at ioc.tukartaserver.server.Server.processLogOff(Server.java:278)
+	at ioc.tukartaserver.server.ServerTest.testProcessLogOff(ServerTest.java:140)
+</error>
+    <system-out>processLogOff
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+</system-out>
+  </testcase>
+  <testcase classname="ioc.tukartaserver.server.ServerTest" name="testEndConnection" time="0.025">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendRespuesta(Server.java:305)
+	at ioc.tukartaserver.server.Server.endConnection(Server.java:335)
+	at ioc.tukartaserver.server.ServerTest.testEndConnection(ServerTest.java:228)
+</error>
+    <system-out>endConnection
+SERVER: ERROR AL CREAR EL SERVER: Address already in use: NET_Bind
+SERVER: creado el server para escuchar el puerto 200
+GESTOR DE CÓDIGOS: Iniciando listado de códigos
+GESTOR DE CÓDIGOS: Códigos iniciados con éxito
+SERVER: mensaje enviado:
+------
+MENSAJE:
+Código: 90//Mensaje: Finalizar conexión
+Petición respondida: Conexión
+Datos extras: Gracias por todo
+</system-out>
+  </testcase>
+</testsuite>

@@ -34,9 +34,7 @@ public MensajeRespuesta(Codes code, String peticion, Object data){
   this.data = gson.toJson(data);
 }
 
-  public Gson getGson() {
-    return gson;
-  }
+
 
   public Codes getCode() {
     return code;
@@ -66,6 +64,11 @@ public MensajeRespuesta(Codes code, String peticion, Object data){
     this.data = data;
   }
   
+  public MensajeRespuesta generarMensajeRespuesta(){
+    MensajeRespuesta mensaje = new MensajeRespuesta();    
+    return  mensaje;
+  }
+  
   @Override
   public String toString(){
     StringBuilder builder = new StringBuilder();
@@ -73,7 +76,7 @@ public MensajeRespuesta(Codes code, String peticion, Object data){
     builder.append("\nCódigo: "+code.getCode()+"//Mensaje: "+code.getMessage());
     builder.append("\nPetición respondida: "+peticion);
     builder.append("\nDatos extras: "+data);
-    
+    builder.append("\n------");
     return builder.toString();
   }
 }

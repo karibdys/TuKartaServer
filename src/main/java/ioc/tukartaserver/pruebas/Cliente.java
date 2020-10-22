@@ -67,7 +67,7 @@ public void startClient() {
       
       System.out.println(CLIENTE+"Procediendo a hacer petición de login");
       //creamos usuario
-      Usuario user = new Usuario("karibdys", "manuPass", "manu@manu.com", null, null);
+      Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes
@@ -126,7 +126,7 @@ public void startClient() {
       mensajeString = in.readLine();
       System.out.println(CLIENTE+"Recibiendo mensaje:");     
       mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);
-      System.out.println("SEVER: "+mensajeRes);
+      System.out.println(mensajeRes);
       codigo = mensajeRes.getCode().getCode();
       if (codigo.equals(Codes.END_CONNECTION)){
         System.out.println(CLIENTE+"Cerrando conexión con el servidor");				

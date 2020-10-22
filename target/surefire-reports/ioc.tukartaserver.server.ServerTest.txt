@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------------
+Test set: ioc.tukartaserver.server.ServerTest
+-------------------------------------------------------------------------------
+Tests run: 16, Failures: 1, Errors: 15, Skipped: 0, Time elapsed: 1.309 sec <<< FAILURE!
+testProcesarPeticion_MensajeSolicitud(ioc.tukartaserver.server.ServerTest)  Time elapsed: 1.23 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.procesarPeticion(Server.java:114)
+	at ioc.tukartaserver.server.ServerTest.testProcesarPeticion_MensajeSolicitud(ServerTest.java:64)
+
+testProcessSignIn_Usuario(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0 sec  <<< FAILURE!
+junit.framework.AssertionFailedError: The test case is a prototype.
+	at junit.framework.Assert.fail(Assert.java:47)
+	at ioc.tukartaserver.server.ServerTest.testProcessSignIn_Usuario(ServerTest.java:102)
+
+testComprobarSesion(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.016 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.comprobarSesion(Server.java:324)
+	at ioc.tukartaserver.server.ServerTest.testComprobarSesion(ServerTest.java:216)
+
+testProcesarPeticion_JSONObject(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.001 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.procesarPeticion(Server.java:128)
+	at ioc.tukartaserver.server.ServerTest.testProcesarPeticion_JSONObject(ServerTest.java:76)
+
+testSendCode_Codes_String(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.002 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendCode(Server.java:292)
+	at ioc.tukartaserver.server.ServerTest.testSendCode_Codes_String(ServerTest.java:153)
+
+testProcessSignIn_5args(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.processSignIn(Server.java:239)
+	at ioc.tukartaserver.server.ServerTest.testProcessSignIn_5args(ServerTest.java:116)
+
+testProcessLogin(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.001 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.processLogin(Server.java:208)
+	at ioc.tukartaserver.server.ServerTest.testProcessLogin(ServerTest.java:88)
+
+testStartServer(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.001 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.startServer(Server.java:69)
+	at ioc.tukartaserver.server.ServerTest.testStartServer(ServerTest.java:41)
+
+testCloseServer(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.001 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.closeServer(Server.java:101)
+	at ioc.tukartaserver.server.ServerTest.testCloseServer(ServerTest.java:52)
+
+testPrepareCode(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.005 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.prepareCode(Server.java:318)
+	at ioc.tukartaserver.server.ServerTest.testPrepareCode(ServerTest.java:202)
+
+testSendCode_Codes(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.003 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendCode(Server.java:299)
+	at ioc.tukartaserver.server.ServerTest.testSendCode_Codes(ServerTest.java:165)
+
+testSend(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.002 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.send(Server.java:312)
+	at ioc.tukartaserver.server.ServerTest.testSend(ServerTest.java:189)
+
+testSendRespuesta(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.002 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendRespuesta(Server.java:305)
+	at ioc.tukartaserver.server.ServerTest.testSendRespuesta(ServerTest.java:177)
+
+testProcessModify(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.002 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.comprobarSesion(Server.java:324)
+	at ioc.tukartaserver.server.Server.processModify(Server.java:250)
+	at ioc.tukartaserver.server.ServerTest.testProcessModify(ServerTest.java:128)
+
+testProcessLogOff(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.002 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.comprobarSesion(Server.java:324)
+	at ioc.tukartaserver.server.Server.processLogOff(Server.java:278)
+	at ioc.tukartaserver.server.ServerTest.testProcessLogOff(ServerTest.java:140)
+
+testEndConnection(ioc.tukartaserver.server.ServerTest)  Time elapsed: 0.025 sec  <<< ERROR!
+java.lang.NullPointerException
+	at ioc.tukartaserver.server.Server.sendRespuesta(Server.java:305)
+	at ioc.tukartaserver.server.Server.endConnection(Server.java:335)
+	at ioc.tukartaserver.server.ServerTest.testEndConnection(ServerTest.java:228)
+
