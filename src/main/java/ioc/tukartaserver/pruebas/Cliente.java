@@ -10,6 +10,7 @@ import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -67,7 +68,8 @@ public void startClient() {
       
       System.out.println(CLIENTE+"Procediendo a hacer petición de login");
       //creamos usuario
-      Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
+      //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
+      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes
@@ -125,8 +127,9 @@ public void startClient() {
     do{                
       mensajeString = in.readLine();
       System.out.println(CLIENTE+"Recibiendo mensaje:");     
+      System.out.println(mensajeString);
+      System.out.println(CLIENTE+"Mensaje en formato Mensaje:");
       mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);
-      System.out.println(mensajeRes);
       codigo = mensajeRes.getCode().getCode();
       if (codigo.equals(Codes.END_CONNECTION)){
         System.out.println(CLIENTE+"Cerrando conexión con el servidor");				

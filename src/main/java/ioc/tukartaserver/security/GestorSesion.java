@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public class GestorSesion {
 
-private HashMap<String, String> sesiones;
+private HashMap<String, TokenSesion> sesiones;
 
 private static final String GESTOR = "GESTOR SESIÓN: ";
 
@@ -21,14 +21,20 @@ public GestorSesion(){
   System.out.println(GESTOR+"Iniciado el registro de sesiones");
 }
 
-public HashMap<String, String> getSesion(){
+public HashMap<String, TokenSesion> getSesion(){
   return this.sesiones;
 }
 
+
+/**
+ * Método que añade una sesión al listado de sesiones activas
+ * @param token TokenSesion: con la información del token a añadir al listado
+ * @return true: si el token se ha añadido con éxito o false en caso contrario
+ */
 public boolean addSesion (TokenSesion token){
   boolean ret = false;
   int numSesion = sesiones.size();
-  this.sesiones.put(token.getToken(), token.getUsuario());
+  this.sesiones.put(token.getUsuario(), token);
   int numSesionAct = sesiones.size();
   if(numSesion!=numSesionAct){
     ret = true;
@@ -37,33 +43,30 @@ public boolean addSesion (TokenSesion token){
   return ret;
 }
 
-public void removeSesion(String token){
-  sesiones.remove(token);
+public boolean isToken(String usuario){
+  return sesiones.containsKey(usuario);
 }
 
-public boolean isToken(String token){
-  return sesiones.containsKey(token);
-}
+/**
+ * Elimina una sesión activa del listado de sesiones si se corresponden los objetos. 
+ * @param token Token de sesión al que se quiere dar de baja
+ */
 
-public String getUser(String token){  
-  String userMail ="";
-  if (sesiones.containsKey(token)){
-    userMail=sesiones.get(token);
+public boolean removeSesion(TokenSesion token){  
+  boolean ret = false;
+  //comprobar que el usuario tiene sesión abierta:
+  String user = token.getUsuario();
+  if(isToken(user)){
+    //comprobamos que el usuario tiene la misma sesión:
+    TokenSesion tokenSesion = sesiones.get(user);
+      if (tokenSesion==token){
+        //si ambos son iguales,               
+        sesiones.remove(user);
+        ret = true;
+      }        
   }
-  return userMail;
+  return ret;
 }
 
-public String generateToken(){
-  StringBuilder token=new StringBuilder(10);
-  int num = sesiones.size();
-  char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-  Random random = new Random();
-  for (int i = 0; i < 10; i++) {
-    char c = chars[random.nextInt(chars.length)];
-    token.append(c);
-  }
-  token.append(num);  
-  return token.toString();
-}
   
 }

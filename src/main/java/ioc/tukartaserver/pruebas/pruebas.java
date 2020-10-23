@@ -15,7 +15,7 @@ import ioc.tukartaserver.model.Usuario;
  * @author Manu
  */
 public class pruebas {
-public static void main(String...args){
+/*public static void main(String...args){
   Usuario user = new Usuario ("karibdys", "manuPass", "manu@manu.com", "Manu", "Mora");
   Gson gson = new Gson();
   String userJson = gson.toJson(user);
@@ -35,5 +35,6 @@ public static void main(String...args){
 
   
 }
+*/
   
 }

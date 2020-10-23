@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 
-public class Server{
+public class Server extends Thread{
 
 private boolean endServer =false;
 private static final int PORT =200;
@@ -46,7 +46,9 @@ private Codes code = null;
 private Gson gson;
 
 private MensajeRespuesta respuesta;
+private String mensajeOut;
 private MensajeSolicitud solicitud;
+private String mensajeIn;
 
 /**
  * Constructor básico del servidor. Crea el canal de escucha en el sistema, el gestor de sesiones, el de la base de datos y el builder de JSON
@@ -59,14 +61,15 @@ public Server() {
     
   } catch (IOException e) {
     System.out.println(SERVER+"ERROR AL CREAR EL SERVER: "+e.getMessage());
+    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
   }
   System.out.println(SERVER+"creado el server para escuchar el puerto "+PORT);
   try{
     gestorDB = new GestorDB();
   } catch (SQLException ex) {
-    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", "");
+    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
   } catch (ClassNotFoundException ex) {
-    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", "");
+    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
   }
 }
 
@@ -75,27 +78,39 @@ public Server() {
  */
 public void startServer() {
   System.out.println(SERVER+"Iniciando server...");  
-  String mensajeIn="";
+  mensajeIn="";
   while (!endServer) {    
     try {
       cs = ss.accept();
       System.out.println(SERVER+"Petición de cliente aceptada.");	
       //sacamos los canales
       in = new BufferedReader(new InputStreamReader(cs.getInputStream()));
-      out = new PrintStream(cs.getOutputStream()); 
+      out = new PrintStream(cs.getOutputStream());       
       System.out.println(SERVER+"Canales abiertos.");
+     
+      //Enviamos el primer mensaje de respuesta
       System.out.println(SERVER+"Enviando confirmación de conexión con el cliente.");
-      sendCode(new Codes (Codes.CODIGO_OK), "Conexión");      
-      //esperamos la petición del cliente    
+      sendCode(new Codes (Codes.CODIGO_OK), "Conexión");                
       System.out.println(SERVER+"Esperando petición de cliente.");
+      
+      //esperamos la petición del cliente  
       mensajeIn = in.readLine();
     } catch (IOException ex) {
       sendCode(new Codes(Codes.CODIGO_ERR), "conexión");
       System.out.println(SERVER+"Enviando código de error");
-    }                
+    }
+    
+    //si no ha habido ningún fallo en la recepción, tendremos un mensaje JSON.
     System.out.println(SERVER+": JSON recibido\n  -->\n"+mensajeIn);  
-    MensajeSolicitud mensajeSol = gson.fromJson(mensajeIn, MensajeSolicitud.class);
-    procesarPeticion(mensajeSol);
+    if(mensajeIn!=null){
+      solicitud = gson.fromJson(mensajeIn, MensajeSolicitud.class);
+      //procesamos la petición
+      procesarPeticion(solicitud);
+    }else{
+      endConnection();
+    }
+    
+    //esperamos nueva petición de otro cliente o del mismo.
     System.out.println(SERVER+"esperando nueva petición");
   }
 
@@ -222,20 +237,24 @@ public void procesarPeticion(JSONObject json) throws IOException, SQLException {
 
 /**
  * Se encarga de gestionar el proceso de login. Requiere un usuario y conecta con la base de datos para comprobar que el usuario existe y tiene permisos
- * @param usuario 
+ * @param usuario Usuario con, al menos, los datos de email y pass del usuario que intenta hacer login
+ * @param isGestor un boolean que indica si se está solicitando un login de gestor o de empleado
  */
 public void processLogin(Usuario usuario, boolean isGestor){
   System.out.println(SERVER+"Accediendo a la base de datos.");
-  code=gestorDB.login(usuario.getEmail(), usuario.getPwd(), isGestor);
+  //llamamos a la base de datos que nos devolverá directamente un MensajeRespuesta con los datos de la petición
+  respuesta = gestorDB.loginMens(usuario.getEmail(), usuario.getPwd(), isGestor);
+  code = respuesta.getCode();
+  System.out.println(SERVER+"código recibido del gestor de la base de datos: "+code.getCode());
   if(code.getCode()==Codes.CODIGO_OK) {    
-    System.out.println(SERVER+"código recibido: "+code.getCode());
     //si todo es OK generamos el token      
     TokenSesion token = new TokenSesion(usuario);
     //comprobamos que el token se registra y si es así, lo mandamos
-    if (sesiones.addSesion(token)){
-      System.out.println(SERVER+"sesión añadida");
-      System.out.println(SERVER+"preparando y enviando mensaje de respuesta");
-      sendRespuesta (code, Mensaje.FUNCION_LOGIN, gson.toJson(token));         
+    if (sesiones.addSesion(token)){                    
+      respuesta.setData(token);
+      //convertimos la respuesta en JSON y la mandamos
+      out.println(gson.toJson(respuesta));
+      out.flush();
       System.out.println(SERVER+"mensaje de respuesta enviado");
 
     }else{
@@ -250,15 +269,6 @@ public void processLogin(Usuario usuario, boolean isGestor){
     sendCode(code, Mensaje.FUNCION_LOGIN);
   }
   endConnection();
-}
-
-/**
- * Se encarga de gestionar el proceso de login de un usuario administrador. Requiere un usuario y conecta con la base de datos para comprobar que el usuario existe y tiene permisos
- * @param usuario 
- */
-public void processLoginAdmin(Usuario user){
-  //comprobar que el usuario tiene permisos
-  
 }
 
 /*
@@ -300,25 +310,25 @@ public void processModify(JSONObject json){
 }
 */
 
-/*
-public void procesarLogout(JSONObject json){
-  //comprobamos los datos básicos:
-  String token = "";
-  String userMail="";
-  
-  //comprobamos que el usuario ha iniciado sesión  
-  if ((token=comprobarSesion(json)).equals(NO_SESSION)){
-    //si no está la sesión, lanzamos un código de error
-    code = new Codes(Codes.CODIGO_NO_SESION);   
+/**
+ * Método que da de baja a un usuario de la lista de sesiones abiertas. Comprobará que el usuario está en ella y su sesión es válida. 
+ * @param token Requiere un objeto TokenSesion que indicará el token que recibió del servidor.
+ */
+public void procesarLogout(TokenSesion token){
+  //comprobamos que el usuario está en la lista de sesiones
+  if(sesiones.removeSesion(token)){
+    //si la sesión está, le damos de baja y mandamos mensaje de ok    
+    sendCode(new Codes(Codes.CODIGO_OK), "logout");    
   }else{
-    sesiones.removeSesion(token);
-    code=new Codes (Codes.CODIGO_OK);
-  } 
-  sendCode(code);
-  endConnection();  
-  
+    //si la sesión no está dada de alta, entonces enviamos código de error
+    sendCode(new Codes(Codes.CODIGO_NO_SESION), "logout");
+  }
 }
-*/
+
+//**************************
+//Métodos auxiliares
+//**************************
+
 /**
  * Envía una petición simple sin datos adicionales, solo con el código y la petición a la que responde
  * @param codigo Codes: código de mensaje
@@ -326,9 +336,9 @@ public void procesarLogout(JSONObject json){
  */
 public void sendCode(Codes codigo, String peticion){
   respuesta = new MensajeRespuesta(codigo, peticion);
-  String mensajeJson = gson.toJson(respuesta);
-  System.out.println(SERVER+"Enviando mensaje: \n  -->"+mensajeJson);
-  out.println(mensajeJson);
+  mensajeOut = gson.toJson(respuesta);
+  System.out.println(SERVER+"Enviando mensaje: \n  -->"+mensajeOut);
+  out.println(mensajeOut);
   out.flush();  
 }
 
@@ -338,8 +348,8 @@ public void sendCode(Codes codigo, String peticion){
  * @param peticion String: petición a la que responde el código
  * @param data  String: datos complementarios (formato JSON)
  */
-public void sendRespuesta (Codes codigo, String peticion, String data){
-  MensajeRespuesta mensajeRes = new MensajeRespuesta(codigo, peticion, data);
+public void sendRespuesta (Codes codigo, String peticion, String data, String dataUser){
+  MensajeRespuesta mensajeRes = new MensajeRespuesta(codigo, peticion, data, (String) null);
   System.out.println(SERVER+"mensaje generado:\n"+mensajeRes);
   String mensajeJson = gson.toJson(mensajeRes);
   System.out.println(SERVER+"mensaje JSON:\n"+mensajeJson);
@@ -348,6 +358,7 @@ public void sendRespuesta (Codes codigo, String peticion, String data){
   System.out.println(SERVER+"mensaje enviado");
 }
 
+/*
 public String comprobarSesion(JSONObject json){  
   String token = json.getString(Mensaje.ATT_TOKEN);
   if (sesiones.isToken(token)){
@@ -356,11 +367,26 @@ public String comprobarSesion(JSONObject json){
     return NO_SESSION;
   }  
 }
+*/
+
+public boolean comprobarSesion(TokenSesion token){
+  boolean ret = false;
+  if(sesiones.isToken(token.getToken())){
+    ret =true;
+  }
+  return ret;
+}
+
+
 
 /**
  * Envía un mensaje de fin de sesión al cliente y cierra el canal entre ambos.
  */
 public void endConnection(){
   sendCode(new Codes(Codes.END_CONNECTION), "fin conexión");
+}
+
+public void run(){
+  startServer();
 }
 }

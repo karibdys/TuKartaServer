@@ -4,6 +4,8 @@ package ioc.tukartaserver.main;
 import ioc.tukartaserver.server.Server;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +20,7 @@ Server server;
  * Creates new form NewJFrame
  */
 public InitServer() {
-  initComponents();
+  initComponents();  
   server = new Server();
 }
 

@@ -1,7 +1,6 @@
 package ioc.tukartaserver.model;
 
 import java.util.Date;
-import org.json.JSONObject;
 
 /**
  * Clase que representa un usuario de la base de datos del proyecto TuKarta

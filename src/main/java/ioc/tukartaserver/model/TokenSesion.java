@@ -1,6 +1,7 @@
 package ioc.tukartaserver.model;
 
 import ioc.tukartaserver.model.Usuario;
+import java.time.LocalTime;
 import java.util.Random;
 
 /**
@@ -8,15 +9,34 @@ import java.util.Random;
  * @author Manu
  */
 public class TokenSesion {
+
+//minutos válidos que tendrá la sesión como máximo
+private static final long MIN_MAX = 30;
+
 private String token;
 private String usuario;
+private LocalTime validez;
 
 public TokenSesion (Usuario user){
   this.usuario=user.getUsuario();
   this.token=generateToken();
+  //this.validez= validezHasta(MIN_MAX);
+  this.validez=null;
 }
 
-private String generateToken(){
+public String getToken(){
+  return this.token;
+}
+
+public String getUsuario(){
+  return this.usuario;
+}
+
+public LocalTime getValidez(){
+  return this.validez;
+}
+
+private static String generateToken(){
   StringBuilder token=new StringBuilder(10);
   
   char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -29,12 +49,17 @@ private String generateToken(){
   return token.toString();
 }
 
-public String getToken(){
-  return this.token;
+public static LocalTime validezHasta(long minutos){
+  LocalTime hora= LocalTime.now().plusMinutes(minutos);
+  return hora;
 }
 
-public String getUsuario(){
-  return this.usuario;
+public String toString(){
+  StringBuilder builder = new StringBuilder();
+  builder.append("Token: "+this.token);
+  builder.append("\nUser: "+this.usuario);
+  builder.append("\nValidez: "+this.validez);
+  return builder.toString();
 }
-  
+
 }

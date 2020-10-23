@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Usuario;
 import java.util.Date;
 import java.util.logging.Level;
@@ -77,9 +78,69 @@ public Codes login (String mail, String pass, boolean isGestor) {
   return ret;
 }
 
+/**
+ * Procesa una petición de login del servidor a la base de datos
+ * @param mail  email del usuario
+ * @param pass  contraseá del usuario
+ * @param isGestor  indica si el usuario debe de constar como gestor o no de la aplicación
+ * @return MensajeRespuesta que contiene el código que se ha generado y los datos que se le han pedido. 
+ */
+public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
+  //creamos los datos necesarios
+  MensajeRespuesta mensajeRes = new MensajeRespuesta();
+  Codes codigoRet=null;
+  Usuario userRes =new Usuario();
+  String userResString="";
+  
+  //preparamos la sentencia en función de si es gestor o no un requisito  
+  String sentencia = "select * from  "+TABLA_USERS+" where email=\'"+mail+"\'";
+  if (isGestor){
+    sentencia+= "and isGestor='true'";
+  }
+  System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
+  
+  //hacemos la petición a la base de datos
+  try {              
+    Statement statement = con.createStatement();    
+    ResultSet result = statement.executeQuery(sentencia);
+    if (result.next()) {
+      System.out.println(BD+"Usuario encontrado");
+      if(pass.equals(result.getString("pwd"))) {
+        codigoRet= new Codes(Codes.CODIGO_OK);				 
+        System.out.println(BD+"Contraseña correcta");
+        
+        //pasamos a procesar el usuario
+        userRes.setUsuario(result.getString("usuario"));
+        userRes.setNombre(result.getString("nombre"));
+        userRes.setApellido(result.getString("apellidos"));
+        userRes.setEmail(result.getString("email"));
+        userRes.setIsGestor(result.getBoolean("isGestor"));
+      }else {
+        System.out.println(BD+"Contraseña incorrecta");
+        codigoRet = new Codes(Codes.CODIGO_ERR_PWD);
+      }
+    }else {
+      System.out.println(BD+"El resultset es nulo");
+      codigoRet = new Codes(Codes.CODIGO_ERR_USER);
+    }
+    
+    //preparamos el mensaje con los datos
+    mensajeRes= new MensajeRespuesta (codigoRet, "login", null, userRes);    
+    result.close();
+    statement.close();
+    System.out.println (BD+"conexión finalizada");
+    
+  } catch (Exception ex) {
+    codigoRet = new Codes(Codes.CODIGO_ERR);
+    System.out.println(BD+ex.getMessage());
+    System.out.println (BD+"se devuelve el mensaje:\n"+mensajeRes);
+  } 
+  return mensajeRes;
+}
+
 /*
 public Codes signIn(String mail, String pass, String userName, String realName, String realCognom) throws SQLException{
-  Codes ret =null;
+  Codes codigoRet =null;
   
   Statement statement = con.createStatement();
   //comprobamos que el usuario existe:
@@ -88,7 +149,7 @@ public Codes signIn(String mail, String pass, String userName, String realName, 
   ResultSet result = statement.executeQuery(sentencia);
   result.next();
   if (result.getInt(1)!=0){   
-    ret = new Codes(Codes.CODIGO_USER_REP);    
+    codigoRet = new Codes(Codes.CODIGO_USER_REP);    
   }else{
     //si no está repetido, procedemos a crear un usuario
     System.out.println(BD+"usuario no encontrado. Se procede a darle de alta");
@@ -97,17 +158,17 @@ public Codes signIn(String mail, String pass, String userName, String realName, 
     sentencia = "INSERT INTO "+TABLA_USERS+" VALUES ('"+userName+"', '"+pass+"', '"+mail+"', '"+realName+"', '"+realCognom+"', null, '"+sqlDate+"', '"+sqlDate+"')";
     System.out.println(BD+"SENTENCIA\n  --> "+sentencia);
     if (statement.executeUpdate(sentencia)==0){
-      ret = new Codes(Codes.CODIGO_ERR);      
+      codigoRet = new Codes(Codes.CODIGO_ERR);      
     }else{
-      ret = new Codes(Codes.CODIGO_OK);
+      codigoRet = new Codes(Codes.CODIGO_OK);
     }    
   }
-  return ret ;
+  return codigoRet ;
 }
 */
 /*
 public Codes modify(String email, String param, String value) throws SQLException{
-  Codes ret = null;
+  Codes codigoRet = null;
   Statement statement = con.createStatement();
   String sentencia = "UPDATE "+TABLA_USERS+" SET "+param+" = '"+value+"' WHERE "+Usuario.EMAIL+" = '"+email+"'";
   System.out.println(BD+"SENTENCIA\n  --> "+sentencia);
@@ -116,11 +177,11 @@ public Codes modify(String email, String param, String value) throws SQLExceptio
     java.sql.Date sqlDate = convert(new Date());
     sentencia = "UPDATE "+TABLA_USERS+" SET "+Usuario.FECHA_MOD+" = '"+sqlDate+"' WHERE "+Usuario.EMAIL+" = '"+email+"'";
     statement.executeUpdate(sentencia);
-    ret = new Codes(Codes.CODIGO_OK);
+    codigoRet = new Codes(Codes.CODIGO_OK);
   }else{
-    ret = new Codes(Codes.CODIGO_ERR);
+    codigoRet = new Codes(Codes.CODIGO_ERR);
   }  
-  return ret;
+  return codigoRet;
 }
 */
 
