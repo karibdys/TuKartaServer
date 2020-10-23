@@ -16,23 +16,17 @@ import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.security.GestorSesion;
 import java.io.BufferedReader;
 import java.io.PrintStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.sql.SQLException;
+
 
 /**
  * Clase que gestionará los envíos de los mensajes del servidor
  * @author Manu Mora
  */
-public class GestorMensajes {
+public class GestorServer {
 
+private static final String SERVER ="GESTOR SERVER: ";
 
-private boolean endServer =false;
-private static final int PORT =200;
-private static final String NO_SESSION = "NO SESSION";
-private static final String SERVER ="SERVER: ";
-
-private ServerSocket ss;
-private Socket cs;
 private BufferedReader in;
 private PrintStream  out;
 private GestorDB gestorDB;
@@ -42,10 +36,25 @@ private Gson gson;
 
 private MensajeRespuesta respuesta;
 private String mensajeOut;
-private MensajeSolicitud solicitud;
-private String mensajeIn;
 
-
+public GestorServer(BufferedReader in, PrintStream out){
+  this.in=in;
+  this.out=out;
+  sesiones=new GestorSesion();
+  try{
+    gestorDB = new GestorDB();
+  } catch (SQLException ex) {
+    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
+    System.out.println(ex.getMessage());
+  } catch (ClassNotFoundException ex) {
+    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
+    System.out.println(ex.getMessage());
+  }
+  gson = new Gson();
+  if(in==null || out==null){
+    System.out.println(SERVER+"LOS CANALES NO SE HAN ABIERTO CORRECTAMENTE");
+  }
+}
 
 /**
  * Se encarga de gestionar el proceso de login. Requiere un usuario y conecta con la base de datos para comprobar que el usuario existe y tiene permisos
@@ -57,8 +66,9 @@ public void processLogin(Usuario usuario, boolean isGestor){
   //llamamos a la base de datos que nos devolverá directamente un MensajeRespuesta con los datos de la petición
   respuesta = gestorDB.loginMens(usuario.getEmail(), usuario.getPwd(), isGestor);
   code = respuesta.getCode();
-  System.out.println(SERVER+"código recibido del gestor de la base de datos: "+code.getCode());
-  if(code.getCode()==Codes.CODIGO_OK) {    
+  String codeString = code.getCode();
+  System.out.println(SERVER+"código recibido del gestor de la base de datos: "+codeString);
+  if(codeString==Codes.CODIGO_OK) {    
     //si todo es OK generamos el token      
     TokenSesion token = new TokenSesion(usuario);
     //comprobamos que el token se registra y si es así, lo mandamos
@@ -83,6 +93,21 @@ public void processLogin(Usuario usuario, boolean isGestor){
   endConnection();
 }
 
+/**
+ * Método que da de baja a un usuario de la lista de sesiones abiertas. Comprobará que el usuario está en ella y su sesión es válida. 
+ * @param token Requiere un objeto TokenSesion que indicará el token que recibió del servidor.
+ */
+public void procesarLogout(TokenSesion token){
+  //comprobamos que el usuario está en la lista de sesiones
+  if(sesiones.removeSesion(token)){
+    //si la sesión está, le damos de baja y mandamos mensaje de ok    
+    sendCode(new Codes(Codes.CODIGO_OK), "logout");    
+  }else{
+    //si la sesión no está dada de alta, entonces enviamos código de error
+    sendCode(new Codes(Codes.CODIGO_NO_SESION), "logout");
+  }
+}
+
 //**************************
 //Métodos auxiliares
 //**************************
@@ -92,6 +117,9 @@ public void processLogin(Usuario usuario, boolean isGestor){
  * @param peticion String: petición a la que responde el código
  */
 public void sendCode(Codes codigo, String peticion){
+  System.out.println(SERVER+"Preparando mensje de respuesta con código");
+  System.out.println(SERVER+"Código recibido: \n"+codigo);
+  System.out.println(SERVER+"Petición recibida: "+peticion);
   respuesta = new MensajeRespuesta(codigo, peticion);
   mensajeOut = gson.toJson(respuesta);
   System.out.println(SERVER+"Enviando mensaje: \n  -->"+mensajeOut);

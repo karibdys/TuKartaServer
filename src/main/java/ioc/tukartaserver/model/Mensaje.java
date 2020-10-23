@@ -11,6 +11,8 @@ public static final String FUNCION_LOGIN_ADMIN = "loginAdmin";
 public static final String FUNCION_SIGNIN = "signIn";
 public static final String FUNCION_ALTER = "modify";
 public static final String FUNCION_LOGOFF = "logout";
+public static final String FUNCION_FIN_CON = "fin_conexion";
+public static final String FUNCION_FIN_SERVER = "cerrar_server";
 
 public static final String ATT_PETICION = "peticion";
 public static final String ATT_TOKEN = "token";

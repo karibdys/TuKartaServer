@@ -3,7 +3,6 @@ package ioc.tukartaserver.security;
 
 import ioc.tukartaserver.model.TokenSesion;
 import java.util.HashMap;
-import java.util.Random;
 
 /**
  * Clase que se encarga de gestionar las sesiones abiertas en el servidor.
@@ -33,12 +32,17 @@ public HashMap<String, TokenSesion> getSesion(){
  */
 public boolean addSesion (TokenSesion token){
   boolean ret = false;
-  int numSesion = sesiones.size();
-  this.sesiones.put(token.getUsuario(), token);
-  int numSesionAct = sesiones.size();
-  if(numSesion!=numSesionAct){
-    ret = true;
+  try{
+    int numSesion = sesiones.size();
+    this.sesiones.put(token.getUsuario(), token);
+    int numSesionAct = sesiones.size();
+    if(numSesion!=numSesionAct){
+      ret = true;
+    }
+  }catch (Exception ex){
+    System.err.println(ex.getMessage());
   }
+  
   
   return ret;
 }
@@ -66,7 +70,5 @@ public boolean removeSesion(TokenSesion token){
       }        
   }
   return ret;
-}
-
-  
+}  
 }

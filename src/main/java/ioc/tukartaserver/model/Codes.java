@@ -29,6 +29,9 @@ public static final String CODIGO_USER_REP ="63";
 
 //fin de conexión
 public static final String END_CONNECTION = "90";
+public static final String END_SERVER = "91";
+
+
 
 private static final String CODES = "GESTOR DE CÓDIGOS: ";
 
@@ -71,6 +74,7 @@ public static void initMap () {
   codigos.put(CODIGO_USER_REP, "El usuario ya existe en la base de datos.");
   //fin de conexión
   codigos.put(END_CONNECTION, "Finalizar conexión");
+  codigos.put(END_SERVER, "Finalizar el servidor");
   System.out.println(CODES+"Códigos iniciados con éxito");
 }
 

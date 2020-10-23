@@ -38,10 +38,7 @@ BufferedReader in;
 
 public Cliente() throws IOException{
   gson = new Gson();
-  try{
-    //*****activa esto para conectar por internet con el servidor
-    //cs = new Socket(NGROK_HOST, NGROK_PORT);
-    //*****activa esto para conectar en local con el servidor
+  try{ 
     cs = new Socket(LOCAL_HOST, LOCAL_PORT);
   }catch (Exception e) {    
     System.out.println(CLIENTE+"ERROR CREADO EL CLIENTE: "+e.getMessage());   

@@ -14,68 +14,29 @@ import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Usuario;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 
 public class GestorDB {
-private static final String clase = "org.postgresql.Driver";
+private static final String CLASE = "org.postgresql.Driver";
 
 private final String LOCAL_URL = "jdbc:postgresql://localhost:5432/TuKarta";    
-//private final String NGROK_DIR ="2.tcp.ngrok.io:18135";
-//private String NGROK_URL = "jdbc:postgresql://"+NGROK_DIR+"/TuKarta"; 
-//private String urlAmazamon ="jdbc:postgresql://tukarta.ciq1mt081nsj.eu-west-3.rds.amazonaws.com:5432/tukarta";
-private String user = "tukarta";
-private String pass = "TuKartaP4$$"; 
+private final String USER = "tukarta";
+private final String PASS = "TuKartaP4$$"; 
 private static final String TABLA_USERS = "usuario";
 private static final String BD ="GESTOR BD: ";
 
 private Connection con;
 
-
+/**
+ * Constructor básico del gestor de la base de datos
+ * @throws SQLException en caso de no acceder a la conexión por datos incorrectos
+ * @throws ClassNotFoundException si no se ha encontrado la clase que gestiona el driver
+ */
 public GestorDB() throws SQLException, ClassNotFoundException {
-    Class.forName(clase);    
-    //conectar en local    
-    con = DriverManager.getConnection(LOCAL_URL,user,pass);    
-    //conectar en remoto
-    //con = DriverManager.getConnection(NGROK_URL,user,pass);    
+    Class.forName(CLASE);    
+    con = DriverManager.getConnection(LOCAL_URL,USER,PASS);     
     System.out.println(BD+"Conexión establecida");  
-}
-
-public Codes login (String mail, String pass, boolean isGestor) {
-   Codes ret=null;
-   String sentencia = "select * from  "+TABLA_USERS+" where email=\'"+mail+"\'";
-   if (isGestor){
-     sentencia+= "and isGestor='true'";
-   }
-   System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
-  try {              
-    Statement statement = con.createStatement();    
-    ResultSet result = statement.executeQuery(sentencia);
-    if (result.next()) {
-      System.out.println(BD+"Usuario encontrado");
-      if(pass.equals(result.getString("pwd"))) {
-        ret= new Codes(Codes.CODIGO_OK);				 
-        System.out.println(BD+"Contraseña correcta");
-      }else {
-        System.out.println(BD+"Contraseña incorrecta");
-        ret = new Codes(Codes.CODIGO_ERR_PWD);
-      }
-    }else {
-      System.out.println(BD+"El resultset es nulo");
-      ret = new Codes(Codes.CODIGO_ERR_USER);
-    }
-    System.out.println (BD+"se devuelve el código:\n"+ret);
-    
-    result.close();
-    statement.close();
-    System.out.println (BD+"conexión finalizada");
-    
-  } catch (Exception ex) {
-    ret = new Codes(Codes.CODIGO_ERR);
-    System.out.println(BD+ex.getMessage());
-  } 
-  return ret;
 }
 
 /**
@@ -83,14 +44,13 @@ public Codes login (String mail, String pass, boolean isGestor) {
  * @param mail  email del usuario
  * @param pass  contraseá del usuario
  * @param isGestor  indica si el usuario debe de constar como gestor o no de la aplicación
- * @return MensajeRespuesta que contiene el código que se ha generado y los datos que se le han pedido. 
+ * @return MensajeRespuesta que contiene el código que se ha generado y los datos que se le han pedido, tanto si la petición ha tenido éxito como si no. 
  */
 public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
   //creamos los datos necesarios
   MensajeRespuesta mensajeRes = new MensajeRespuesta();
   Codes codigoRet=null;
   Usuario userRes =new Usuario();
-  String userResString="";
   
   //preparamos la sentencia en función de si es gestor o no un requisito  
   String sentencia = "select * from  "+TABLA_USERS+" where email=\'"+mail+"\'";
