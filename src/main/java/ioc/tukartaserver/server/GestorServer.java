@@ -44,8 +44,8 @@ public GestorServer(BufferedReader in, PrintStream out){
   try{
     gestorDB = new GestorDB();
   } catch (SQLException ex) {
-    sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
-    System.out.println(ex.getMessage());
+    sendRespuesta(new Codes(Codes.CODIGO_ERR_BD), "conexión", null, null);
+    System.out.println("GESTOR DB: ERROR AL CONECTAR CON LA BASE DE DATOS");
   } catch (ClassNotFoundException ex) {
     sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
     System.out.println(ex.getMessage());

@@ -23,6 +23,8 @@ public static final String CODIGO_NO_SESION = "44";
 //error genérico
 public static final String CODIGO_ERR = "50";
 //error en la base de datos
+
+public static final String CODIGO_ERR_BD ="60";
 public static final String CODIGO_ERR_USER ="61";
 public static final String CODIGO_ERR_PWD ="62";
 public static final String CODIGO_USER_REP ="63";
@@ -69,6 +71,7 @@ public static void initMap () {
   //error genérico
   codigos.put(CODIGO_ERR,  "Error al procesar la petición");
   //error en la base de datos
+  codigos.put(CODIGO_ERR_BD, "Error al acceder a la base de datos.");
   codigos.put(CODIGO_ERR_USER, "Usuario no encontrado");
   codigos.put(CODIGO_ERR_PWD, "Contraseña Incorrecta");
   codigos.put(CODIGO_USER_REP, "El usuario ya existe en la base de datos.");

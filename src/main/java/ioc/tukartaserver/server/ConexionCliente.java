@@ -22,10 +22,11 @@ private Server server;
 private PrintStream out;
 private BufferedReader in;
 private GestorServer gestorServer;
-private static final Gson gson = new Gson();
 
+private static final Gson gson = new Gson();
 private String mensajeIn;
 private MensajeSolicitud solicitud;
+
 
 private static final String CONCLI="CON_CLI: ";
 

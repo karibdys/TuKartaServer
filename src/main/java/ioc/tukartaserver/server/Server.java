@@ -29,11 +29,9 @@ private Socket cs;
 private BufferedReader in;
 private PrintStream  out;
 private GestorSesion sesiones;
-private Gson gson;
 private GestorServer gestorMensajes;
 
-
-
+private Gson gson;
 private MensajeSolicitud solicitud;
 private String mensajeIn;
 

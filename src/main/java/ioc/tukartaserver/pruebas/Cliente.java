@@ -7,6 +7,7 @@ package ioc.tukartaserver.pruebas;
 
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Login;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
@@ -16,7 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.InetAddress;
+
 import java.net.Socket;
 
 import org.json.JSONObject;
@@ -66,11 +67,12 @@ public void startClient() {
       System.out.println(CLIENTE+"Procediendo a hacer petición de login");
       //creamos usuario
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
-      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
+      Login user = new Login("marcPass", "marc@tukarta.com", true);
+      //Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes
-      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN, userJson);
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN_ADMIN, userJson, (String) null);
       //convertimos el mensajeRes en JSON
       String mensajeOutJson = gson.toJson(mensajeOut);
       System.out.println(CLIENTE+" enviando JSON\n  -->"+mensajeOutJson);
@@ -83,41 +85,41 @@ public void startClient() {
       //Crear usuario
       Usuario user = new Usuario ("karibdys", "manuPass", "manu@chen.com", "Manu", "Mora");
       String peticion = Mensaje.FUNCION_SIGNIN;
-          //creamos el JSON "hijo"
-          JSONObject jsonUser = user.parseJSON();          
-          jsonOut.put("peticion", peticion);
-          jsonOut.put("usuario", jsonUser);
-          System.out.println(CLIENTE+"petición JSON:|n  --> "+jsonOut);
-          out.println(jsonOut);
-          out.flush();     
-          */
-
-          //prueba de modify***************************
-          /*
-          String token = "KagIHYyosR0";
-          System.out.println(CLIENTE+"Procediendo a hacer petición de modify");
-                    
-          JSONObject json = new JSONObject();
-          json.put(Mensaje.ATT_PETICION, Mensaje.FUNCION_ALTER);
-          json.put(Mensaje.ATT_TOKEN, token);
-          json.put(Mensaje.ATT_PARAM, Usuario.NOM_REAL);
-          json.put(Mensaje.ATT_VALOR, "Manuel Jesús");
-          System.out.println(CLIENTE+"petición JSON\n  --> "+json);
-          out.println(json);
-          out.flush();    
-          */
-          //prueba de logoff***************************
-          /*
-          String token = "oQFjNamPjw0";
-          System.out.println("Procediendo a hacer petición de logoff");
-                    
-          JSONObject json = new JSONObject();
-          json.put(Mensaje.ATT_PETICION, Mensaje.FUNCION_LOGOFF);
-          json.put(Mensaje.ATT_TOKEN, token);
-          System.out.println(CLIENTE+"petición JSON\n  --> "+json);
-          out.println(json);
-          out.flush();    
-          */
+      //creamos el JSON "hijo"
+      JSONObject jsonUser = user.parseJSON();          
+      jsonOut.put("peticion", peticion);
+      jsonOut.put("usuario", jsonUser);
+      System.out.println(CLIENTE+"petición JSON:|n  --> "+jsonOut);
+      out.println(jsonOut);
+      out.flush();     
+      */
+      
+      //prueba de modify***************************
+      /*
+      String token = "KagIHYyosR0";
+      System.out.println(CLIENTE+"Procediendo a hacer petición de modify");
+      
+      JSONObject json = new JSONObject();
+      json.put(Mensaje.ATT_PETICION, Mensaje.FUNCION_ALTER);
+      json.put(Mensaje.ATT_TOKEN, token);
+      json.put(Mensaje.ATT_PARAM, Usuario.NOM_REAL);
+      json.put(Mensaje.ATT_VALOR, "Manuel Jesús");
+      System.out.println(CLIENTE+"petición JSON\n  --> "+json);
+      out.println(json);
+      out.flush();    
+      */
+      //prueba de logoff***************************
+      /*
+      String token = "oQFjNamPjw0";
+      System.out.println("Procediendo a hacer petición de logoff");
+      
+      JSONObject json = new JSONObject();
+      json.put(Mensaje.ATT_PETICION, Mensaje.FUNCION_LOGOFF);
+      json.put(Mensaje.ATT_TOKEN, token);
+      System.out.println(CLIENTE+"petición JSON\n  --> "+json);
+      out.println(json);
+      out.flush();    
+      */
     }
     System.out.println(CLIENTE+"esperando al server..."); 
     String codigo="";
