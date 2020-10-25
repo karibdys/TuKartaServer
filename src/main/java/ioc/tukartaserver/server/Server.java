@@ -61,7 +61,7 @@ public void startServer() {
       cc=new ConexionCliente(ss.accept());
       cc.start();
     } catch (IOException ex) {
-      System.out.println("EEEEERROR");
+      System.out.println(SERVER+"PETE CERRANDO EL SERVER");
     }
   }
 
@@ -106,6 +106,10 @@ public void closeServer() throws IOException {
 @Override
 public void run(){
   startServer();
+}
+
+public GestorSesion getGestorSesiones(){
+  return this.sesiones;
 }
 
 }

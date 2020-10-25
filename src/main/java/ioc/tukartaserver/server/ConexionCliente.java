@@ -3,7 +3,9 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Mensaje;
+import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,10 +24,10 @@ private Server server;
 private PrintStream out;
 private BufferedReader in;
 private GestorServer gestorServer;
-
 private static final Gson gson = new Gson();
 private String mensajeIn;
 private MensajeSolicitud solicitud;
+private MensajeRespuesta respuesta;
 
 
 private static final String CONCLI="CON_CLI: ";
@@ -33,8 +35,7 @@ private static final String CONCLI="CON_CLI: ";
 public ConexionCliente (Socket socket) throws IOException {
   this.socket=socket;
   out = new PrintStream(socket.getOutputStream());
-  in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-  
+  in = new BufferedReader(new InputStreamReader(socket.getInputStream()));  
 }
 
 @Override
@@ -82,20 +83,25 @@ public void run(){
 
 public void procesarPeticion(MensajeSolicitud mensaje){  
   //sacamos el tipo de petición
-  String data = mensaje.getData();
+  String dataString = mensaje.getData();
+  String tokenString = mensaje.getToken();
   Usuario userIn=null;
   switch (mensaje.getPeticion()){
     case Mensaje.FUNCION_LOGIN:
       //sacamos los datos que, en este caso, serán Usuarios
-      userIn = gson.fromJson(data, Usuario.class);
-      gestorServer.processLogin(userIn, false);
+      userIn = gson.fromJson(dataString, Usuario.class);
+      //gestorServer.processLogin(userIn, false);
+      respuesta = gestorServer.processMensajeLogin(userIn, false);
+      gestorServer.sendRespuesta(respuesta);
       break;
     case Mensaje.FUNCION_LOGIN_ADMIN:
-      userIn = gson.fromJson(data, Usuario.class);
-      gestorServer.processLogin(userIn, true);
+      userIn = gson.fromJson(dataString, Usuario.class);
+      respuesta = gestorServer.processMensajeLogin(userIn, true);
+      gestorServer.sendRespuesta(respuesta);      
       break;
-    case Mensaje.FUNCION_FIN_SERVER:
-      
+    case Mensaje.FUNCION_LOGOFF:
+      TokenSesion token = gson.fromJson(tokenString, TokenSesion.class);
+      gestorServer.procesarLogout(token);      
     default:
       gestorServer.sendCode(new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion());      
       break;
@@ -103,7 +109,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
 }
 
 /**
- * Envía un mensaje de fin de sesión al cliente y cierra el canal entre ambos.
+ * Envía un mensaje de fin de sesión y cierra el canal entre ambos.
  */
 public void endConnection(){
   gestorServer.sendCode(new Codes(Codes.END_CONNECTION), "fin conexión");

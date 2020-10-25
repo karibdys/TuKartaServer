@@ -67,8 +67,8 @@ public void startClient() {
       System.out.println(CLIENTE+"Procediendo a hacer petición de login");
       //creamos usuario
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
-      Login user = new Login("marcPass", "marc@tukarta.com", true);
-      //Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
+
+      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes

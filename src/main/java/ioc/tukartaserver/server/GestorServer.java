@@ -61,37 +61,37 @@ public GestorServer(BufferedReader in, PrintStream out){
  * @param usuario Usuario con, al menos, los datos de email y pass del usuario que intenta hacer login
  * @param isGestor un boolean que indica si se está solicitando un login de gestor o de empleado
  */
-public void processLogin(Usuario usuario, boolean isGestor){
-  System.out.println(SERVER+"Accediendo a la base de datos.");
-  //llamamos a la base de datos que nos devolverá directamente un MensajeRespuesta con los datos de la petición
-  respuesta = gestorDB.loginMens(usuario.getEmail(), usuario.getPwd(), isGestor);
-  code = respuesta.getCode();
-  String codeString = code.getCode();
-  System.out.println(SERVER+"código recibido del gestor de la base de datos: "+codeString);
-  if(codeString==Codes.CODIGO_OK) {    
-    //si todo es OK generamos el token      
-    TokenSesion token = new TokenSesion(usuario);
-    //comprobamos que el token se registra y si es así, lo mandamos
-    if (sesiones.addSesion(token)){                    
-      respuesta.setData(token);
-      //convertimos la respuesta en JSON y la mandamos
-      out.println(gson.toJson(respuesta));
-      out.flush();
-      System.out.println(SERVER+"mensaje de respuesta enviado");
-
-    }else{
-      System.out.println(SERVER+"sesión no añadida");
-      //TODO comprobar el error de usuario no introducido en la sesión
-      sendCode(code, Mensaje.FUNCION_LOGIN);
-      System.out.println("GESTOR SESIÓN: ERROR EN LA SESIÓN DE USUARIO");
-    }      
-
-  }else {
-    System.out.println(SERVER+"código recibido: "+code.getCode());
-    sendCode(code, Mensaje.FUNCION_LOGIN);
+public MensajeRespuesta processMensajeLogin(Usuario usuario, boolean isGestor){
+  respuesta =null;
+  if (usuario==null||usuario.getEmail()==null || usuario.getPwd()==null){
+    //mandar mensaje malo
+    String pet = (isGestor)? Mensaje.FUNCION_LOGIN_ADMIN:Mensaje.FUNCION_LOGIN;
+    respuesta = new MensajeRespuesta (new Codes(Codes.CODIGO_DATOS_INCORRECTOS), pet);
+  }else{   
+    System.out.println(SERVER+"Accediendo a la base de datos.");
+    respuesta = gestorDB.loginMens(usuario.getEmail(), usuario.getPwd(), isGestor);
+    code = respuesta.getCode();
+    String codeString = code.getCode();    
+    System.out.println(SERVER+"código recibido del gestor de la base de datos: "+codeString);
+    if(codeString==Codes.CODIGO_OK) {    
+      //si todo es OK generamos el token      
+      TokenSesion token = new TokenSesion(usuario);
+      //comprobamos que el token se registra y si es así, lo mandamos
+      if (sesiones.addSesion(token)){                    
+        respuesta.setData(token);        
+      }else{
+        System.out.println(SERVER+"sesión no añadida");
+        //TODO comprobar el error de usuario no introducido en la sesión
+        respuesta = new MensajeRespuesta(code, Mensaje.FUNCION_LOGIN);
+        System.out.println("GESTOR SESIÓN: ERROR EN LA SESIÓN DE USUARIO");
+      }            
+    }else {
+      respuesta = new MensajeRespuesta(code, respuesta.getPeticion());
+    }  
   }
-  endConnection();
+  return respuesta;
 }
+
 
 /**
  * Método que da de baja a un usuario de la lista de sesiones abiertas. Comprobará que el usuario está en ella y su sesión es válida. 
@@ -148,6 +148,12 @@ public void sendRespuesta (Codes codigo, String peticion, String data, String da
  */
 public void endConnection(){
   sendCode(new Codes(Codes.END_CONNECTION), "fin conexión");
+}
+
+public void sendRespuesta (MensajeRespuesta mensaje){
+  String mensajeJSON = gson.toJson(mensaje);
+  out.println(mensajeJSON);
+  out.flush();
 }
   
 }
