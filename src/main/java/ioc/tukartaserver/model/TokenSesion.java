@@ -21,7 +21,19 @@ public TokenSesion (Usuario user){
   this.usuario=user.getUsuario();
   this.token=generateToken();
   //this.validez= validezHasta(MIN_MAX);
-  this.validez=null;
+  this.validez=validezHasta(MIN_MAX);
+}
+
+public void setToken(String token) {
+  this.token = token;
+}
+
+public void setUsuario(String usuario) {
+  this.usuario = usuario;
+}
+
+public void setValidez(LocalTime validez) {
+  this.validez = validez;
 }
 
 public String getToken(){

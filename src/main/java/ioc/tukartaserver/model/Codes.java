@@ -2,7 +2,7 @@ package ioc.tukartaserver.model;
 
 /**
  * Clase que se encarga de gestionar los códigos que genera el servidor como respuesta a las peticiones de las aplicaciones cliente. 
- * @author Manu
+ * @author Manu Mora
  */
 import java.util.HashMap;
 import org.json.JSONObject;
@@ -23,17 +23,13 @@ public static final String CODIGO_NO_SESION = "44";
 //error genérico
 public static final String CODIGO_ERR = "50";
 //error en la base de datos
-
 public static final String CODIGO_ERR_BD ="60";
 public static final String CODIGO_ERR_USER ="61";
 public static final String CODIGO_ERR_PWD ="62";
 public static final String CODIGO_USER_REP ="63";
-
 //fin de conexión
 public static final String END_CONNECTION = "90";
 public static final String END_SERVER = "91";
-
-
 
 private static final String CODES = "GESTOR DE CÓDIGOS: ";
 
@@ -96,14 +92,6 @@ public String getMessage() {
   return this.message;
 }
 
-//ESTE SOBRA
-public JSONObject parseCode(){
-  JSONObject json= new JSONObject();
-  json.put(KEY_CODE, code);
-  json.put(KEY_MESS, message);  
-  return json;
-}
-
 /**
  * Genera un String que permite ver el código y el mensaje de una forma sencilla y clara
  * @return String: pequeño esquema con el código y el mensaje de este objeto
@@ -111,5 +99,13 @@ public JSONObject parseCode(){
 public String toString(){
   return "  Codigo: "+this.getCode()+" \n  Mensaje: "+this.getMessage();
 }	
+
+//MÉTODO USADO SOLO PARA PRUEBAS, ES TEMPORAL
+public JSONObject parseCode(){
+  JSONObject json= new JSONObject();
+  json.put(KEY_CODE, code);
+  json.put(KEY_MESS, message);  
+  return json;
+}
 }
 

@@ -7,7 +7,6 @@ package ioc.tukartaserver.pruebas;
 
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
-import ioc.tukartaserver.model.Login;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
@@ -26,14 +25,13 @@ public class Cliente {
 //accesos local
 private int LOCAL_PORT =200;
 private final String LOCAL_HOST = "localhost";
-//accesos internet
-private int NGROK_PORT =200;
-private final String NGROK_HOST = "http://c186bc351979.ngrok.io";
 
 private final String CLIENTE="CLIENTE: ";
 private Socket cs;
 private PrintStream  out;	
 private Gson gson;
+
+private TokenSesion tokenUser;
 
 BufferedReader in;
 
@@ -77,49 +75,8 @@ public void startClient() {
       String mensajeOutJson = gson.toJson(mensajeOut);
       System.out.println(CLIENTE+" enviando JSON\n  -->"+mensajeOutJson);
       out.println(mensajeOutJson);          
-      out.flush();
-      
-      //prueba de sigin***************************
-      /*
-      System.out.println(CLIENTE+"Procediendo a hacer petición de signIn");
-      //Crear usuario
-      Usuario user = new Usuario ("karibdys", "manuPass", "manu@chen.com", "Manu", "Mora");
-      String peticion = Mensaje.FUNCION_SIGNIN;
-      //creamos el JSON "hijo"
-      JSONObject jsonUser = user.parseJSON();          
-      jsonOut.put("peticion", peticion);
-      jsonOut.put("usuario", jsonUser);
-      System.out.println(CLIENTE+"petición JSON:|n  --> "+jsonOut);
-      out.println(jsonOut);
-      out.flush();     
-      */
-      
-      //prueba de modify***************************
-      /*
-      String token = "KagIHYyosR0";
-      System.out.println(CLIENTE+"Procediendo a hacer petición de modify");
-      
-      JSONObject json = new JSONObject();
-      json.put(Mensaje.ATT_PETICION, Mensaje.FUNCION_ALTER);
-      json.put(Mensaje.ATT_TOKEN, token);
-      json.put(Mensaje.ATT_PARAM, Usuario.NOM_REAL);
-      json.put(Mensaje.ATT_VALOR, "Manuel Jesús");
-      System.out.println(CLIENTE+"petición JSON\n  --> "+json);
-      out.println(json);
-      out.flush();    
-      */
-      //prueba de logoff***************************
-      /*
-      String token = "oQFjNamPjw0";
-      System.out.println("Procediendo a hacer petición de logoff");
-      
-      JSONObject json = new JSONObject();
-      json.put(Mensaje.ATT_PETICION, Mensaje.FUNCION_LOGOFF);
-      json.put(Mensaje.ATT_TOKEN, token);
-      System.out.println(CLIENTE+"petición JSON\n  --> "+json);
-      out.println(json);
-      out.flush();    
-      */
+      out.flush();      
+    
     }
     System.out.println(CLIENTE+"esperando al server..."); 
     String codigo="";
@@ -130,19 +87,40 @@ public void startClient() {
       System.out.println(CLIENTE+"Mensaje en formato Mensaje:");
       mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);
       codigo = mensajeRes.getCode().getCode();
+      tokenUser = gson.fromJson(mensajeRes.getData(), TokenSesion.class);
+      System.out.println(CLIENTE+"SACANDO TOKEN: "+tokenUser.getToken());
       if (codigo.equals(Codes.END_CONNECTION)){
         System.out.println(CLIENTE+"Cerrando conexión con el servidor");				
         closeClient();
         break;
-      }else {						
-        sendCode(new Codes(Codes.CODIGO_OK));
-        
+      }else {				
+        System.out.println(CLIENTE+"enviando respuesta OK");
+        sendCode(new Codes(Codes.CODIGO_OK));        
       }      
-    }while (codigo!=Codes.END_CONNECTION);        
+    }while (codigo!=Codes.END_CONNECTION);
+    //prueba de logout
+  try {
+    //creamos los canales de entrada y salida:
+    out= new PrintStream(cs.getOutputStream());
+    in= new BufferedReader(new InputStreamReader(cs.getInputStream()));
+    //leemos
+    System.out.println(CLIENTE+"preparado para leer");
+    mensajeString=in.readLine();    
+    System.out.println(CLIENTE+"mensaje recibido: \n  -->"+mensajeString);
+    mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);    
+    code=mensajeRes.getCode();
+    System.out.println("SERVER: código "+code.getCode());         
     
   }catch (Exception e) {
     System.out.println(CLIENTE+"ERROR EN CLIENTE: "+e.getMessage());
   }
+    
+  }catch (Exception e) {
+    System.out.println(CLIENTE+"ERROR EN CLIENTE: "+e.getMessage());
+  }
+  
+  
+  
 }
 
 public void closeClient() throws IOException {

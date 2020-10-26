@@ -2,7 +2,7 @@ package ioc.tukartaserver.model;
 
 /**
  * Clase con mensajes importantes para ser usados en las aplicaciones.
- * @author Manu
+ * @author Manu Mora
  */
 public interface  Mensaje {
 

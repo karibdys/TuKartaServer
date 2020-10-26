@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 /**
  * Clase que representa un mensaje de respuesta del cliente o del servidor al otro. 
- * @author Manu Mora
+ * @author Manu Mora y David Domenech
  */
 public class MensajeRespuesta implements Mensaje{
 private static Gson gson = new Gson();
@@ -24,6 +24,19 @@ public MensajeRespuesta(){
 public MensajeRespuesta(Codes code, String peticion){
   this.code=code;
   this.peticion=peticion;
+}
+
+public MensajeRespuesta(Codes code, String peticion, String data){
+  this.code=code;
+  this.peticion=peticion;
+  this.data=data;  
+}
+
+public MensajeRespuesta(Codes code, String peticion, Object data){
+  gson = new Gson();
+  this.code=code;
+  this.peticion=peticion;
+  this.data = gson.toJson(data); 
 }
 
 public MensajeRespuesta(Codes code, String peticion, String data, String dataUser){

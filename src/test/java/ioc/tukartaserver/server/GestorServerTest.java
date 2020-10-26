@@ -5,10 +5,21 @@
  */
 package ioc.tukartaserver.server;
 
+import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
+import ioc.tukartaserver.security.GestorSesion;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,13 +29,20 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Manu
+ * @author Manu Mora
  */
 public class GestorServerTest {
+
 private static GestorServer gestor;
 private static Usuario usuarioCorrecto;
 private static Usuario usuarioCorrectoAdmin;
-
+private static TokenSesion tokenCorrecto;
+private ServerSocket ss;
+private  Socket scServer;
+private  Socket scCliente;
+private  PrintStream serverOut;
+private  BufferedReader clienteIn;
+private static final Gson gson= new Gson();
 
 public GestorServerTest() {
 }
@@ -34,6 +52,7 @@ public static void setUpClass() {
   gestor = new GestorServer(null, null);
   usuarioCorrecto = new Usuario ("karibdys", "manuPass", "manu@tukarta.com", "manu", "mora", false);
   usuarioCorrectoAdmin = new Usuario ("marc", "marcPass", "marc@tukarta.com", "marc", "abad", true);
+  tokenCorrecto = new TokenSesion(usuarioCorrecto);
 }
 
 @AfterClass
@@ -48,6 +67,12 @@ public void setUp() {
 public void tearDown() {
 }
 
+
+  /*
+  ******************
+  PROCESS MENSAJE LOGIN
+  ******************
+  */
   /**
    * Comprueba que el mensaje que se manda es de código 40 (datos incorrectos) cuando se envía un usuario null
    * Peticion LOGIN
@@ -176,77 +201,210 @@ public void tearDown() {
     }    
   }
   
-  
-  
-  
-  
+  /*
+  ******************
+  PROCESS MENSAJE LOGOUT
+  ******************
+  */
   
   /**
-   * Test of procesarLogout method, of class GestorServer.
+   * Comprueba que se genera un mensaje correcto con código 40 si el Token introducido es nulo
    */
   @Test
-  public void testProcesarLogout() {
-    System.out.println("procesarLogout");
-    TokenSesion token = null;
-    GestorServer instance = null;
-    instance.procesarLogout(token);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  public void testPorcessMensajeLogoutNull(){
+    MensajeRespuesta result = gestor.procesarMensajeLogout(null);
+    String codigo = result.getCode().getCode();
+    String expResult = Codes.CODIGO_DATOS_INCORRECTOS;    
+    assertEquals(expResult, codigo);
   }
-
+ /**
+   * Comprueba que se genera un mensaje correcto con código 40 si el Token introducido no es nulo pero tiene un usuario nulo
+   */
+  @Test
+  public void testPorcessMensajeLogoutUserNull(){
+    TokenSesion token = new TokenSesion(usuarioCorrecto);
+    token.setUsuario(null);    
+    MensajeRespuesta result = gestor.procesarMensajeLogout(token);
+    String codigo = result.getCode().getCode();
+    String expResult = Codes.CODIGO_DATOS_INCORRECTOS;    
+    assertEquals(expResult, codigo);
+  }
+    
   /**
-   * Test of sendCode method, of class GestorServer.
+   * Comprueba que se genera un mensaje correcto con código 40 si el Token introducido no es nulo pero tiene un token nulo
    */
   @Test
-  public void testSendCode() {
-    System.out.println("sendCode");
-    Codes codigo = null;
-    String peticion = "";
-    GestorServer instance = null;
-    instance.sendCode(codigo, peticion);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-  }
+  public void testPorcessMensajeLogoutTokenNull(){
+    TokenSesion token = new TokenSesion(usuarioCorrecto);
+    token.setToken(null);    
+    MensajeRespuesta result = gestor.procesarMensajeLogout(token);
+    String codigo = result.getCode().getCode();
+    String expResult = Codes.CODIGO_DATOS_INCORRECTOS;    
+    assertEquals(expResult, codigo);
+  }  
+  
+   /**
+   * Comprueba que se genera un mensaje correcto con código 44 si el Token introducido no es nulo pero la sesión no está abierta en el servidor
+   */
+  @Test
+  public void testPorcessMensajeLogoutNoSesion(){    
+    MensajeRespuesta result = gestor.procesarMensajeLogout(tokenCorrecto);
+    String codigo = result.getCode().getCode();
+    String expResult = Codes.CODIGO_NO_SESION;    
+    assertEquals(expResult, codigo);
+  }  
+  
+   /**
+   * Comprueba que se genera un mensaje correcto con código 10 si el Token introducido no es nulo y hay una sesión en el gestor que cierra
+   */
+  @Test
+  public void testPorcessMensajeLogoutSiSesion(){    
+    //metemos la sesión en el gestor
+    GestorSesion gestorSesion = new GestorSesion();
+    gestorSesion.addSesion(tokenCorrecto);
+    //obligamos al server que registre este gestor de sesión en su contenido
+    gestor.setSesiones(gestorSesion);
+    //lanzamos el mensaje
+    MensajeRespuesta result = gestor.procesarMensajeLogout(tokenCorrecto);
+    String codigo = result.getCode().getCode();
+    String expResult = Codes.CODIGO_OK;    
+    assertEquals(expResult, codigo);
+  }  
+  
+  /*
+  ******************
+  SEND MENSAJE
+  ******************
+  */
+  
+  //métodos auxiliares
+  public void initCon() throws IOException{
+    ss = new ServerSocket(200);
+    scServer = new Socket ("localhost", 200);
+    //aceptar conexión
+    scCliente = ss.accept();
+    serverOut = new PrintStream(scServer.getOutputStream());
+    
+    clienteIn = new BufferedReader(new InputStreamReader(scCliente.getInputStream()));   
 
+  }
+  
+  public void closeCon() throws IOException{    
+    if (clienteIn!=null){
+      clienteIn.close();
+      System.out.println("Canal cliente cerrado");
+    }else{
+      System.out.println("El clienteIn ya estaba cerrado");
+    }
+    if (serverOut!=null){            
+      serverOut.close();
+      System.out.println("Canal server cerrado");
+    }if (scCliente.isConnected()){
+      scCliente.close();
+      System.out.println("Socket cliente cerrado");    
+    }if (scServer.isConnected()){      
+      scServer.close();
+      System.out.println("Socket server cerrado");
+    }if (ss!=null){      
+      ss.close();
+      System.out.println("SockerServer cerrado");
+    }    
+  }
+  
   /**
-   * Test of sendRespuesta method, of class GestorServer.
+   * Comprueba que el envía un MensajeRespuesta con solo códigos y petición correctamente
+   * @throws IOException 
    */
   @Test
-  public void testSendRespuesta_4args() {
-    System.out.println("sendRespuesta");
-    Codes codigo = null;
-    String peticion = "";
-    String data = "";
-    String dataUser = "";
-    GestorServer instance = null;
-    instance.sendRespuesta(codigo, peticion, data, dataUser);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  public void testSendMensajeCodigoPetOK() throws IOException {
+    try{
+      initCon();  
+      //fabricar mensaje
+      MensajeRespuesta mensaje = new MensajeRespuesta(new Codes(Codes.CODIGO_OK), "login");
+      String mensajeJSON = gson.toJson(mensaje);
+      gestor.setOut(serverOut);
+      gestor.sendMensaje(mensaje);
+      serverOut.close();
+      String mensajeJSONRecibido = clienteIn.readLine();
+      clienteIn.close(); 
+      assertEquals(mensajeJSON, mensajeJSONRecibido);       
+    } catch (IOException ex) {
+      fail();
+    }finally{
+      closeCon();
+    }    
   }
-
+  
   /**
-   * Test of endConnection method, of class GestorServer.
+   * Comprueba que el envía un MensajeRespuesta con código, petición y data correctamente 
+   * @throws IOException 
    */
   @Test
-  public void testEndConnection() {
-    System.out.println("endConnection");
-    GestorServer instance = null;
-    instance.endConnection();
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  public void testSendRespuestaCodigoPetData() throws IOException {
+    try{
+      initCon();  
+      //fabricar mensaje
+      MensajeRespuesta mensaje = new MensajeRespuesta(new Codes(Codes.CODIGO_OK), "login", tokenCorrecto);
+      String mensajeJSON = gson.toJson(mensaje);
+      gestor.setOut(serverOut);
+      gestor.sendMensaje(mensaje);
+      serverOut.close();
+      String mensajeJSONRecibido = clienteIn.readLine();
+      clienteIn.close(); 
+      assertEquals(mensajeJSON, mensajeJSONRecibido);    
+    } catch (IOException ex) {
+      fail();
+    }finally{
+      closeCon();
+    }    
   }
-
+  
   /**
-   * Test of sendRespuesta method, of class GestorServer.
+   * Comprueba que el envía un MensajeRespuesta con código, petición, data y Usuario correctamente 
+   * @throws IOException 
    */
   @Test
-  public void testSendRespuesta_MensajeRespuesta() {
-    System.out.println("sendRespuesta");
-    MensajeRespuesta mensaje = null;
-    GestorServer instance = null;
-    instance.sendRespuesta(mensaje);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  public void testSendRespuestaCodigoPetDataUser() throws IOException {
+    try{
+      initCon();  
+      //fabricar mensaje
+      MensajeRespuesta mensaje = new MensajeRespuesta(new Codes(Codes.CODIGO_OK), "login", tokenCorrecto, usuarioCorrecto);
+      String mensajeJSON = gson.toJson(mensaje);
+      gestor.setOut(serverOut);
+      gestor.sendMensaje(mensaje);
+      serverOut.close();
+      String mensajeJSONRecibido = clienteIn.readLine();
+      clienteIn.close(); 
+      assertEquals(mensajeJSON, mensajeJSONRecibido);    
+    } catch (IOException ex) {
+      fail();
+    }finally{
+      closeCon();
+    }    
+  }  
+  
+  /**
+   * Comprueba el comportamiento de un mensaje que es completamente nulo
+   * @throws IOException 
+   */
+  @Test
+  public void testSendRespuestaCodigoNull() throws IOException {
+    try{
+      initCon();  
+      //fabricar mensaje
+      MensajeRespuesta mensaje = null;
+      String mensajeJSON = gson.toJson(mensaje);
+      gestor.setOut(serverOut);
+      gestor.sendMensaje(mensaje);
+      serverOut.close();
+      String mensajeJSONRecibido = clienteIn.readLine();
+      clienteIn.close(); 
+      assertEquals(mensajeJSON, mensajeJSONRecibido);    
+    } catch (IOException ex) {
+      fail();
+    }finally{
+      closeCon();
+    }    
   }
-
+  
 }

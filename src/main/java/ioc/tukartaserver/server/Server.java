@@ -5,16 +5,11 @@ package ioc.tukartaserver.server;
  * @author Manu Mora
  */
 
-import com.google.gson.Gson;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 import ioc.tukartaserver.model.Codes;
-import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.security.GestorSesion;
-import ioc.tukartaserver.model.TokenSesion;
 
 
 public class Server extends Thread{
@@ -25,27 +20,20 @@ private ConexionCliente cc;
 private static final String SERVER ="SERVER: ";
 
 private ServerSocket ss;
-private Socket cs;
-private BufferedReader in;
-private PrintStream  out;
 private GestorSesion sesiones;
 private GestorServer gestorMensajes;
-
-private Gson gson;
-private MensajeSolicitud solicitud;
-private String mensajeIn;
+private MensajeRespuesta respuesta;
 
 /**
  * Constructor básico del servidor. Crea el canal de escucha en el sistema, el gestor de sesiones, el de la base de datos y el builder de JSON
  */
 public Server() {
   try {
-    ss= new ServerSocket(PORT);     
-    gson = new Gson();    
-   
+    ss= new ServerSocket(PORT);       
   } catch (IOException e) {
     System.out.println(SERVER+"ERROR AL CREAR EL SERVER: "+e.getMessage());
-    gestorMensajes.sendRespuesta(new Codes(Codes.CODIGO_ERR), "conexión", null, null);
+    respuesta = new MensajeRespuesta(new Codes(Codes.CODIGO_ERR), "conexión");
+    gestorMensajes.sendMensaje(respuesta);
   }
   System.out.println(SERVER+"creado el server para escuchar el puerto "+PORT);
 }
@@ -54,10 +42,10 @@ public Server() {
  * Inicia el servidor para que empiece a funcionar y establece el funcionamiento básico cuando recibe peticiones. 
  */
 public void startServer() {
-  System.out.println(SERVER+"Iniciando server...");  
-  mensajeIn="";
+  System.out.println(SERVER+"Iniciando server..."); 
   while (!endServer) {    
     try {
+      System.out.println("Esperando petición de algún cliente...");
       cc=new ConexionCliente(ss.accept());
       cc.start();
     } catch (IOException ex) {
@@ -76,37 +64,28 @@ public void startServer() {
 }
 
 
-
-
-
-
 //**************************
 //Métodos auxiliares
 //**************************
-public boolean comprobarSesion(TokenSesion token){
-  boolean ret = false;
-  if(sesiones.isToken(token.getToken())){
-    ret =true;
-  }
-  return ret;
-}
 
-/**
- * Envía un mensaje de fin de sesión al cliente y cierra el canal entre ambos.
- */
-public void endConnection(){
-  gestorMensajes.sendCode(new Codes(Codes.END_CONNECTION), "fin conexión");
-}
 
 public void closeServer() throws IOException {
   endServer=true;
-  ss.close();
+  if (!ss.isClosed()){
+    ss.close();
+  }  
 }
 
 @Override
 public void run(){
   startServer();
 }
+
+
+//**************************
+// Getters y Setters
+//**************************
+
 
 public GestorSesion getGestorSesiones(){
   return this.sesiones;

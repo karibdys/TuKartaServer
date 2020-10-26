@@ -25,6 +25,7 @@ private boolean isGestor;
 public Usuario(){
  this.fecha_alta= this.fecha_modificacion = new Date();    
 }
+
 /**
  * Constructor de la clase Usuario
  * @param nombreUser  String: nombre del usuario 

@@ -16,6 +16,9 @@ private HashMap<String, TokenSesion> sesiones;
 
 private static final String GESTOR = "GESTOR SESIÓN: ";
 
+/**
+ * Constructor básico de un gestor de sesiones. Crea un HashMap listo para almacenar sesiones que se le lleguen al servidor con un método login
+ */
 public GestorSesion(){
   sesiones = new HashMap<>();
   System.out.println(GESTOR+"Registro se sesiones iniciado con éxito");
@@ -28,7 +31,6 @@ public GestorSesion(){
 public HashMap<String, TokenSesion> getSesion(){
   return this.sesiones;
 }
-
 
 /**
  * Método que añade una sesión al listado de sesiones activas
@@ -108,6 +110,4 @@ public boolean removeSesion(TokenSesion token){
     return ret;
   }  
 }
-
-
 }

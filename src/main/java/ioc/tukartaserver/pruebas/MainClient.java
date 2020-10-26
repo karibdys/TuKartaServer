@@ -13,8 +13,7 @@ public class MainClient {
 
       try {
         System.out.println("MAIN: Iniciando cliente\n");
-        Cliente cli = new Cliente();
-        
+        Cliente cli = new Cliente();        
         cli.startClient();
         System.out.println("MAIN: Cliente iniciado");
         System.out.println("MAIN: Cliente cerrado");

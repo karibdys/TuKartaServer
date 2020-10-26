@@ -14,13 +14,12 @@ import java.io.PrintStream;
 import java.net.Socket;
 
 /**
- *
+ *  Clase que procesa los mensajes recibidos y responde en función de lo que le pide el cliente.
  * @author Manu
  */
 public class ConexionCliente extends Thread {
 
-private Socket socket;
-private Server server;
+
 private PrintStream out;
 private BufferedReader in;
 private GestorServer gestorServer;
@@ -33,7 +32,7 @@ private MensajeRespuesta respuesta;
 private static final String CONCLI="CON_CLI: ";
 
 public ConexionCliente (Socket socket) throws IOException {
-  this.socket=socket;
+  
   out = new PrintStream(socket.getOutputStream());
   in = new BufferedReader(new InputStreamReader(socket.getInputStream()));  
 }
@@ -50,14 +49,14 @@ public void run(){
       
       //Enviamos el primer mensaje de respuesta
       System.out.println(CONCLI+"Enviando confirmación de conexión con el cliente.");
-      gestorServer.sendCode(new Codes (Codes.CODIGO_OK), "Conexión");                
+      gestorServer.sendMensaje(new MensajeRespuesta (new Codes (Codes.CODIGO_OK), "Conexión"));                
       System.out.println(CONCLI+"Esperando petición de cliente.");
       
       //esperamos la petición del cliente  
       mensajeIn = in.readLine();
       
-    } catch (IOException ex) {
-      gestorServer.sendCode(new Codes(Codes.CODIGO_ERR), "conexión");
+    } catch (IOException ex) {     
+      gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_ERR), "conexión"));
       System.out.println(CONCLI+"Enviando código de error");
     }
     
@@ -70,15 +69,14 @@ public void run(){
       procesarPeticion(solicitud);
     }else{
       endConnection();
-    }    
+    }      
     endConnection();
+    System.out.println(CONCLI+"finalizando conexión");
 }
 
 /**
- * Método que se encarga de procesar la petición que llega desde el cliente. Necesita un JSON con los atributos definidos en la documentación según la petición que solicite.
- * @param json Mensaje de petición que llega al servidor en formato JSONObject.
- * @throws IOException los datos introducidos no son válidos
- * @throws SQLException La conexión con la base de datos ha fallado
+ * Método que se encarga de procesar la petición que llega desde el cliente.Necesita un JSON con los atributos definidos en la documentación según la petición que solicite.
+   * @param mensaje MensajeSolicitud un mensaje con la solicitud que se le envía desde un cliente. 
  */
 
 public void procesarPeticion(MensajeSolicitud mensaje){  
@@ -92,18 +90,19 @@ public void procesarPeticion(MensajeSolicitud mensaje){
       userIn = gson.fromJson(dataString, Usuario.class);
       //gestorServer.processLogin(userIn, false);
       respuesta = gestorServer.processMensajeLogin(userIn, false);
-      gestorServer.sendRespuesta(respuesta);
+      gestorServer.sendMensaje(respuesta);
       break;
     case Mensaje.FUNCION_LOGIN_ADMIN:
       userIn = gson.fromJson(dataString, Usuario.class);
       respuesta = gestorServer.processMensajeLogin(userIn, true);
-      gestorServer.sendRespuesta(respuesta);      
+      gestorServer.sendMensaje(respuesta);      
       break;
     case Mensaje.FUNCION_LOGOFF:
       TokenSesion token = gson.fromJson(tokenString, TokenSesion.class);
-      gestorServer.procesarLogout(token);      
-    default:
-      gestorServer.sendCode(new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion());      
+      respuesta = gestorServer.procesarMensajeLogout(token);      
+      gestorServer.sendMensaje(respuesta);
+    default:    
+      gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
       break;
   }    
 }
@@ -112,6 +111,6 @@ public void procesarPeticion(MensajeSolicitud mensaje){
  * Envía un mensaje de fin de sesión y cierra el canal entre ambos.
  */
 public void endConnection(){
-  gestorServer.sendCode(new Codes(Codes.END_CONNECTION), "fin conexión");
+  gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.END_CONNECTION), "fin de conexión"));
 } 
 }
