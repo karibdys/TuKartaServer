@@ -39,7 +39,7 @@ public MensajeSolicitud(String funcion, String objetoJson, String token){
  */
 public MensajeSolicitud(String function, Object data, TokenSesion token){
   this.peticion=function;
-  this.data = token.getToken();
+  this.data = gson.toJson(data);
   this.token=gson.toJson(token);
 }
 /**

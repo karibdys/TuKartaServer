@@ -7,6 +7,7 @@ import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
+import ioc.tukartaserver.security.GestorSesion;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,11 +19,10 @@ import java.net.Socket;
  * @author Manu
  */
 public class ConexionCliente extends Thread {
-
-
 private PrintStream out;
 private BufferedReader in;
 private GestorServer gestorServer;
+private GestorSesion gestorSesion;
 private static final Gson gson = new Gson();
 private String mensajeIn;
 private MensajeSolicitud solicitud;
@@ -30,20 +30,18 @@ private MensajeRespuesta respuesta;
 
 
 private static final String CONCLI="CON_CLI: ";
-
-public ConexionCliente (Socket socket) throws IOException {
-  
+public ConexionCliente (Socket socket, GestorSesion gestorsesion) throws IOException {  
   out = new PrintStream(socket.getOutputStream());
   in = new BufferedReader(new InputStreamReader(socket.getInputStream()));  
+  gestorSesion=gestorsesion;
 }
 
 @Override
 public void run(){
   try {              
-      System.out.println(CONCLI+"Petición de cliente aceptada.");	
-           
+      System.out.println(CONCLI+"Petición de cliente aceptada.");	           
       //crea el gestor de mensajes    
-      gestorServer = new GestorServer(in, out);  
+      gestorServer = new GestorServer(in, out, gestorSesion);  
       System.out.println(CONCLI+"Canales abiertos.");
       //sacamos el mensaje que nos envían
       
@@ -81,30 +79,41 @@ public void run(){
 
 public void procesarPeticion(MensajeSolicitud mensaje){  
   //sacamos el tipo de petición
-  String dataString = mensaje.getData();
-  String tokenString = mensaje.getToken();
-  Usuario userIn=null;
-  switch (mensaje.getPeticion()){
-    case Mensaje.FUNCION_LOGIN:
-      //sacamos los datos que, en este caso, serán Usuarios
-      userIn = gson.fromJson(dataString, Usuario.class);
-      //gestorServer.processLogin(userIn, false);
-      respuesta = gestorServer.processMensajeLogin(userIn, false);
-      gestorServer.sendMensaje(respuesta);
-      break;
-    case Mensaje.FUNCION_LOGIN_ADMIN:
-      userIn = gson.fromJson(dataString, Usuario.class);
-      respuesta = gestorServer.processMensajeLogin(userIn, true);
-      gestorServer.sendMensaje(respuesta);      
-      break;
-    case Mensaje.FUNCION_LOGOFF:
-      TokenSesion token = gson.fromJson(tokenString, TokenSesion.class);
-      respuesta = gestorServer.procesarMensajeLogout(token);      
-      gestorServer.sendMensaje(respuesta);
-    default:    
-      gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
-      break;
-  }    
+  if (mensaje==null){
+    gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_DATOS_INCORRECTOS), mensaje.getPeticion()));
+  }else{
+    String dataString = mensaje.getData();
+    String tokenString = mensaje.getToken();
+    Usuario userIn=null;
+    switch (mensaje.getPeticion()){
+      case Mensaje.FUNCION_LOGIN:
+        //sacamos los datos que, en este caso, serán Usuarios
+        System.out.println(CONCLI+"procesando login");
+        userIn = gson.fromJson(dataString, Usuario.class);
+        //gestorServer.processLogin(userIn, false);        
+        respuesta = gestorServer.processMensajeLogin(userIn, false);
+        System.out.println(CONCLI+"mensaje recibido del gestor server:\n"+respuesta);
+        System.out.println(CONCLI+"enviando mensaje");
+        gestorServer.sendMensaje(respuesta);
+        System.out.println(CONCLI+"mensaje enviado");
+        break;
+      case Mensaje.FUNCION_LOGIN_ADMIN:
+        System.out.println(CONCLI+"procesando login_admin");
+        userIn = gson.fromJson(dataString, Usuario.class);
+        respuesta = gestorServer.processMensajeLogin(userIn, true);
+        gestorServer.sendMensaje(respuesta);      
+        break;
+      case Mensaje.FUNCION_LOGOFF:
+        System.out.println(CONCLI+"procesando logout");        
+        TokenSesion token = gson.fromJson(tokenString, TokenSesion.class);
+        respuesta = gestorServer.procesarMensajeLogout(token);      
+        gestorServer.sendMensaje(respuesta);
+      default:    
+        gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
+        break;
+   }     
+  }
+  
 }
 
 /**
@@ -113,4 +122,26 @@ public void procesarPeticion(MensajeSolicitud mensaje){
 public void endConnection(){
   gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.END_CONNECTION), "fin de conexión"));
 } 
+
+  public PrintStream getOut() {
+    return out;
+  }
+
+  public BufferedReader getIn() {
+    return in;
+  }
+
+  public GestorServer getGestorServer() {
+    return gestorServer;
+  }
+
+  public void setIn(BufferedReader in) {
+    this.in = in;
+  }
+
+  public void setGestorServer(GestorServer gestorServer) {
+    this.gestorServer = gestorServer;
+  }
+
+
 }

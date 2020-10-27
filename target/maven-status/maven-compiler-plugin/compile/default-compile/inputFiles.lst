@@ -1,10 +1,12 @@
-D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\pruebas\pruebas.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\server\ConexionCliente.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\gestorDB\GestorDB.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Usuario.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\server\Server_old.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Codes.java
-D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\server\ServerPet.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\main\InitServer_old.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\MensajeSolicitud.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\TokenSesion.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\server\GestorServer.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\pruebas\Cliente.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Mensaje.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\pruebas\MainClient.java

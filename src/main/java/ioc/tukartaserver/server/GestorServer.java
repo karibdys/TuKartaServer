@@ -24,7 +24,7 @@ private static final String SERVER ="GESTOR SERVER: ";
 private PrintStream out;
 private BufferedReader in;
 private GestorDB gestorDB;
-private GestorSesion sesiones;
+private GestorSesion gestorSesion;
 private Codes code = null;
 private Gson gson;
 
@@ -35,10 +35,10 @@ private MensajeRespuesta respuesta;
  * @param in BufferedReader que gestiona la entrada de mensajes en el Socket del servidor desde el cliente
  * @param out PrintStream que gestiona la salida de mensajes del Socket del servidor hacia el cliente
  */
-public GestorServer(BufferedReader in, PrintStream out){
+public GestorServer(BufferedReader in, PrintStream out, GestorSesion gestorsesion){
   this.in=in;
   this.out=out;
-  sesiones=new GestorSesion();
+  gestorSesion=gestorsesion;
   try{
     gestorDB = new GestorDB();
   } catch (SQLException ex) {
@@ -78,7 +78,7 @@ public MensajeRespuesta processMensajeLogin(Usuario usuario, boolean isGestor){
       //si todo es OK generamos el token      
       TokenSesion token = new TokenSesion(usuario);
       //comprobamos que el token se registra y si es así, lo mandamos
-      if (sesiones.addSesion(token)){                    
+      if (gestorSesion.addSesion(token)){                    
         respuesta.setData(token);        
       }else{
         System.out.println(SERVER+"sesión no añadida");
@@ -98,14 +98,14 @@ public MensajeRespuesta procesarMensajeLogout(TokenSesion token){
   respuesta = null;
   String pet = "logout";
   //comprobamos que el token no es nulo
-  if (token==null||token.getUsuario()==null || token.getToken()==null){
+  if (token==null||token.getUsuario()==null || token.getToken()==null){    
     respuesta = new MensajeRespuesta (new Codes(Codes.CODIGO_DATOS_INCORRECTOS), pet);
   }else{
-    //comprobamos que el token está en el listado de sesiones
-    if (sesiones.removeSesion(token)){
+    //comprobamos que el token está en el listado de gestorSesion
+    if (gestorSesion.removeSesion(token)){
       respuesta = new MensajeRespuesta (new Codes(Codes.CODIGO_OK), pet);
     } else{
-      respuesta = new MensajeRespuesta (new Codes(Codes.CODIGO_NO_SESION), pet);
+      respuesta = new MensajeRespuesta (new Codes(Codes.CODIGO_NO_SESION), pet);      
     }
   }
   return respuesta;
@@ -134,8 +134,8 @@ public void endConnection(){
 }
 
 
-  public void setSesiones(GestorSesion sesiones) {
-    this.sesiones = sesiones;
+  public void setGestorSesion(GestorSesion gestorSesion) {
+    this.gestorSesion = gestorSesion;
   }
 
   public void setIn(BufferedReader in) {

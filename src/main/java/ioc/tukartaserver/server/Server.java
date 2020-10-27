@@ -29,7 +29,8 @@ private MensajeRespuesta respuesta;
  */
 public Server() {
   try {
-    ss= new ServerSocket(PORT);       
+    ss= new ServerSocket(PORT);     
+    sesiones=new GestorSesion();
   } catch (IOException e) {
     System.out.println(SERVER+"ERROR AL CREAR EL SERVER: "+e.getMessage());
     respuesta = new MensajeRespuesta(new Codes(Codes.CODIGO_ERR), "conexión");
@@ -46,7 +47,7 @@ public void startServer() {
   while (!endServer) {    
     try {
       System.out.println("Esperando petición de algún cliente...");
-      cc=new ConexionCliente(ss.accept());
+      cc=new ConexionCliente(ss.accept(), sesiones);
       cc.start();
     } catch (IOException ex) {
       System.out.println(SERVER+"PETE CERRANDO EL SERVER");
@@ -85,7 +86,6 @@ public void run(){
 //**************************
 // Getters y Setters
 //**************************
-
 
 public GestorSesion getGestorSesiones(){
   return this.sesiones;

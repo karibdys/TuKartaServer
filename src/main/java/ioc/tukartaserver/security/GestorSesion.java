@@ -47,6 +47,7 @@ public boolean addSesion (TokenSesion token){
       int numSesionAct = sesiones.size();
       if(numSesion!=numSesionAct){
         System.out.println(GESTOR+"sesión añadida con éxito");
+        System.out.println(GESTOR+"tamaño del listado: "+sesiones.size());
         ret = true;
       }
     }catch (Exception ex){
@@ -77,8 +78,7 @@ public boolean isToken(String usuario){
  */
 public boolean isToken(Usuario usuario){  
   String userString = usuario.getUsuario();  
-  if (userString==null){
-    System.out.println(GESTOR+"Se ha pasado un Usuario nulo para comprobar si está o no en el listado");
+  if (userString==null){    
     return false;
   }else{
     return sesiones.containsKey(userString);
@@ -99,9 +99,13 @@ public boolean removeSesion(TokenSesion token){
     //comprobar que el usuario tiene sesión abierta:    
     String user = token.getUsuario();
     if(isToken(user)){
-      //comprobamos que el usuario tiene la misma sesión:
-      TokenSesion tokenSesion = sesiones.get(user);
-      if (tokenSesion==token){
+      //comprobamos que el usuario tiene la misma sesión:      
+      String tokenEnviado = token.getToken();
+      String tokenAlmacen = sesiones.get(user).getToken();
+      System.out.println("TOKEN EN SESION: "+tokenAlmacen);
+      System.out.println("TOKEN SOLICITADO: "+tokenEnviado);
+                  
+      if (tokenEnviado.equals(tokenAlmacen)){
         //si ambos son iguales,               
         sesiones.remove(user);
         ret = true;

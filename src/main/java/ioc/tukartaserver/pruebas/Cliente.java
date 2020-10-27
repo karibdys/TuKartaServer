@@ -60,17 +60,25 @@ public void startClient() {
     
     if (code.getCode().equals(Codes.CODIGO_OK)) {
       
-      //prueba de login***************************
-      
-      System.out.println(CLIENTE+"Procediendo a hacer petición de login");
+      //prueba de login***************************            
+      System.out.println(CLIENTE+"Procediendo a hacer petición de login");  
       //creamos usuario
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
-
-      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
+      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);      
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
-      //creamos el mensajeRes
+      //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN_ADMIN, userJson, (String) null);
+   
+      /*
+     //prueba de logout***************************   
+      System.out.println(CLIENTE+"Procediendo a hacer petición de logout");      
+      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
+      String userJson = gson.toJson(user);
+      TokenSesion token = new TokenSesion(user);
+      token.setToken("WdJpbyRyuU");
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGOFF, userJson, token);
+  */
       //convertimos el mensajeRes en JSON
       String mensajeOutJson = gson.toJson(mensajeOut);
       System.out.println(CLIENTE+" enviando JSON\n  -->"+mensajeOutJson);
@@ -97,26 +105,9 @@ public void startClient() {
         System.out.println(CLIENTE+"enviando respuesta OK");
         sendCode(new Codes(Codes.CODIGO_OK));        
       }      
-    }while (codigo!=Codes.END_CONNECTION);
-    //prueba de logout
-  try {
-    //creamos los canales de entrada y salida:
-    out= new PrintStream(cs.getOutputStream());
-    in= new BufferedReader(new InputStreamReader(cs.getInputStream()));
-    //leemos
-    System.out.println(CLIENTE+"preparado para leer");
-    mensajeString=in.readLine();    
-    System.out.println(CLIENTE+"mensaje recibido: \n  -->"+mensajeString);
-    mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);    
-    code=mensajeRes.getCode();
-    System.out.println("SERVER: código "+code.getCode());         
+    }while (codigo!=Codes.END_CONNECTION);     
     
-  }catch (Exception e) {
-    System.out.println(CLIENTE+"ERROR EN CLIENTE: "+e.getMessage());
-  }
-    
-  }catch (Exception e) {
-    System.out.println(CLIENTE+"ERROR EN CLIENTE: "+e.getMessage());
+  }catch (Exception e) {   
   }
   
   
