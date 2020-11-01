@@ -7,9 +7,11 @@ package ioc.tukartaserver.pruebas;
 
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
 import java.io.BufferedReader;
@@ -64,7 +66,10 @@ public void startClient() {
       System.out.println(CLIENTE+"Procediendo a hacer petición de login");  
       //creamos usuario
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
-      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);      
+      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);    
+      //emleado
+      Empleado emp = new Empleado ("Manu", "manuPass", "manu@tukarta.com", null, null, user, Rol.CAMARERO);
+        
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes      

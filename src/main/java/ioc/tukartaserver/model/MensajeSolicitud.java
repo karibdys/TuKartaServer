@@ -12,6 +12,11 @@ private String token;
 private String data;
 private static Gson gson = new Gson();
 
+/******************
+ * CONSTRUCTOR
+ ******************
+ */
+
 /**
  * Constructor básico de la clase. No incluye ni petición ni datos ni token.
  */
@@ -30,7 +35,6 @@ public MensajeSolicitud(String funcion, String objetoJson, String token){
   this.token= token;
 }
 
-
 /**
  * Constructor que permite componer un mensaje a través de tres objetos compuestos sin convertir previamente a JSON
  * @param funcion un String con la función a solicitar. Es una constante codificada en la interfaz Mensajes
@@ -42,6 +46,12 @@ public MensajeSolicitud(String function, Object data, TokenSesion token){
   this.data = gson.toJson(data);
   this.token=gson.toJson(token);
 }
+
+/******************
+ * GETTERS
+ ******************
+ */
+
 /**
  * Devuelve la petición del mensaje
  * @return un string con la petición del mensaje
@@ -65,6 +75,11 @@ public String getData() {
 public String getToken() {
   return token;
 }
+
+/******************
+ * SETTERS
+ ******************
+ */
 
 /**
  * Permite establecer el token de la sesión indicando el String
@@ -106,6 +121,11 @@ public void setData(Object data){
   this.data = gson.toJson(data);
 } 
 
+
+/******************
+ * MÉTODOS AUXILIARES
+ ******************
+ */
 /**
  * Devuelve un String con los datos básicos del mensaje para que el programador pueda comprobar su formato
  * @return un String con los campos del Mensaje en formato JSON

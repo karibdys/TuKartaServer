@@ -1,7 +1,7 @@
 package ioc.tukartaserver.gestorDB;
 
 /**
- *
+ * Clase que se encarga de gestionar la base de datos
  * @author Manu
  */
 import java.sql.Connection;
@@ -16,11 +16,10 @@ import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Usuario;
 import java.util.Date;
 
-
-
 public class GestorDB {
-private static final String CLASE = "org.postgresql.Driver";
 
+//Datos de conexión
+private static final String CLASE = "org.postgresql.Driver";
 private final String LOCAL_URL = "jdbc:postgresql://localhost:5432/TuKarta";    
 private final String USER = "tukarta";
 private final String PASS = "TuKartaP4$$"; 
@@ -28,6 +27,11 @@ private static final String TABLA_USERS = "usuario";
 private static final String BD ="GESTOR BD: ";
 
 private Connection con;
+
+/******************
+ * CONSTRUCTOR
+ ******************
+ */
 
 /**
  * Constructor básico del gestor de la base de datos
@@ -46,6 +50,20 @@ public GestorDB() throws SQLException, ClassNotFoundException {
  * @param pass  contraseá del usuario
  * @param isGestor  indica si el usuario debe de constar como gestor o no de la aplicación
  * @return MensajeRespuesta que contiene el código que se ha generado y los datos que se le han pedido, tanto si la petición ha tenido éxito como si no. 
+ */
+
+
+/******************
+ * MÉTODOS AUXILIARES
+ ******************
+ */
+
+/**
+ * Procesa una petición de login y devuelve un MensajeRespuesta con los datos del usuario en caso de ser correcta. 
+ * @param mail String con el email del usuario
+ * @param pass String con la contraseña del usuario
+ * @param isGestor boolean que indica qué tipo de login se le pide al método (gestor o empleado)
+ * @return MensajeRespuesta con 
  */
 public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
   //creamos los datos necesarios
@@ -80,7 +98,7 @@ public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
           //pasamos a procesar el usuario
           userRes.setUsuario(result.getString("usuario"));
           userRes.setNombre(result.getString("nombre"));
-          userRes.setApellido(result.getString("apellidos"));
+          userRes.setApellidos(result.getString("apellidos"));
           userRes.setEmail(result.getString("email"));
           userRes.setIsGestor(result.getBoolean("isGestor"));
         }else {
@@ -127,6 +145,11 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
   return ret;
 }
 
+/**
+ * Método para construir fechas conrrectas para insertar en la base de datos. 
+ * @param uDate Date en formato Java
+ * @return Date en formato SQL
+ */
  private static java.sql.Date convert(java.util.Date uDate) {
    java.sql.Date sDate = new java.sql.Date(uDate.getTime());
    return sDate;

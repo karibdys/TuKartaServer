@@ -1,3 +1,4 @@
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\pruebas\pruebas.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\server\ConexionCliente.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\gestorDB\GestorDB.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Usuario.java
@@ -7,11 +8,17 @@ D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\mai
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\MensajeSolicitud.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\TokenSesion.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\server\GestorServer.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Rol.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\pruebas\Cliente.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Mensaje.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\pruebas\MainClient.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Codigo.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Gestor.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\main\InitServer.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\MensajeRespuesta.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Restaurante.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\server\Server.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\MensajeRespuesta2.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\security\GestorSesion.java
+D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Empleado.java
 D:\Documentos\NetBeansProjects\TuKartaServer\src\main\java\ioc\tukartaserver\model\Utiles.java

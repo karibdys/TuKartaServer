@@ -28,14 +28,83 @@ private String mensajeIn;
 private MensajeSolicitud solicitud;
 private MensajeRespuesta respuesta;
 
-
 private static final String CONCLI="CON_CLI: ";
+
+/******************
+ * CONSTRUCTOR
+ ******************
+ */
+
+/**
+ * Constructor principal de una conexión cliente
+ * @param socket Socket del servidor conectado con el cliente. Será el que mande los mensajes del servidor y reciba los del cliente.
+ * @param gestorsesion GestorSesion que controla el acceso de los usuarios a la plataforma. 
+ * @throws IOException Si los canales no se pueden recuperar o son nulos. 
+ */
 public ConexionCliente (Socket socket, GestorSesion gestorsesion) throws IOException {  
   out = new PrintStream(socket.getOutputStream());
   in = new BufferedReader(new InputStreamReader(socket.getInputStream()));  
   gestorSesion=gestorsesion;
 }
 
+/******************
+ * GETTERS
+ ******************
+ */
+
+/**
+ * Devuelve el canal de salida del Sokect que gestiona la conexiónd del lado del servidor y manda las peticiones. 
+ * @return PrintStream
+ */
+public PrintStream getOut() {
+  return out;
+}
+
+/**
+ * Devuelve el canal de entrada del Socket que gestiona la conexión del lado del servidor y recibe las peticiones.
+ * @return BufferedReader
+ */
+public BufferedReader getIn() {
+  return in;
+}
+
+/**
+ * Devuelve el gestor server que se encargará de gestionar el envío de respuestas
+ * @return GestorServer
+ */
+public GestorServer getGestorServer() {
+  return gestorServer;
+}
+
+/******************
+ * SETTERS
+ ******************
+ */
+
+/**
+ * Establece el canal de entrada del Socket que gestiona la conxeión del lado del servidor. 
+ * @param in nuevo BufferedReader
+ */
+public void setIn(BufferedReader in) {
+  this.in = in;
+}
+
+/**
+ * Establece un gestor server distinto al original 
+ * @param gestorServer nuevo GestorServer
+ */
+  public void setGestorServer(GestorServer gestorServer) {
+    this.gestorServer = gestorServer;
+  }
+
+/******************
+ * RUN 
+ ******************
+ */
+
+/**
+ * Método principal que se encarga de ejecutar la tarea que tiene asignada. En este caso, abrir los canales y procesará la petición que se le manda. 
+ */
 @Override
 public void run(){
   try {              
@@ -71,6 +140,12 @@ public void run(){
     endConnection();
     System.out.println(CONCLI+"finalizando conexión");
 }
+
+
+/******************
+ * MÉTODOS AUXILIARES
+ ******************
+ */
 
 /**
  * Método que se encarga de procesar la petición que llega desde el cliente.Necesita un JSON con los atributos definidos en la documentación según la petición que solicite.
@@ -122,26 +197,5 @@ public void procesarPeticion(MensajeSolicitud mensaje){
 public void endConnection(){
   gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.END_CONNECTION), "fin de conexión"));
 } 
-
-  public PrintStream getOut() {
-    return out;
-  }
-
-  public BufferedReader getIn() {
-    return in;
-  }
-
-  public GestorServer getGestorServer() {
-    return gestorServer;
-  }
-
-  public void setIn(BufferedReader in) {
-    this.in = in;
-  }
-
-  public void setGestorServer(GestorServer gestorServer) {
-    this.gestorServer = gestorServer;
-  }
-
 
 }

@@ -1,0 +1,24 @@
+-classpath
+'C:/Users/Manu/.m2/repository/junit/junit/4.13.1/junit-4.13.1.jar;C:/Users/Manu/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar;C:/Users/Manu/.m2/repository/org/json/json/20180130/json-20180130.jar;C:/Users/Manu/.m2/repository/org/postgresql/postgresql/42.2.16/postgresql-42.2.16.jar;C:/Users/Manu/.m2/repository/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'D:/Documentos/NetBeansProjects/TuKartaServer/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2020. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'D:/Documentos/NetBeansProjects/TuKartaServer/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'TuKartaServer 1 API'
+-linkoffline
+'https://docs.oracle.com/en/java/javase/11/docs/api' 'D:/Documentos/NetBeansProjects/TuKartaServer/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'TuKartaServer 1 API'

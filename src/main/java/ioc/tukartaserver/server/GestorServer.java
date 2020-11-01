@@ -30,6 +30,11 @@ private Gson gson;
 
 private MensajeRespuesta respuesta;
 
+/******************
+ * CONSTRUCTOR  
+ ******************
+ */
+
 /**
  * Único constructor de la clase GestorServer. Necessita los canales de entrada y de salida para poder funcionar. 
  * @param in BufferedReader que gestiona la entrada de mensajes en el Socket del servidor desde el cliente
@@ -55,6 +60,47 @@ public GestorServer(BufferedReader in, PrintStream out, GestorSesion gestorsesio
     System.out.println(SERVER+"LOS CANALES NO SE HAN ABIERTO CORRECTAMENTE");
   }
 }
+
+/******************
+ * GETTERS
+ ******************
+ */
+  
+
+
+/******************
+ * SETTERS
+ ******************
+ */
+
+/**
+ * Establece un Gestor de sesiones distinto al original 
+ * @param gestorSesion GestorSesion
+ */
+public void setGestorSesion(GestorSesion gestorSesion) {
+  this.gestorSesion = gestorSesion;
+}
+
+/**
+ * Establece un canal de entrada distinto al original
+ * @param in BufferedReader 
+ */
+public void setIn(BufferedReader in) {
+  this.in = in;
+}
+
+/**
+ * Establece un canal del salida distinto al original creado por el constructor. 
+ * @param out PrintStream
+ */
+public void setOut(PrintStream out) {
+  this.out = out;
+}
+  
+/******************
+ * MÉTODOS AUXILIARES 
+ ******************
+ */
 
 /**
  * Se encarga de gestionar el proceso de login. Requiere un usuario y el tipo de permisos exigido. Conecta con la base de datos para comprobar que el usuario existe y tiene los permisos indicados
@@ -111,10 +157,6 @@ public MensajeRespuesta procesarMensajeLogout(TokenSesion token){
   return respuesta;
 }
 
-//**************************
-//Métodos auxiliares
-//**************************
-
 /**
  * Envía un mensaje, ya sea de tipo respuesta o solicitud
  * @param mensaje MensajeRepuesta completo 
@@ -133,19 +175,4 @@ public void endConnection(){
   sendMensaje(respuesta);
 }
 
-
-  public void setGestorSesion(GestorSesion gestorSesion) {
-    this.gestorSesion = gestorSesion;
-  }
-
-  public void setIn(BufferedReader in) {
-    this.in = in;
-  }
-
-  public void setOut(PrintStream out) {
-    this.out = out;
-  }
-  
-  
-  
 }
