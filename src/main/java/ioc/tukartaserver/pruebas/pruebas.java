@@ -5,11 +5,7 @@
  */
 package ioc.tukartaserver.pruebas;
 
-import ioc.tukartaserver.model.Codigo;
-import ioc.tukartaserver.model.Empleado;
-import ioc.tukartaserver.model.MensajeRespuesta2;
-import ioc.tukartaserver.model.Rol;
-import ioc.tukartaserver.model.Usuario;
+
 
 /**
  *
@@ -17,12 +13,8 @@ import ioc.tukartaserver.model.Usuario;
  */
 public class pruebas {
 
-public static void main (String... args){  
-  
-  MensajeRespuesta2 mensaje = new MensajeRespuesta2();
-  mensaje.setCode(Codigo.CODIGO_ERR);
-  mensaje.setData("Hola");
-  System.out.println(mensaje);
+public static void main (String... args){    
+ 
 }
   
 }

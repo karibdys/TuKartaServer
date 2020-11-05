@@ -1,6 +1,8 @@
 ioc\tukartaserver\model\Utiles.class
 ioc\tukartaserver\model\Codes.class
 ioc\tukartaserver\gestorDB\GestorDB.class
+ioc\tukartaserver\model\Menu.class
+ioc\tukartaserver\model\Estado.class
 ioc\tukartaserver\model\Codigo.class
 ioc\tukartaserver\model\Rol.class
 ioc\tukartaserver\model\Restaurante.class
@@ -8,6 +10,7 @@ ioc\tukartaserver\pruebas\MainClient.class
 ioc\tukartaserver\server\Server.class
 ioc\tukartaserver\main\InitServer$2.class
 ioc\tukartaserver\model\MensajeRespuesta.class
+ioc\tukartaserver\model\Alergeno.class
 ioc\tukartaserver\security\GestorSesion.class
 ioc\tukartaserver\server\ConexionCliente.class
 ioc\tukartaserver\server\GestorServer.class
@@ -19,7 +22,10 @@ ioc\tukartaserver\model\Mensaje.class
 ioc\tukartaserver\model\Usuario.class
 ioc\tukartaserver\main\InitServer$3.class
 ioc\tukartaserver\pruebas\Cliente.class
+ioc\tukartaserver\model\Producto.class
+ioc\tukartaserver\model\Mesa.class
 ioc\tukartaserver\model\MensajeRespuesta2.class
+ioc\tukartaserver\model\Pedido.class
 ioc\tukartaserver\main\InitServer$1.class
 ioc\tukartaserver\pruebas\pruebas.class
 ioc\tukartaserver\model\Empleado.class

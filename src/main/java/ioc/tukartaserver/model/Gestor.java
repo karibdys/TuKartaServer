@@ -1,6 +1,5 @@
 package ioc.tukartaserver.model;
-
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Clase que extiende a Usuario y da forma a los gestores de restaurantes
@@ -8,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Gestor extends Usuario{
 
-private ArrayList<Restaurante> restaurantes;
+private HashSet<Restaurante> restaurantes;
 private Rol rol;
 
 /******************
@@ -25,7 +24,7 @@ private Rol rol;
  * @param apellidoReal apellido real del empleado
  * @param restaurantes ArrayList de Restaurante que indica los restaurantes de los que es gestor
  */
-public Gestor (String nombreUser, String pass, String email, String nombreReal, String apellidoReal, ArrayList<Restaurante> restaurantes){
+public Gestor (String nombreUser, String pass, String email, String nombreReal, String apellidoReal, HashSet<Restaurante> restaurantes){
   super(nombreUser, pass, email, nombreReal, apellidoReal, true);
   this.restaurantes=restaurantes; 
   this.rol = Rol.GESTOR;
@@ -36,7 +35,7 @@ public Gestor (String nombreUser, String pass, String email, String nombreReal, 
  * @param user el usuario que se va a convertir en empleado
  * @param restaurantes ArrayList de Restaurante que indica los restaurantes de los que es gestor
  */
-public Gestor (Usuario user, ArrayList<Restaurante> restaurantes){
+public Gestor (Usuario user, HashSet<Restaurante> restaurantes){
   super(user.getUsuario(), user.getPwd(), user.getEmail(), user.getNombre(), user.getApellidos(), false);
   this.restaurantes=restaurantes; 
   this.rol = Rol.GESTOR;
@@ -52,7 +51,7 @@ public Gestor (Usuario user, ArrayList<Restaurante> restaurantes){
  * Devuelve la lista de restaurantes de la que el usuario es gestor
  * @return Restarante[]
  */
-public ArrayList<Restaurante> getRestaurantes() {
+public HashSet<Restaurante> getRestaurantes() {
   return restaurantes;
 }
 
@@ -65,7 +64,7 @@ public ArrayList<Restaurante> getRestaurantes() {
  * Establece el listado de restaurantes de los que el usuario es gestor
  * @param restaurantes 
  */
-public void setRestaurantes(ArrayList<Restaurante> restaurantes) {
+public void setRestaurantes(HashSet<Restaurante> restaurantes) {
   this.restaurantes = restaurantes;
 }
 
@@ -77,16 +76,10 @@ public void setRestaurantes(ArrayList<Restaurante> restaurantes) {
 /**
  * Añade un restaurante al listado de restaurantes del Gestor y confirma si la operación se ha realizado con éxito o no.
  * @param res Restaurante
- * @return true si el restaurante se añade con éxito. False si no. 
  */
-public boolean addRestaurante(Restaurante res){
-  if (!this.restaurantes.contains(res)){
-    this.restaurantes.add(res);
-    return true;
-  }else{
-    return false;
-  }  
-}
+public void addRestaurante(Restaurante res){
+  this.restaurantes.add(res);
+}  
 
 /**
  * Elimina un restaurante del listado de restaurantes del Gestor y confirma si la operación se ha realizado con éxito o no.

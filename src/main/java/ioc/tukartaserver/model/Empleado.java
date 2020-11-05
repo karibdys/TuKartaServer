@@ -1,5 +1,7 @@
 package ioc.tukartaserver.model;
 
+import java.util.HashSet;
+
 /**
  * Subclase de la clase Usuario que controla los datos de un empleado de un restaurante. 
  * @author Manu Mora
@@ -9,7 +11,7 @@ public class Empleado extends Usuario{
 private Usuario gestor;
 private Restaurante trabajadorDe;
 private float salario;
-//private Pedido[] pedidos;
+private HashSet<Pedido> pedidos;
 private Rol rol;
 
 private Boolean isActive;
@@ -127,40 +129,75 @@ public Restaurante getTrabajadorDe(){
  ******************
  */
   
-  /**
-   * Establece a un empleado activo. Necesita el gestor que le da de alta.   
-   * @param gestor El gestor que le da de alta y lo contrata
-   */
-  public void setActive(Gestor gestor){
-    this.isActive=true;
-    this.gestor=gestor;
+/**
+ * Establece a un empleado activo. Necesita el gestor que le da de alta.   
+ * @param gestor El gestor que le da de alta y lo contrata
+ */
+public void setActive(Gestor gestor){
+  this.isActive=true;
+  this.gestor=gestor;
+}
+
+/**
+ * Establece a un empleado inactivo. Elimina sus relaciones con el gestor, el restaurante, su rol y su salario. 
+ */
+public void setInactive(){   
+  this.isActive=false;
+  this.salario=0;
+  this.gestor=null;
+  this.trabajadorDe=null;    
+  this.rol=null;
+}
+  
+/**
+ * Comprueba que un empleado está en activo o no.
+ * @return Devuelve true si el empleado tiene salario, y gestor que lo contrata. Si no, devuelve false. 
+ */
+public boolean isActive(){
+  if(salario==0 || gestor== null){
+    isActive=false;
+    return isActive;
+  }else{
+    isActive=true;
+    return isActive;
+  }
+}
+  
+/**
+ * Añade el pedido al usuario si este no estaba añadido ya
+ * @param ped Pedido a añadir al listado
+ */
+public void addPedido(Pedido ped){
+  pedidos.add(ped);
+}
+
+/**
+ * Elimina el pedido indicado si existe
+ * @param ped Pedido a eliminar
+ * @return devuelve true si el pedido se elimina y false si no
+ */
+public boolean removepedido(Pedido ped){  
+  if (pedidos.contains(ped)){
+    pedidos.remove(ped);
+    return true;
+  }else{
+    return false;
   }
   
-  /**
-   * Establece a un empleado inactivo. Elimina sus relaciones con el gestor, el restaurante, su rol y su salario. 
-   */
-  public void setInactive(){   
-    this.isActive=false;
-    this.salario=0;
-    this.gestor=null;
-    this.trabajadorDe=null;    
-    this.rol=null;
-  }
-  
-  /**
-   * Comprueba que un empleado está en activo o no.
-   * @return Devuelve true si el empleado tiene salario, y gestor que lo contrata. Si no, devuelve false. 
-   */
-  public boolean isActive(){
-    if(salario==0 || gestor== null){
-      isActive=false;
-      return isActive;
-    }else{
-      isActive=true;
-      return isActive;
-    }
-  }
-  
+}
+
+/**
+ * Cambia un pedido por otro o por el mismo pero actualizado (si existe)
+ * @param pedInicial Pedido a actualizar
+ * @param pedFinal Pedido actualizado
+ */
+public void updatePedido(Pedido pedInicial, Pedido pedFinal){
+  if (pedidos.contains(pedInicial)){
+    pedidos.remove(pedInicial);
+    pedidos.add(pedFinal);
+  }   
+}
+
 /**
  * Devuelve un Strin con la representación en texto de este usuario.
  * @return String
