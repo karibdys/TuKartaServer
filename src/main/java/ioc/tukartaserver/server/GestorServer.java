@@ -139,7 +139,11 @@ public MensajeRespuesta processMensajeLogin(Usuario usuario, boolean isGestor){
   return respuesta;
 }
 
-
+/**
+ * Procesa un mensaje de petición de logout. Necesita un token de sesión para ello
+ * @param token TokenSesion con la información de la sesión del usuario. 
+ * @return MensajeRespuesta con la confirmación del cierre de sesión o un código de error
+ */
 public MensajeRespuesta procesarMensajeLogout(TokenSesion token){
   respuesta = null;
   String pet = "logout";
@@ -156,6 +160,27 @@ public MensajeRespuesta procesarMensajeLogout(TokenSesion token){
   }
   return respuesta;
 }
+
+//TODO javadoc
+
+public MensajeRespuesta procesarMensajeDatosUsuario(TokenSesion token){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_DATOS_USER);
+  }else{
+    //si el código es un código OK, continuamos con el proceso
+    respuesta = gestorDB.selectDataUser(token.getUsuario());
+    
+    //TODO completar método y respuesta
+  }
+  
+    
+  
+  return respuesta;  
+}
+
 
 /**
  * Envía un mensaje, ya sea de tipo respuesta o solicitud
@@ -175,4 +200,21 @@ public void endConnection(){
   sendMensaje(respuesta);
 }
 
+
+private Codes comprobarSesion(TokenSesion token){
+  Codes codigoRet = null;
+  //comprobamos que el token es válido
+  if (token==null||token.getUsuario()==null || token.getToken()==null){    
+    codigoRet = new Codes(Codes.CODIGO_DATOS_INCORRECTOS);
+  }else{
+    //comprobamos que el token está en el listado de gestorSesion
+    if (gestorSesion.isToken(token.getUsuario())){
+      codigoRet = new Codes(Codes.CODIGO_OK);
+    }else{
+      codigoRet = new Codes(Codes.CODIGO_NO_SESION);
+    }
+       
+  }
+  return codigoRet;
+} 
 }

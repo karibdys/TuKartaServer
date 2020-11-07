@@ -16,6 +16,12 @@ private Rol rol;
  */
 
 /**
+ * Constructor vacío de un Gestor
+ */
+public Gestor (){  
+}
+
+/**
  * Constructor básico de la clase Empleado.
  * @param nombreUser nombre de usuario del empleado
  * @param pass contraseña del empleado
@@ -31,12 +37,20 @@ public Gestor (String nombreUser, String pass, String email, String nombreReal, 
 }
 
 /**
+ * Crea un Gestor a partir de un Usuario
+ * @param user Usuario usuario a partir del que se crea el gestor. 
+ */
+public Gestor(Usuario user){
+  super(user.getUsuario(), user.getPwd(), user.getEmail(), user.getNombre(), user.getApellidos(), true);
+}
+
+/**
  * Constructor que emplea a un usuario ya creado para convertirlo en Empleado
  * @param user el usuario que se va a convertir en empleado
  * @param restaurantes ArrayList de Restaurante que indica los restaurantes de los que es gestor
  */
 public Gestor (Usuario user, HashSet<Restaurante> restaurantes){
-  super(user.getUsuario(), user.getPwd(), user.getEmail(), user.getNombre(), user.getApellidos(), false);
+  super(user.getUsuario(), user.getPwd(), user.getEmail(), user.getNombre(), user.getApellidos(), true);
   this.restaurantes=restaurantes; 
   this.rol = Rol.GESTOR;
   }  

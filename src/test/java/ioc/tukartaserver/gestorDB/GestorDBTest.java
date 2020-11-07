@@ -1,8 +1,13 @@
 package ioc.tukartaserver.gestorDB;
 
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.Usuario;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -267,4 +272,105 @@ public void tearDown() {
     String expResult = "select * from usuario where email='"+email+"' and isGestor='true'".toLowerCase();
     assertEquals (expResult, sentencia);            
   }
+  
+   /*  
+  *************
+   CREATE USER FROM RESULT
+  ***************
+  */
+  
+  /**
+   * Comprueba que se crea un usuario correcto a partir de un usuario gestor
+   * @throws SQLException 
+   */
+  @Test
+  public void construirUserFromResult_GestorOK() throws SQLException{
+    String email = "marc@tukarta.com";
+    boolean isGestor =true;
+    Usuario expResult = new Usuario("Marc", null, email, "Marc", "Abad", isGestor);
+    Connection con = gestor.getCon();
+    PreparedStatement stm = con.prepareStatement(GestorDB.SELECT_USER);
+    stm.setString(1, email);
+    ResultSet result = stm.executeQuery();
+    result.next();
+    Usuario resultado = gestor.createUserFromResult(result, isGestor);
+    assertEquals(expResult.toString(), resultado.toString());
+  }
+  
+    /**
+   * Comprueba que se crea un usuario correcto a partir de un usuario empleado
+   * @throws SQLException 
+   */
+  @Test
+  public void construirUserFromResult_EmpleadoOK() throws SQLException{
+    String email = "manu@tukarta.com";
+    boolean isGestor =false;
+    Usuario user = new Usuario("Manu", null, email, "Manu", "Mora", isGestor);
+    Empleado expResult = new Empleado(user);
+    expResult.setSalario(1600);
+    Connection con = gestor.getCon();
+    PreparedStatement stm = con.prepareStatement(GestorDB.SELECT_USER);
+    stm.setString(1, email);
+    ResultSet result = stm.executeQuery();
+    result.next();
+    Usuario resultado = gestor.createUserFromResult(result, isGestor);
+    assertEquals(expResult.toString(), resultado.toString());
+  }
+  
+  /*  
+  *************
+   SELECT ALL WHERE
+  ***************
+  */
+  
+  /**
+   * Comprueba que el mensaje que retorna el método lleva por código un 40 (datos erróneos)
+   */
+  @Test
+  public void selectUserData_EmpleadoOK(){
+    String expResult = Codes.CODIGO_DATOS_INCORRECTOS;    
+    String email =null;
+    MensajeRespuesta res =gestor.selectDataUser(email);
+    String codeResult = res.getCode().getCode();
+    assertEquals(expResult, codeResult);    
+  }
+  
+  /**
+   * Comprueba que el mensaje que retorna el método lleva por código un 42 (usuario no encontrado) al pasarle un usuario que no está en la base de datos
+   */
+  @Test
+  public void selectUserData_usuarioNoExiste(){
+    String expResult = Codes.CODIGO_NO_USER;    
+    String email ="pepe@tukarta.com";
+    MensajeRespuesta res =gestor.selectDataUser(email);
+    String codeResult = res.getCode().getCode();
+    assertEquals(expResult, codeResult);    
+  }
+  
+    
+  /**
+   * Comprueba que el mensaje que retorna el método lleva por código un 10 al pasarle un usuario gestor que está en la base de datos
+   */
+  @Test
+  public void selectUserData_gestorOK(){
+    String expResult = Codes.CODIGO_OK;        
+    String email ="marc@tukarta.com";  
+    MensajeRespuesta res =gestor.selectDataUser(email);
+    String codeResult = res.getCode().getCode();    
+    assertEquals(expResult, codeResult);    
+  }
+  
+  
+   /**
+   * Comprueba que el mensaje que retorna el método lleva por código un 10 al pasarle un usuario empleado que está en la base de datos
+   */
+  @Test
+  public void selectUserData_empleadoOK(){
+    String expResult = Codes.CODIGO_OK;   
+    String email ="manu@tukarta.com";  
+    MensajeRespuesta res =gestor.selectDataUser(email);
+    String codeResult = res.getCode().getCode();
+    assertEquals(expResult, codeResult);    
+  }  
+  
 }

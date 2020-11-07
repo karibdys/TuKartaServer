@@ -28,7 +28,7 @@ private LocalTime validez;
  * @param user Usuario al que se vinculará el token
  */
 public TokenSesion (Usuario user){
-  this.usuario=user.getUsuario();
+  this.usuario=user.getEmail();
   this.token=generateToken();
   //this.validez= validezHasta(MIN_MAX);
   this.validez=validezHasta(MIN_MAX);

@@ -13,6 +13,7 @@ ioc\tukartaserver\model\MensajeRespuesta.class
 ioc\tukartaserver\model\Alergeno.class
 ioc\tukartaserver\security\GestorSesion.class
 ioc\tukartaserver\server\ConexionCliente.class
+ioc\tukartaserver\model\Provincia.class
 ioc\tukartaserver\server\GestorServer.class
 ioc\tukartaserver\model\TokenSesion.class
 ioc\tukartaserver\model\Gestor.class

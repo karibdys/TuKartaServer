@@ -160,6 +160,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
     String dataString = mensaje.getData();
     String tokenString = mensaje.getToken();
     Usuario userIn=null;
+    TokenSesion token = null;
     switch (mensaje.getPeticion()){
       case Mensaje.FUNCION_LOGIN:
         //sacamos los datos que, en este caso, serán Usuarios
@@ -180,9 +181,14 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         break;
       case Mensaje.FUNCION_LOGOFF:
         System.out.println(CONCLI+"procesando logout");        
-        TokenSesion token = gson.fromJson(tokenString, TokenSesion.class);
+        token = gson.fromJson(tokenString, TokenSesion.class);
         respuesta = gestorServer.procesarMensajeLogout(token);      
         gestorServer.sendMensaje(respuesta);
+      case Mensaje.FUNCION_DATOS_USER:
+        System.out.println(CONCLI+"procesando petición de datos de usuario");
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        respuesta = gestorServer.procesarMensajeDatosUsuario(token);
+        break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;

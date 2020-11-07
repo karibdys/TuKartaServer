@@ -14,6 +14,9 @@ public static final String FUNCION_LOGOFF = "logout";
 public static final String FUNCION_FIN_CON = "fin_conexion";
 public static final String FUNCION_FIN_SERVER = "cerrar_server";
 
+//peticiones TEA3
+public static final String FUNCION_DATOS_USER = "get_datos_user";
+
 public static final String ATT_PETICION = "peticion";
 public static final String ATT_TOKEN = "token";
 public static final String ATT_PARAM = "parametro";

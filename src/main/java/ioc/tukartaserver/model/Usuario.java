@@ -24,10 +24,10 @@ private boolean isGestor;
  */
 
 /**
- * Constructor básico de un usuario sin parámetros. Incluye la fecha de creación.
+ * Constructor básico de un usuario sin parámetros.
  */
 public Usuario(){
- this.fecha_alta= this.fecha_modificacion = new Date();    
+   
 }
 
 /**
@@ -186,6 +186,13 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
     this.fecha_modificacion=new Date();
   }
   
+ /**
+  * Establece la fecha de alta de este usuario
+  * @param fechaAlta Date con la fecha de alta del usuario
+  */  
+ public void setFecha_alta(Date fechaAlta){
+   this.fecha_alta=fechaAlta;
+ }
   /**
    * Cambia le fecha de última modificación de los datos del usuario
    * @param fechaUltimaMod Date

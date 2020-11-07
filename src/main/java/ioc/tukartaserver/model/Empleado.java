@@ -50,6 +50,16 @@ public Empleado (Usuario user, Usuario gestor, Rol rol){
   this.rol=rol;
   }
 
+/**
+ * Crea un empleado a partir de un Usuario
+ * @param user Usuario a partir del que se crea el Empleado
+ */
+public Empleado (Usuario user){
+  super(user.getUsuario(), user.getPwd(), user.getEmail(), user.getNombre(), user.getApellidos(), false);
+}
+
+public Empleado() {
+}
 
 /******************
  * SETTERS
@@ -212,5 +222,7 @@ public String toString(){
     builder.append("\nsalario: "+salario+"€");
   }
   return builder.toString();
-}            
+}          
+
+
 }
