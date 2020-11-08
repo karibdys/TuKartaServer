@@ -186,8 +186,21 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         gestorServer.sendMensaje(respuesta);
       case Mensaje.FUNCION_DATOS_USER:
         System.out.println(CONCLI+"procesando petición de datos de usuario");
+        //necesitamos el token para hacer la petición
         token = gson.fromJson(tokenString, TokenSesion.class);
-        respuesta = gestorServer.procesarMensajeDatosUsuario(token);
+        //hacemos la petición al gestorServer:
+        respuesta = gestorServer.procesarMensajeDatosUsuario(token, null);
+        gestorServer.sendMensaje(respuesta);
+        break;
+      case Mensaje.FUNCION_DATOS_OTRO_USER:
+        System.out.println(CONCLI+"procesando petición de datos de usuario");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        Usuario userMail = gson.fromJson(dataString, Usuario.class);
+        //hacemos la petición al gestorServer:
+        respuesta = gestorServer.procesarMensajeDatosUsuario(token, userMail.getEmail());
+        System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
+        gestorServer.sendMensaje(respuesta);
         break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));

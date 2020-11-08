@@ -163,7 +163,7 @@ public MensajeRespuesta procesarMensajeLogout(TokenSesion token){
 
 //TODO javadoc
 
-public MensajeRespuesta procesarMensajeDatosUsuario(TokenSesion token){
+public MensajeRespuesta procesarMensajeDatosUsuario(TokenSesion token, String email){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error
@@ -175,9 +175,6 @@ public MensajeRespuesta procesarMensajeDatosUsuario(TokenSesion token){
     
     //TODO completar método y respuesta
   }
-  
-    
-  
   return respuesta;  
 }
 
