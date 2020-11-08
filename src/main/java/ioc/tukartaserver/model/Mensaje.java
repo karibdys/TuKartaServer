@@ -16,6 +16,7 @@ public static final String FUNCION_FIN_SERVER = "cerrar_server";
 
 //peticiones TEA3
 public static final String FUNCION_DATOS_USER = "get_datos_user";
+public static final String FUNCION_DATOS_OTRO_USER = "get_data_other_user";
 
 public static final String ATT_PETICION = "peticion";
 public static final String ATT_TOKEN = "token";

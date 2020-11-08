@@ -317,9 +317,9 @@ public void tearDown() {
     assertEquals(expResult.toString(), resultado.toString());
   }
   
-  /*  
+ /*  
   *************
-   SELECT ALL WHERE
+   SELECT DATA USER WHERE
   ***************
   */
   
@@ -327,7 +327,7 @@ public void tearDown() {
    * Comprueba que el mensaje que retorna el método lleva por código un 40 (datos erróneos)
    */
   @Test
-  public void selectUserData_EmpleadoOK(){
+  public void selectDataUser_EmpleadoOK(){
     String expResult = Codes.CODIGO_DATOS_INCORRECTOS;    
     String email =null;
     MensajeRespuesta res =gestor.selectDataUser(email);
@@ -339,8 +339,8 @@ public void tearDown() {
    * Comprueba que el mensaje que retorna el método lleva por código un 42 (usuario no encontrado) al pasarle un usuario que no está en la base de datos
    */
   @Test
-  public void selectUserData_usuarioNoExiste(){
-    String expResult = Codes.CODIGO_NO_USER;    
+  public void selectDataUser_usuarioNoExiste(){
+    String expResult = Codes.CODIGO_ERR_USER;    
     String email ="pepe@tukarta.com";
     MensajeRespuesta res =gestor.selectDataUser(email);
     String codeResult = res.getCode().getCode();
@@ -352,7 +352,7 @@ public void tearDown() {
    * Comprueba que el mensaje que retorna el método lleva por código un 10 al pasarle un usuario gestor que está en la base de datos
    */
   @Test
-  public void selectUserData_gestorOK(){
+  public void selectDataUser_gestorOK(){
     String expResult = Codes.CODIGO_OK;        
     String email ="marc@tukarta.com";  
     MensajeRespuesta res =gestor.selectDataUser(email);
@@ -365,12 +365,11 @@ public void tearDown() {
    * Comprueba que el mensaje que retorna el método lleva por código un 10 al pasarle un usuario empleado que está en la base de datos
    */
   @Test
-  public void selectUserData_empleadoOK(){
+  public void selectDataUser_empleadoOK(){
     String expResult = Codes.CODIGO_OK;   
     String email ="manu@tukarta.com";  
     MensajeRespuesta res =gestor.selectDataUser(email);
     String codeResult = res.getCode().getCode();
     assertEquals(expResult, codeResult);    
   }  
-  
 }

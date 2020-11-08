@@ -20,6 +20,8 @@ public static final String CODIGO_FUNCION_ERR = "41";
 public static final String CODIGO_NO_USER = "42";
 public static final String CODIGO_NO_PASS = "43";
 public static final String CODIGO_NO_SESION = "44";
+public static final String CODIGO_ERROR_USER_BAJA = "45";
+
 //error genérico
 public static final String CODIGO_ERR = "50";
 //error en la base de datos
@@ -64,6 +66,7 @@ public static void initMap () {
   codigos.put(CODIGO_NO_USER, "No se ha indicado un mail de usuario.");
   codigos.put(CODIGO_NO_PASS, "No se ha indicado una contraseña de usuario.");  
   codigos.put(CODIGO_NO_SESION, "No hay sesión vinculada a la petición.");
+  codigos.put(CODIGO_ERROR_USER_BAJA, "El usuario ha sido dado de baja en la base de datos");
   //error genérico
   codigos.put(CODIGO_ERR,  "Error al procesar la petición");
   //error en la base de datos

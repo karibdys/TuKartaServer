@@ -3,7 +3,6 @@ ioc\tukartaserver\model\Codes.class
 ioc\tukartaserver\gestorDB\GestorDB.class
 ioc\tukartaserver\model\Menu.class
 ioc\tukartaserver\model\Estado.class
-ioc\tukartaserver\model\Codigo.class
 ioc\tukartaserver\model\Rol.class
 ioc\tukartaserver\model\Restaurante.class
 ioc\tukartaserver\pruebas\MainClient.class
@@ -25,7 +24,6 @@ ioc\tukartaserver\main\InitServer$3.class
 ioc\tukartaserver\pruebas\Cliente.class
 ioc\tukartaserver\model\Producto.class
 ioc\tukartaserver\model\Mesa.class
-ioc\tukartaserver\model\MensajeRespuesta2.class
 ioc\tukartaserver\model\Pedido.class
 ioc\tukartaserver\main\InitServer$1.class
 ioc\tukartaserver\pruebas\pruebas.class
