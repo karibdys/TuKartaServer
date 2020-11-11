@@ -18,6 +18,7 @@ import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
 import java.sql.PreparedStatement;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,7 @@ public static final String TABLA_PROD = "producto";
 
 //sentencias
 public static final String SELECT_USER = "SELECT * FROM usuario WHERE email = ?";
+public static final String BAJA_USER = "UPDATE usuario SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
 private static final String BD ="GESTOR BD: ";
 
 private Connection con;
@@ -233,6 +235,29 @@ public MensajeRespuesta addData(Object dato, String peticion){
     ret = Utiles.mensajeErrorFuncionNoSoportada(peticion);
   }
   return ret;
+}
+
+public MensajeRespuesta bajaUser(String email){
+  MensajeRespuesta ret = null;
+  String peticion = Mensaje.FUNCION_BAJA_USER;
+  //para dar de baja necesito la fecha de hoy
+  java.sql.Date fecha_baja = Utiles.convertDateJavaToSQL(new Date());    
+  PreparedStatement stm;
+  try {
+    stm = con.prepareStatement(BAJA_USER);
+    stm.setDate(1, fecha_baja);
+    stm.setString(2, email);
+    System.out.println(BD+" sentencia --> "+stm);
+    if (stm.executeUpdate()==1){
+      ret = Utiles.mensajeOK(peticion);
+    }else{
+      throw new SQLException();
+    }
+  } catch (SQLException ex) {
+    ret = Utiles.mensajeErrorDB(peticion);
+    //TODO ver qué tipo de códigos se pueden lanzar (usuario no encotnrado, etc)
+  }
+  return ret;      
 }
 
 /******************

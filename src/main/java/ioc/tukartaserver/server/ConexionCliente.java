@@ -171,27 +171,22 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         respuesta = gestorServer.processMensajeLogin(userIn, false);
         System.out.println(CONCLI+"mensaje recibido del gestor server:\n"+respuesta);
         System.out.println(CONCLI+"enviando mensaje");
-        gestorServer.sendMensaje(respuesta);
-        System.out.println(CONCLI+"mensaje enviado");
         break;
       case Mensaje.FUNCION_LOGIN_ADMIN:
         System.out.println(CONCLI+"procesando login_admin");
         userIn = gson.fromJson(dataString, Usuario.class);
-        respuesta = gestorServer.processMensajeLogin(userIn, true);
-        gestorServer.sendMensaje(respuesta);      
+        respuesta = gestorServer.processMensajeLogin(userIn, true);     
         break;
       case Mensaje.FUNCION_LOGOFF:
         System.out.println(CONCLI+"procesando logout");        
         token = gson.fromJson(tokenString, TokenSesion.class);
-        respuesta = gestorServer.procesarMensajeLogout(token);      
-        gestorServer.sendMensaje(respuesta);
+        respuesta = gestorServer.procesarMensajeLogout(token); 
       case Mensaje.FUNCION_DATOS_USER:
         System.out.println(CONCLI+"procesando petición de datos de usuario");
         //necesitamos el token para hacer la petición
         token = gson.fromJson(tokenString, TokenSesion.class);
         //hacemos la petición al gestorServer:
         respuesta = gestorServer.procesarMensajeDatosUsuario(token, null);
-        gestorServer.sendMensaje(respuesta);
         break;
       case Mensaje.FUNCION_DATOS_OTRO_USER:
         System.out.println(CONCLI+"procesando petición de datos de usuario");
@@ -200,8 +195,6 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         Usuario userMail = gson.fromJson(dataString, Usuario.class);
         //hacemos la petición al gestorServer:
         respuesta = gestorServer.procesarMensajeDatosUsuario(token, userMail.getEmail());
-        System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
-        gestorServer.sendMensaje(respuesta);
         break;
       case Mensaje.FUNCION_ADD_EMP:
         System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
@@ -210,8 +203,6 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         userIn = gson.fromJson(dataString, Empleado.class);
         //hacemos la petición al gestorServer:
         respuesta = gestorServer.procesarMensajeAddUser(token, userIn, false);
-        gestorServer.sendMensaje(respuesta);
-        System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
         break;
       case Mensaje.FUNCION_ADD_GESTOR:   
         System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
@@ -219,14 +210,23 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         token = gson.fromJson(tokenString, TokenSesion.class);
         userIn = gson.fromJson(dataString, Usuario.class);
         //hacemos la petición al gestorServer:
-        respuesta = gestorServer.procesarMensajeAddUser(token, userIn, true);
-        gestorServer.sendMensaje(respuesta);
-        System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
+        respuesta = gestorServer.procesarMensajeAddUser(token, userIn, true);  ;
+        break;
+      case Mensaje.FUNCION_BAJA_USER:
+        System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        //sacamos el usuario que hay que eliminar
+        userIn = gson.fromJson(dataString, Usuario.class);
+        String email = userIn.getEmail();
+        respuesta = gestorServer.procesarMensajeBajaUser(token, email);        
         break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;
-   }     
+    }     
+    gestorServer.sendMensaje(respuesta);
+    System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
   }
   
 }

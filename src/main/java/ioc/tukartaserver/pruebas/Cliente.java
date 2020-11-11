@@ -74,6 +74,7 @@ public void startClient() {
       //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN_ADMIN, userJson, (String) null);
       */
+      
       /*******************PRUEBA DE LOGOFF************************/
       /*       
       System.out.println(CLIENTE+"Procediendo a hacer petición de logout");      
@@ -107,13 +108,23 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE ADD DATA GESTOR ************************/
-  
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_gestor");   
       TokenSesion token = new TokenSesion(user);
-      token.setToken("cXOWjgsNBu");  
+      token.setToken("YOZVzhZXeP");  
       Usuario userGestor = new Usuario("Gestor", "gestorPass", "gestor@tukarta.com", null, null, true);    
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_GESTOR, userGestor, token);
-  
+      */
+      
+      /*******************PRUEBA DE BAJA USER************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de baja_user");   
+      TokenSesion token = new TokenSesion(user);
+      token.setToken("rKoYsKGIfy");  
+      Usuario userGestor = new Usuario();    
+      userGestor.setEmail("gestor@tukarta.com");
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_BAJA_USER, userGestor, token);
+      
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         

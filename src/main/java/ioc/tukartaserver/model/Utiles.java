@@ -1,6 +1,6 @@
 package ioc.tukartaserver.model;
 
-import ioc.tukartaserver.gestorDB.GestorDB;
+import com.google.gson.Gson;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -257,5 +257,6 @@ public static String ParseDate(Date fecha){
   java.util.Date javaDate = new java.util.Date(uDate.getTime());   
    return javaDate;
  }
+ 
   
 }

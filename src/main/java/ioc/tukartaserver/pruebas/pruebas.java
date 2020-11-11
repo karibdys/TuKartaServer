@@ -9,11 +9,6 @@ import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 
 
 /**
@@ -31,19 +26,7 @@ public static void main (String... args) throws ClassNotFoundException{
   Empleado emp = new Empleado ("Pepe", "pepePass", "pepe@tukarta.com", null, null, user, Rol.CAMARERO);
   String sentencia = Utiles.sentenciaEmpleadoToInsertSQL(emp);
   System.out.println(sentencia);
-  Class.forName(CLASE);    
-  try{
-    Connection con = DriverManager.getConnection(LOCAL_URL,USER,PASS);
-    Statement stm = con.createStatement();
-    System.out.println(stm.executeUpdate(sentencia));
-  } catch (SQLException ex){
-    System.out.println("Codigo error: "+ex.getErrorCode());
-    System.out.println("Codigo error: "+ex.getSQLState());
-    System.out.println("Codigo error: "+ex.getMessage());
-  }    
-  
-  
-  
+    
 }
   
 }
