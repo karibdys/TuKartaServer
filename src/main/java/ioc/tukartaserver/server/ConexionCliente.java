@@ -2,6 +2,7 @@ package ioc.tukartaserver.server;
 
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
@@ -201,6 +202,26 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         respuesta = gestorServer.procesarMensajeDatosUsuario(token, userMail.getEmail());
         System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
         gestorServer.sendMensaje(respuesta);
+        break;
+      case Mensaje.FUNCION_ADD_EMP:
+        System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        userIn = gson.fromJson(dataString, Empleado.class);
+        //hacemos la petición al gestorServer:
+        respuesta = gestorServer.procesarMensajeAddUser(token, userIn, false);
+        gestorServer.sendMensaje(respuesta);
+        System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
+        break;
+      case Mensaje.FUNCION_ADD_GESTOR:   
+        System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        userIn = gson.fromJson(dataString, Usuario.class);
+        //hacemos la petición al gestorServer:
+        respuesta = gestorServer.procesarMensajeAddUser(token, userIn, true);
+        gestorServer.sendMensaje(respuesta);
+        System.out.println(CONCLI+"Mensaje enviado:\n"+respuesta);
         break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));

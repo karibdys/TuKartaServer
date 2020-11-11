@@ -16,7 +16,10 @@ import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
+import ioc.tukartaserver.model.Utiles;
 import java.sql.PreparedStatement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class GestorDB {
@@ -29,6 +32,7 @@ private final String PASS = "TuKartaP4$$";
 
 //tablas
 public static final String TABLA_USERS = "usuario";
+public static final String TABLA_PROD = "producto";
 
 //sentencias
 public static final String SELECT_USER = "SELECT * FROM usuario WHERE email = ?";
@@ -133,7 +137,7 @@ public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
       result.close();
       statement.close();
       System.out.println (BD+"conexión finalizada");
-
+      statement.close();
     } catch (Exception ex) {
       codigoRet = new Codes(Codes.CODIGO_ERR);
       System.out.println(BD+ex.getMessage());
@@ -152,7 +156,7 @@ public MensajeRespuesta selectDataUser(String email){
   MensajeRespuesta ret = null;
   String peticion = Mensaje.FUNCION_DATOS_USER;
   if (email==null){
-    ret = mensajeErrorDatosIncorrectos(peticion);
+    ret = Utiles.mensajeErrorDatosIncorrectos(peticion);
   }else{
     //si son todos correctos, entonces empezamos el proceso
     try{
@@ -165,22 +169,69 @@ public MensajeRespuesta selectDataUser(String email){
         if (isGestor){
           System.out.println(BD+" usuario de tipo gestor encontrado");
           Gestor gestor = new Gestor(createUserFromResult(result, isGestor));
-          ret = mensajeOK(peticion);
+          ret = Utiles.mensajeOK(peticion);
           ret.setData(gestor);
         }else{
           System.out.println(BD+" usuario de tipo empleado encontrado");
           Empleado empleado = (Empleado) createUserFromResult(result, isGestor);
-          ret = mensajeOK(peticion);
+          ret = Utiles.mensajeOK(peticion);
           ret.setData(empleado);
         }       
       }else{
         System.out.println(BD+" usuario no encontrado");
-        ret = mensajeErrorNoUser(peticion);
+        ret = Utiles.mensajeErrorNoUser(peticion);
       }      
     }catch(SQLException ex){
-      ret = mensajeErrorDB(peticion);
+      ret = Utiles.mensajeErrorDB(peticion);
     }   
   }  
+  return ret;
+}
+
+
+public MensajeRespuesta addData(Object dato, String peticion){
+  MensajeRespuesta ret = null;
+  String sentencia = "";
+  //primero tenemos que saber qué tipo de dato viene asociado
+  if (dato instanceof Empleado){
+    //tipo empleado
+    sentencia = Utiles.sentenciaEmpleadoToInsertSQL((Empleado)dato);   
+    System.out.println(BD+"sentencia: "+sentencia);
+  }else if (dato instanceof Usuario){
+    //tipo gestor/usuario
+    sentencia = Utiles.sentenciaUsuarioToInsertSQL((Usuario)dato);   
+  }  
+  //si la sentencia creada no está vacía, procedemos a hacer la petición
+  if(!sentencia.equals("")){
+    try {
+      //si el dato es de tipo usuario, habrá que hacer un insert a la tabla Usuario
+      Statement statement = con.createStatement();
+      if(statement.executeUpdate(sentencia)==1){
+        System.out.println(BD+" dato insertado correctamente");
+        //si todo ha ido bien (se ha insertado una sentencia) entonces mandamos código OK
+        ret = Utiles.mensajeOK(peticion);
+      }else{
+        //si no ha ido bien se manda un error de BD
+        ret = Utiles.mensajeErrorDB(peticion);
+        System.out.println(BD+" dato no insertado correctamente");
+      };
+      statement.close();
+    } catch (SQLException ex) {
+      //si tenemos una excepción en la base de datos específica, intentamos sacarla
+      String sqlstate = ex.getSQLState();
+      if(sqlstate.equals("23505")){
+        //si el error es que la clase está duplicada, mandamos ese mensaje
+        ret = Utiles.mensajeErrorUserRep(peticion);
+      }else{
+        //si el error es otro, entonces mandamos un error genérico
+        ret = Utiles.mensajeError(peticion);
+        System.out.println(ex.getMessage());
+      }
+    }      
+  }else {
+    //si llegamos aquí es que no se ha formado bien la sentencia porque no es un tipo de dato soportado (aún)
+    ret = Utiles.mensajeErrorFuncionNoSoportada(peticion);
+  }
   return ret;
 }
 
@@ -203,26 +254,6 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
   return ret;
 }
 
-/**
- * Método para construir fechas conrrectas para insertar en la base de datos. 
- * @param uDate Date en formato Java
- * @return Date en formato SQL
- */
- private static java.sql.Date convertDateJavaToSQL (java.util.Date uDate) {
-   java.sql.Date sDate = new java.sql.Date(uDate.getTime());
-   return sDate;
- }
-
-  /**
-  * Método para construir fechas correctas en Java a partir de un date de SQL
-  * @param uDate una fecha en formato SQL
-  * @return Date con la fecha del SQL
-  */
- private static java.util.Date convertDateSQLtoJava(java.sql.Date uDate) {
-  java.util.Date javaDate = new java.util.Date(uDate.getTime());   
-   return javaDate;
- }
- 
  /**
   * Crea un usuario a partir de un ResultSet
   * @param result ResultSet que contiene el dato del Usuario
@@ -236,10 +267,10 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    user.setEmail(result.getString("email"));
    user.setNombre(result.getString("nombre"));
    user.setApellidos(result.getString("apellidos"));
-   user.setFecha_alta(convertDateSQLtoJava(result.getDate("fecha_alta")));
-   user.setFecha_modificacion(convertDateSQLtoJava(result.getDate("fecha_modificacion")));
+   user.setFecha_alta(Utiles.convertDateSQLtoJava(result.getDate("fecha_alta")));
+   user.setFecha_modificacion(Utiles.convertDateSQLtoJava(result.getDate("fecha_modificacion")));
    if (result.getDate("fecha_baja")!=null){
-     user.setFecha_baja(convertDateSQLtoJava(result.getDate("fecha_baja")));
+     user.setFecha_baja(Utiles.convertDateSQLtoJava(result.getDate("fecha_baja")));
    }
    //si el usuario es de tipo gestor, creamos un gestor
    if (isGestor){          
@@ -265,44 +296,15 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    
  }
  
-/******************
- * CONSTRUCTORES DE MENSAJES DE RESPUESTA
- ******************
- */
-
- /**
-  * construye un mensaje genérico de error de datos incorrectos
-  * @param peticion String nombre de la petición a responder
-  * @return MensajeRespuesta con el código 40 y la petición indicada como parámetro. 
-  */
- private static MensajeRespuesta mensajeErrorDatosIncorrectos (String peticion){
-    return new MensajeRespuesta(new Codes(Codes.CODIGO_DATOS_INCORRECTOS), peticion);  
+ 
+ public void closeConnection(){
+   try{ 
+     if(con!=null && !con.isClosed()){
+       con.close();
+     }
+   }catch (SQLException e){
+    System.out.println(e.getMessage());
+   }
  }
  
- /**
-  * Construyen un mensaje genérico de error de usuario no encontrado
-  * @param peticion String nombre de la petición a responder
-  * @return MensajeRespuesta con el código 42 y la petición a respondida
-  */ 
- private static MensajeRespuesta mensajeErrorNoUser (String peticion){
-    return new MensajeRespuesta(new Codes(Codes.CODIGO_NO_USER), peticion);  
- }
- 
- /**
-  * Construyen un mensaje genérico de error producido en la Base de Datos
-  * @param peticion String nombre de la petición a responder
-  * @return MensajeRespuesta con el código 60 y la petición a respondida
-  */
- private static MensajeRespuesta mensajeErrorDB(String peticion){
-   return new MensajeRespuesta(new Codes(Codes.CODIGO_ERR_BD), peticion);  
- }
- 
- /**
-  * Construyen un mensaje genérico de petición completada con éxito
-  * @param peticion String nombre de la petición a responder
-  * @return MensajeRespuesta con el código 10 y la petición a respondida. Necesita añadir los datos
-  */
- private static MensajeRespuesta mensajeOK(String peticion){
-   return new MensajeRespuesta(new Codes(Codes.CODIGO_OK), peticion);  
- }
 }

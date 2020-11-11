@@ -61,22 +61,19 @@ public void startClient() {
     System.out.println("SERVER: código "+code.getCode()); 
     
     if (code.getCode().equals(Codes.CODIGO_OK)) {
- 
       
-      /*******************PRUEBA DE LOGIN************************/          
-  /*
-      System.out.println(CLIENTE+"Procediendo a hacer petición de login");  
-      //creamos usuario
-      //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);    
-      //emleado
       Empleado emp = new Empleado ("Manu", "manuPass", "manu@tukarta.com", null, null, user, Rol.CAMARERO);
-        
+      Empleado pepe = new Empleado ("Pepe", "pepePass", "pepe@tukarta.com", null, null, user, Rol.CAMARERO);
+      //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
+      /*******************PRUEBA DE LOGIN************************/          
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de login"); 
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN_ADMIN, userJson, (String) null);
-  */
+      */
       /*******************PRUEBA DE LOGOFF************************/
       /*       
       System.out.println(CLIENTE+"Procediendo a hacer petición de logout");      
@@ -89,20 +86,37 @@ public void startClient() {
      
      
       /*******************PRUEBA DE SELECT DATA USER************************/
-    
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de select_data_user");      
       Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
       String userJson = gson.toJson(user);
       TokenSesion token = new TokenSesion(user);
       token.setToken("VdUPBmIPNe");
- 
-      Usuario userRet = new Usuario();
+       Usuario userRet = new Usuario();
       userRet.setEmail("manu@tukarta.com");
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DATOS_OTRO_USER, userRet, token);   
-
-      String mensajeOutJson = gson.toJson(mensajeOut);
+      */
       
-   
+      
+      /*******************PRUEBA DE ADD DATA EMP ************************/
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
+      TokenSesion token = new TokenSesion(user);
+      token.setToken("VbzpbetnGR");  
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_EMP, pepe, token);
+      */
+      
+      /*******************PRUEBA DE ADD DATA GESTOR ************************/
+  
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_gestor");   
+      TokenSesion token = new TokenSesion(user);
+      token.setToken("cXOWjgsNBu");  
+      Usuario userGestor = new Usuario("Gestor", "gestorPass", "gestor@tukarta.com", null, null, true);    
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_GESTOR, userGestor, token);
+  
+      
+      /*******************FINAL DE PETICIÓN ************************/
+      String mensajeOutJson = gson.toJson(mensajeOut);         
       //convertimos el mensajeRes en JSON     
       System.out.println(CLIENTE+" enviando JSON\n  -->"+mensajeOutJson);
       out.println(mensajeOutJson);          

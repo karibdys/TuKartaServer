@@ -28,7 +28,7 @@ public static final String CODIGO_ERR = "50";
 public static final String CODIGO_ERR_BD ="60";
 public static final String CODIGO_ERR_USER ="61";
 public static final String CODIGO_ERR_PWD ="62";
-public static final String CODIGO_USER_REP ="63";
+public static final String CODIGO_ERROR_DATA_REP ="63";
 //fin de conexión
 public static final String END_CONNECTION = "90";
 public static final String END_SERVER = "91";
@@ -73,7 +73,7 @@ public static void initMap () {
   codigos.put(CODIGO_ERR_BD, "Error al acceder a la base de datos.");
   codigos.put(CODIGO_ERR_USER, "Usuario no encontrado");
   codigos.put(CODIGO_ERR_PWD, "Contraseña Incorrecta");
-  codigos.put(CODIGO_USER_REP, "El usuario ya existe en la base de datos.");
+  codigos.put(CODIGO_ERROR_DATA_REP, "El dato contiene una ID que ya existe en la base de datos.");
   //fin de conexión
   codigos.put(END_CONNECTION, "Finalizar conexión");
   codigos.put(END_SERVER, "Finalizar el servidor");

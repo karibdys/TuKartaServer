@@ -171,11 +171,27 @@ public MensajeRespuesta procesarMensajeDatosUsuario(TokenSesion token, String em
     respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_DATOS_USER);
   }else{
     //si el código es un código OK, continuamos con el proceso
-    respuesta = gestorDB.selectDataUser(token.getUsuario());
-    
-    //TODO completar método y respuesta
+    respuesta = gestorDB.selectDataUser(token.getUsuario());       
   }
   return respuesta;  
+}
+
+public MensajeRespuesta procesarMensajeAddUser(TokenSesion token, Usuario user, boolean isGestor){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es un código 10, podemos seguir adelante. 
+    if (isGestor){
+      respuesta = gestorDB.addData(user, Mensaje.FUNCION_ADD_GESTOR);
+    }else{
+      respuesta = gestorDB.addData(user, Mensaje.FUNCION_ADD_EMP);
+    }
+    
+  }  
+  return respuesta;
 }
 
 
