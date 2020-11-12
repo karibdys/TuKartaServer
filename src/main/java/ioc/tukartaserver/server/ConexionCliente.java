@@ -221,6 +221,14 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         String email = userIn.getEmail();
         respuesta = gestorServer.procesarMensajeBajaUser(token, email);        
         break;
+      case Mensaje.FUNCION_UPDATE_EMP:
+        System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        //sacamos los datos a cambiar
+        Empleado emp = gson.fromJson(dataString, Empleado.class);
+        respuesta = gestorServer.procesarMensajeUpdateEmp(token, emp);        
+        break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;

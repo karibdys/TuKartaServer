@@ -65,6 +65,8 @@ public void startClient() {
       Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);    
       Empleado emp = new Empleado ("Manu", "manuPass", "manu@tukarta.com", null, null, user, Rol.CAMARERO);
       Empleado pepe = new Empleado ("Pepe", "pepePass", "pepe@tukarta.com", null, null, user, Rol.CAMARERO);
+      Empleado empMod = new Empleado ("Manué", "manuPass", "manu@tukarta.com", "Manuel Jesús", null, user, Rol.CAMARERO);
+      empMod.setSalario(1700);
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       /*******************PRUEBA DE LOGIN************************/          
       /*
@@ -117,13 +119,20 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE BAJA USER************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de baja_user");   
       TokenSesion token = new TokenSesion(user);
       token.setToken("rKoYsKGIfy");  
       Usuario userGestor = new Usuario();    
       userGestor.setEmail("gestor@tukarta.com");
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_BAJA_USER, userGestor, token);
+      */
+      /*******************PRUEBA DE UPDATE USER************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de update_emp");   
+      TokenSesion token = new TokenSesion(user);
+      token.setToken("hQffmzTHaf");        
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_EMP, empMod, token);
       
       
       /*******************FINAL DE PETICIÓN ************************/

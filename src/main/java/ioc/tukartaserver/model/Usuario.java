@@ -49,6 +49,30 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
   this.isGestor=isGestor;
 }
 
+
+/**
+ * Constructor de la clase Usuario
+ * @param nombreUser  String: nombre del usuario 
+ * @param pass String: contraseña del usuario
+ * @param email String: email del usuario
+ * @param nombreReal  String: nombre real del usaurio
+ * @param apellidoReal String: apellido real del usuario
+ * @param isGestor boolean: true si el usuario tendrá permisos de administrador, false si no 
+ */
+public Usuario (String nombreUser, String pass, String email, String nombreReal, String apellidoReal, Date fechaAlta, Date fechaMod, Date fechaBaja, boolean isGestor){
+  this.usuario=nombreUser;
+  this.pwd=pass;
+  this.email=email;
+  this.nombre=nombreReal;
+  this.apellidos=apellidoReal;
+  this.fecha_alta=fechaAlta;
+  this.fecha_modificacion=fechaMod;
+  this.fecha_baja = fechaBaja;
+  this.fecha_alta= this.fecha_modificacion = new Date();  
+  this.isGestor=isGestor;
+}
+
+
 /******************
  * GETTERS
  ******************
@@ -217,11 +241,30 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
   @Override
   public String toString(){
     StringBuilder builder =new StringBuilder();
-    builder.append("usuario: "+this.usuario);
-    builder.append("\npassword: "+this.pwd);
-    builder.append("\nnombre real: "+this.nombre);
-    builder.append("\napellido real: "+this.apellidos);
-    builder.append("\nemail: "+this.email);
+    if (this.usuario!=null){
+      builder.append("usuario: "+this.usuario);
+    }
+    if (this.pwd!=null){
+      builder.append("\npassword: "+this.pwd);
+    }
+    if(this.nombre!=null){
+      builder.append("\nnombre real: "+this.nombre);
+    }
+    if (this.apellidos!=null){
+      builder.append("\napellido real: "+this.apellidos); 
+    }
+    if (this.email!=null){
+      builder.append("\nemail: "+this.email);
+    }        
+    if (this.fecha_alta!=null){
+      builder.append("\nalta: "+this.fecha_alta);
+    }
+    if (this.fecha_modificacion!=null){
+      builder.append("\nalta: "+this.fecha_modificacion);
+    }
+    if (this.fecha_baja!=null){
+      builder.append("\nalta: "+this.fecha_baja);
+    }
     
     return builder.toString();
   }

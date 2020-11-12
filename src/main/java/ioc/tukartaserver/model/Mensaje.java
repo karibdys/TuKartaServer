@@ -20,6 +20,9 @@ public static final String FUNCION_DATOS_OTRO_USER = "get_data_other_user";
 public static final String FUNCION_ADD_EMP = "add_empl";
 public static final String FUNCION_ADD_GESTOR = "add_gestor";
 public static final String FUNCION_BAJA_USER = "baja_user";
+public static final String FUNCION_UPDATE_EMP ="update_user_empleado";
+public static final String FUNCION_UPDATE_GESTOR ="update_user_gestor";
+public static final String FUNCION_UPDATE_OTHER_USER ="update_other_user";
 
 public static final String ATT_PETICION = "peticion";
 public static final String ATT_TOKEN = "token";

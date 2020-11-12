@@ -26,7 +26,7 @@ public static final String CODIGO_ERROR_USER_BAJA = "45";
 public static final String CODIGO_ERR = "50";
 //error en la base de datos
 public static final String CODIGO_ERR_BD ="60";
-public static final String CODIGO_ERR_USER ="61";
+public static final String CODIGO_ERR_PK_NOT_FOUND ="61";
 public static final String CODIGO_ERR_PWD ="62";
 public static final String CODIGO_ERROR_DATA_REP ="63";
 //fin de conexión
@@ -71,7 +71,7 @@ public static void initMap () {
   codigos.put(CODIGO_ERR,  "Error al procesar la petición");
   //error en la base de datos
   codigos.put(CODIGO_ERR_BD, "Error al acceder a la base de datos.");
-  codigos.put(CODIGO_ERR_USER, "Usuario no encontrado");
+  codigos.put(CODIGO_ERR_PK_NOT_FOUND, "El dato indicado no se ha encontrado en la base de datos (no existe la Primary Key)");
   codigos.put(CODIGO_ERR_PWD, "Contraseña Incorrecta");
   codigos.put(CODIGO_ERROR_DATA_REP, "El dato contiene una ID que ya existe en la base de datos.");
   //fin de conexión

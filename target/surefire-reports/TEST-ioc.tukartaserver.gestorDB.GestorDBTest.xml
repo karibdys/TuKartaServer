@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="17" failures="2" name="ioc.tukartaserver.gestorDB.GestorDBTest" time="0.167" errors="1" skipped="0">
+<testsuite tests="19" failures="0" name="ioc.tukartaserver.gestorDB.GestorDBTest" time="0.167" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="java.vm.version" value="11.0.2+9-LTS"/>
@@ -65,155 +65,23 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_gestorOK" time="0.121"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoAdmin" time="0.003"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_EmpleadoOK" time="0"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_gestorOK" time="0.122"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoAdmin" time="0.002"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_EmpleadoEmailNull" time="0"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoAdmin" time="0.002"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_usuarioNoExiste" time="0.008">
-    <failure message="expected:&lt;[61]&gt; but was:&lt;[42]&gt;" type="org.junit.ComparisonFailure">org.junit.ComparisonFailure: expected:&lt;[61]&gt; but was:&lt;[42]&gt;
-	at org.junit.Assert.assertEquals(Assert.java:117)
-	at org.junit.Assert.assertEquals(Assert.java:146)
-	at ioc.tukartaserver.gestorDB.GestorDBTest.selectDataUser_usuarioNoExiste(GestorDBTest.java:347)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
-	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
-	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
-	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
-	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
-</failure>
-    <system-out>GESTOR BD:  sentencia --&gt; SELECT * FROM usuario WHERE email = &apos;pepe@tukarta.com&apos;
-GESTOR BD:  usuario no encontrado
-</system-out>
-  </testcase>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="constructorSentenciaLoginAdmin" time="0.007"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_GestorOK" time="0.002"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_usuarioNoExiste" time="0.002"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="constructorSentenciaLoginAdmin" time="0.01"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoNoEnBD" time="0.002"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_GestorOK" time="0.001"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="datosNullLogin" time="0"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoPassOkAdmin" time="0.002"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_EmpleadoOK" time="0.003">
-    <error type="java.lang.NullPointerException">java.lang.NullPointerException
-	at ioc.tukartaserver.model.Empleado.toString(Empleado.java:219)
-	at ioc.tukartaserver.gestorDB.GestorDBTest.construirUserFromResult_EmpleadoOK(GestorDBTest.java:317)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
-	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
-	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
-	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
-	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
-</error>
-  </testcase>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_EmpleadoOK" time="0.009"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoPassOkNoAdmin" time="0.003"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_empleadoOK" time="0.007"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassAdmin" time="0.003"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassNoAdmin" time="0.002"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassAdmin" time="0.002"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassNoAdmin" time="0.003"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="constructorSentenciaLoginNoAdmin" time="0"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoNoAdmin" time="0.004">
-    <failure message="expected:&lt;6[1]&gt; but was:&lt;6[2]&gt;" type="org.junit.ComparisonFailure">org.junit.ComparisonFailure: expected:&lt;6[1]&gt; but was:&lt;6[2]&gt;
-	at org.junit.Assert.assertEquals(Assert.java:117)
-	at org.junit.Assert.assertEquals(Assert.java:146)
-	at ioc.tukartaserver.gestorDB.GestorDBTest.login_usuarioNoEncontradoNoAdmin(GestorDBTest.java:124)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
-	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
-	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
-	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
-	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
-	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
-</failure>
-    <system-out>GESTOR BD:  SENTENCIA
-  --&gt; select * from usuario where email=&apos;luis@tukarta.com&apos;
-GESTOR BD: Usuario encontrado
-GESTOR BD: Contraseña incorrecta
-GESTOR BD: conexión finalizada
-</system-out>
-  </testcase>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoCorrecto" time="0.005"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoNoAdmin" time="0.002"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoNull" time="0"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="datosNullLoginAdmin" time="0"/>
 </testsuite>

@@ -1,18 +1,23 @@
 package ioc.tukartaserver.model;
 
-import com.google.gson.Gson;
+import ioc.tukartaserver.gestorDB.GestorDB;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- *
+ *  Clase con métodos variados y útiles para la gestión del servidor
  * @author Manu Mora
  */
 public class Utiles {
 
 public static SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 
+/**
+ * Convierte un objeto Date en un formato legible y simple: dd/mm/aaaa
+ * @param fecha Date con una fecha
+ * @return String con la fecha en formato dd/MM/AAAA
+ */
 public static Date ParseDate(String fecha){
   Date date = null;
   try {
@@ -62,7 +67,7 @@ public static String ParseDate(Date fecha){
  }
  
 /**
-  * Construyen un mensaje genérico de error de usuario no encontrado: CÓDIGO 42
+  * Construyen un mensaje genérico de error de usuario no indicado: CÓDIGO 42
   * @param peticion String nombre de la petición a responder
   * @return MensajeRespuesta con el código 42 y la petición a respondida
   */ 
@@ -106,6 +111,15 @@ public static String ParseDate(Date fecha){
  public static MensajeRespuesta mensajeErrorDB(String peticion){
    return new MensajeRespuesta(new Codes(Codes.CODIGO_ERR_BD), peticion);  
  }
+ 
+  /**
+  * Construyen un mensaje genérico de error producido porque el dato no está en la base de datos: CÓDIGO 61
+  * @param peticion String nombre de la petición a responder
+  * @return MensajeRespuesta con el código 60 y la petición a respondida
+  */
+ public static MensajeRespuesta mensajeErrorPKNotFound(String peticion){
+   return new MensajeRespuesta(new Codes(Codes.CODIGO_ERR_PK_NOT_FOUND), peticion);  
+ }
   
  /**
   * Construyen un mensaje genérico de error producido en la Base de Datos al no coincidir la contraseña con el usuari introducido CÓDIGO 62
@@ -136,106 +150,123 @@ public static String ParseDate(Date fecha){
  /***********************
   * CONVERSORES A SQL
   ********************/
-
-  public static String sentenciaEmpleadoToInsertSQL (Empleado user){
+   
+  /**
+   * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Usuario o Empleado en función de los atributos que tiene definidos. 
+   * @param user Usuario o Empleado con los campos necesarios para construir un registro válido en la BBDD, es decir, con nombre de usuario, password, email, fecha de alta, fecha de modificación y el indicativo de si es gestor.
+   * @return String con la sentencia INSERT SQL completa
+   */
+  public static String sentenciaUsuarioToInsertSQL (Object user){
     StringBuilder builder = new StringBuilder();
-    builder.append("INSERT INTO usuario (");
+    builder.append("INSERT INTO "+GestorDB.TABLA_USERS+" (");
     //primero ponemos los campos obligatorios
     builder.append("\"usuario\", \"pwd\", \"email\", \"fecha_alta\", \"fecha_modificacion\"");
     //ahora comprobamos que los campos tienen datos para introducirlos
-    if (user.getNombre()!=null){
+    if (((Usuario)user).getNombre()!=null){
       builder.append(", \"nombre\"");   
     }
-    if (user.getApellidos()!=null){
+    if (((Usuario)user).getApellidos()!=null){
       builder.append(", \"apellidos\"");   
     }    
-    if (user.getFecha_baja()!=null){
+    if (((Usuario)user).getFecha_baja()!=null){
       builder.append(", \"fecha_baja\"");      
     }
-    if (user.getGestor() !=null){         
-      builder.append(", \"gestor\"");
-    }
-    if (user.getTrabajadorDe()!=null){
-      builder.append(", \"trabajadorde\"");
-    }
-    builder.append(",\"salario\"");
-    if (user.getRol()!=null){
-      builder.append(", \"rol\"");      
-    }
+    if (user instanceof Empleado){
+      if (((Empleado)user).getGestor() !=null){         
+        builder.append(", \"gestor\"");
+      }
+      if (((Empleado)user).getTrabajadorDe()!=null){
+        builder.append(", \"trabajadorde\"");
+      }
+      builder.append(",\"salario\"");
+      if (((Empleado)user).getRol()!=null){
+        builder.append(", \"rol\"");      
+      }
+    }    
     
     builder.append(") VALUES (");
     //hasta aquí construimos la primera parte de la sentencia.    
     //ahora toca meter los datos
-    builder.append("'"+ user.getUsuario()+"'");
-    builder.append(", '"+ user.getPwd()+"'");
-    builder.append(", '"+ user.getEmail()+"'");
-    builder.append(", '"+ convertDateJavaToSQL(user.getFecha_alta())+"'");
-    builder.append(", '"+ convertDateJavaToSQL(user.getFecha_modificacion())+"'");
+    builder.append("'"+ ((Usuario)user).getUsuario()+"'");
+    builder.append(", '"+ ((Usuario)user).getPwd()+"'");
+    builder.append(", '"+ ((Usuario)user).getEmail()+"'");
+    builder.append(", '"+ convertDateJavaToSQL(((Usuario)user).getFecha_alta())+"'");
+    builder.append(", '"+ convertDateJavaToSQL(((Usuario)user).getFecha_modificacion())+"'");
     //pasamos a comprobar los campos aleatorios:
-    if(user.getNombre()!=null){
-      builder.append(", '"+ user.getNombre()+"'");
+    if(((Usuario)user).getNombre()!=null){
+      builder.append(", '"+ ((Usuario)user).getNombre()+"'");
     }
-    if (user.getApellidos()!=null){
-      builder.append(", '"+ user.getApellidos()+"'");
+    if (((Usuario)user).getApellidos()!=null){
+      builder.append(", '"+ ((Usuario)user).getApellidos()+"'");
     }    
-    if (user.getFecha_baja()!=null){
-      builder.append(", '"+ convertDateJavaToSQL(user.getFecha_baja())+"'");
+    if (((Usuario)user).getFecha_baja()!=null){
+      builder.append(", '"+ convertDateJavaToSQL(((Usuario)user).getFecha_baja())+"'");
     }  
-    if (user.getGestor() !=null){         
-      builder.append(", '"+ user.getGestor().getEmail()+"'");
-    }
-    if (user.getTrabajadorDe()!=null){
-      builder.append(", '"+ user.getTrabajadorDe().getId()+"'");
-    }
-    //salario
-    builder.append(", "+ user.getSalario()+"");
-    if (user.getRol()!=null){
-      builder.append(",'"+ user.getRol().getNombreRol()+"'");
+    if (user instanceof Empleado){
+      if (((Empleado)user).getGestor() !=null){         
+      builder.append(", '"+ ((Empleado)user).getGestor().getEmail()+"'");
+      }
+      if (((Empleado)user).getTrabajadorDe()!=null){
+        builder.append(", '"+ ((Empleado)user).getTrabajadorDe().getId()+"'");
+      }
+      //salario
+      builder.append(", "+ ((Empleado)user).getSalario()+"");
+      if (((Empleado)user).getRol()!=null){
+        builder.append(",'"+ ((Empleado)user).getRol().getNombreRol()+"'");
+      }    
     }    
         
     builder.append(")");
     System.out.println("GESTOR BASE DATOS: sentencia\n--> "+builder.toString());
     return builder.toString();
-  }
-  
-  public static String sentenciaUsuarioToInsertSQL (Usuario user){
+  }   
+ 
+  /**
+   * Crea una sentencia SQL con el comando UPDATE para poder actualizar un objeto de tipo Usuario o Empleado en función de los atributos que tiene definidos. Aquellos datos que sean nulos no serán incorporados en la sentencia.
+   * @param user Usuario o Empleado con los campos que se modificarán. Como mínimo necesita la PRIMARY KEY, que es el email, y otro dato a actualizar.
+   * @return String con la sentencia UPDATE SQL completa
+   */
+  public static String sentenciaUsuarioToUpdateSQL (Usuario user){
     StringBuilder builder = new StringBuilder();
-    builder.append("INSERT INTO usuario (");
-    //primero ponemos los campos obligatorios
-    builder.append("\"usuario\", \"pwd\", \"email\", \"fecha_alta\", \"fecha_modificacion\", \"isgestor\"");
-    //ahora comprobamos que los campos tienen datos para introducirlos
+    builder.append("UPDATE "+GestorDB.TABLA_USERS+" SET ");
+    //como en teoría el mail no cambia, lo ponemos primero para poder establecer luego las "comas"
+    builder.append("\"email\" = '"+user.getEmail()+"'");
+    if (user.getUsuario()!=null){
+      builder.append(", \"usuario\" = '"+user.getUsuario()+"'");
+    }
+    if (user.getPwd()!=null){
+      builder.append(", \"pwd\" = '"+user.getPwd()+"'");
+    }
     if (user.getNombre()!=null){
-      builder.append(", \"nombre\"");   
+      builder.append(", \"nombre\" = '"+user.getNombre()+"'");
     }
     if (user.getApellidos()!=null){
-      builder.append(", \"apellidos\"");   
-    }    
-    if (user.getFecha_baja()!=null){
-      builder.append(", \"fecha_baja\"");      
-    }      
-    builder.append(") VALUES (");
-    //hasta aquí construimos la primera parte de la sentencia.    
-    //ahora toca meter los datos
-    builder.append("'"+ user.getUsuario()+"'");
-    builder.append(", '"+ user.getPwd()+"'");
-    builder.append(", '"+ user.getEmail()+"'");
-    builder.append(", '"+ convertDateJavaToSQL(user.getFecha_alta())+"'");
-    builder.append(", '"+ convertDateJavaToSQL(user.getFecha_modificacion())+"'");
-    builder.append(", '"+user.getIsGestor()+"'");
-    //pasamos a comprobar los campos aleatorios:
-    if(user.getNombre()!=null){
-      builder.append(", '"+ user.getNombre()+"'");
+      builder.append(", \"apellidos\" = '"+user.getApellidos()+"'");
     }
-    if (user.getApellidos()!=null){
-      builder.append(", '"+ user.getApellidos()+"'");
-    }    
-    if (user.getFecha_baja()!=null){
-      builder.append(", '"+ convertDateJavaToSQL(user.getFecha_baja())+"'");
-    }     
-    builder.append(")");
-    System.out.println("GESTOR BASE DATOS: sentencia\n--> "+builder.toString());
+    //la fecha de modificación se pone OBLIGATORIAMENTE
+    builder.append(", \"fecha_modificacion\" = '"+Utiles.ParseDate(new Date())+"'");
+    
+    //hasta aquí el usuario, ahora toca ver si es o no empleado
+    if (user instanceof Empleado){    
+      if (((Empleado)user).getGestor()!=null){
+        builder.append(", \"gestor\" = '"+((Empleado)user).getGestor().getEmail()+"'");
+      }
+      if (((Empleado)user).getTrabajadorDe()!=null){
+        builder.append(", \"trabajadorde\" = '"+((Empleado)user).getTrabajadorDe().getId()+"'");
+      }    
+      if (((Empleado)user).getSalario()!=0){
+        builder.append(", \"salario\" = '"+((Empleado)user).getSalario()+"'");
+      }
+      if(((Empleado)user).getRol()!=null){
+        builder.append(", \"rol\" = '"+((Empleado)user).getRol().getNombreRol()+"'");
+      }
+    }          
+    
+    builder.append(" WHERE email = '"+user.getEmail()+"'");
     return builder.toString();
   }
+
+  
  
   
   /**

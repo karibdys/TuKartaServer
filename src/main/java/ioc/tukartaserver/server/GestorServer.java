@@ -3,17 +3,15 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
-import ioc.tukartaserver.model.Utiles;
 import ioc.tukartaserver.security.GestorSesion;
 import java.io.BufferedReader;
 import java.io.PrintStream;
 import java.sql.SQLException;
-import java.util.Date;
-
 
 /**
  * Clase que gestiona la recepción de los mensajes de petición del cliente y prepara su devolución. 
@@ -216,6 +214,19 @@ public MensajeRespuesta procesarMensajeBajaUser(TokenSesion token, String email)
   }else{
     //si el código es un código 10, podemos seguir adelante.    
     respuesta = gestorDB.bajaUser(email);
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeUpdateEmp(TokenSesion token, Empleado empleado){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es un código 10, podemos seguir adelante.    
+    respuesta = gestorDB.updateData(empleado, Mensaje.FUNCION_UPDATE_EMP);
   }
   return respuesta;
 }

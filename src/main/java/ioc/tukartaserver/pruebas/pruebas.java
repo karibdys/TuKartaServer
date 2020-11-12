@@ -9,6 +9,10 @@ import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 
 /**
@@ -17,15 +21,18 @@ import ioc.tukartaserver.model.Utiles;
  */
 public class pruebas {
 private static final String CLASE = "org.postgresql.Driver";
-private static final String LOCAL_URL = "jdbc:postgresql://localhost:5432/TuKarta";    
-private static final String USER = "tukarta";
-private static final String PASS = "TuKartaP4$$"; 
+private final String LOCAL_URL = "jdbc:postgresql://localhost:5432/TuKarta";    
+private final String USER = "tukarta";
+private final String PASS = "TuKartaP4$$"; 
 
-public static void main (String... args) throws ClassNotFoundException{    
-  Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);   
-  Empleado emp = new Empleado ("Pepe", "pepePass", "pepe@tukarta.com", null, null, user, Rol.CAMARERO);
-  String sentencia = Utiles.sentenciaEmpleadoToInsertSQL(emp);
-  System.out.println(sentencia);
+
+public static void main (String... args) throws ClassNotFoundException, SQLException{    
+    Usuario usuarioCorrecto = new Usuario ("karibdys", "manuPass", "manu@tukarta.com", "manu", "mora", false);
+    Empleado emp = new Empleado(usuarioCorrecto);
+    emp.setSalario(9000);
+    String sentencia = Utiles.sentenciaUsuarioToUpdateSQL(emp);
+    System.out.println(sentencia);
+
     
 }
   

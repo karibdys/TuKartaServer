@@ -1,5 +1,6 @@
 package ioc.tukartaserver.model;
 
+import java.util.Date;
 import java.util.HashSet;
 
 /**
@@ -59,6 +60,10 @@ public Empleado (Usuario user){
 }
 
 public Empleado() {
+}
+
+public Empleado (String nombreUser, String pass, String email, String nombreReal, String apellidoReal, Date fechaAlta, Date fechaMod, Date fechaBaja, boolean isGestor){
+  super (nombreUser, pass, email, nombreReal, apellidoReal, fechaAlta, fechaMod, fechaBaja, isGestor);  
 }
 
 /******************
@@ -216,8 +221,12 @@ public void updatePedido(Pedido pedInicial, Pedido pedFinal){
 public String toString(){
   StringBuilder builder = new StringBuilder();
   builder.append(super.toString());
-  builder.append("\ngestor contratante: "+this.gestor.getNombre());
-  builder.append("\nrol: "+this.rol);
+  if (this.gestor!=null){
+    builder.append("\ngestor contratante: "+this.gestor.getNombre());
+  }
+  if (this.rol!=null){
+    builder.append("\nrol: "+this.rol);
+  }  
   if (salario!=0){
     builder.append("\nsalario: "+salario+"€");
   }
