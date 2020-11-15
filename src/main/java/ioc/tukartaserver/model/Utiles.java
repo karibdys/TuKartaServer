@@ -1,6 +1,8 @@
 package ioc.tukartaserver.model;
 
 import ioc.tukartaserver.gestorDB.GestorDB;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -266,6 +268,63 @@ public static String ParseDate(Date fecha){
     return builder.toString();
   }
 
+  
+  /**
+  * Crea un usuario a partir de un ResultSet. Puede ser un usuario completo (con todos los datos) o simple (sin los datos menos importantes. Nunca llevará la contraseña.
+  * @param result ResultSet que contiene el dato del Usuario
+  * @param isGestor boolean que indica si el usuario es de tipo gestor o empleado
+  * @param basic boolean que indica si queremos todos los datos del usuario o solo los básicos
+  * @return Usuario que puede ser Empleado o Gestor
+  * @throws SQLException Al acceder a la base de datos
+  */
+ public static Empleado createEmpleadoFromResultSet(ResultSet result, boolean basic) throws SQLException{
+   Empleado user = new Empleado();   
+   if (user ==null){
+     //si el usuario es nulo, devolvemos un nulo
+     return user = null;
+   }else{
+     //si no es nulo, empezamos a crear el usuario a partir de los datos del ResultSet:
+     user.setUsuario(result.getString("usuario"));
+     user.setEmail(result.getString("email"));
+     user.setNombre(result.getString("nombre"));
+     user.setApellidos(result.getString("apellidos"));  
+     //si nos piden los datos completos:
+     if (!basic){       
+       if (result.getDate("fecha_alta")!=null){
+         user.setFecha_alta(Utiles.convertDateSQLtoJava(result.getDate("fecha_alta")));
+       }
+       if (result.getDate("fecha_modificacion")!=null){
+         user.setFecha_modificacion(Utiles.convertDateSQLtoJava(result.getDate("fecha_modificacion")));
+       }     
+       if (result.getDate("fecha_baja")!=null){
+         user.setFecha_baja(Utiles.convertDateSQLtoJava(result.getDate("fecha_baja")));
+       }
+     }
+     //Si el usuario es de tipo Empleado, entonces crearemos el empleado
+     if (result.getString("trabajadorde")!=null){
+       //creamos el restaurante
+       String idRest = result.getString("id");
+       String  nombreRest = result.getString(15);
+       Restaurante rest = new Restaurante (idRest, nombreRest);
+       ((Empleado)user).setRestaurante(rest);
+     }
+     ((Empleado)user).setSalario(result.getFloat("salario"));                  
+     
+     if (result.getString("rol")!=null){
+       String rol = result.getString("rol");
+       switch (rol){
+         case ("camarero"):
+           ((Empleado)user).setRol(Rol.CAMARERO);
+           break;                 
+         case ("cocinero"):
+             ((Empleado)user).setRol(Rol.COCINERO);
+         default:           
+           break;                    
+       }    
+     }      
+     return user;
+   }
+ }
   
   /**
  * Método para construir fechas conrrectas para insertar en la base de datos. 

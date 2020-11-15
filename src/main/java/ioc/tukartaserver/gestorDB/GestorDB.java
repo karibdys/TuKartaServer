@@ -4,6 +4,7 @@ package ioc.tukartaserver.gestorDB;
  * Clase que se encarga de gestionar la base de datos
  * @author Manu Mora
  */
+import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -39,8 +40,8 @@ public static final String TABLA_PROD = "producto";
 //sentencias
 public static final String SELECT_USER = "SELECT * FROM usuario WHERE email = ?";
 public static final String BAJA_USER = "UPDATE usuario SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
-public static final String LIST_USERS_FROM_GESTOR = "SELECT email, usuario, nombre, apellidos, trabajadorde, salario, rol FROM usuario WHERE gestor = ?";
-public static final String LIST_USERS_FROM_REST = "SELECT email, usuario, nombre, apellidos, salario, rol FROM usuario WHERE trabajadorde = ?";
+public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.gestor = ?";
+public static final String LIST_USERS_FROM_REST = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.trabajadorde = ?";
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -330,18 +331,30 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
   MensajeRespuesta ret = null;
   ArrayList<Empleado> listado = new ArrayList<>();
   try {
+    openConnection();
     PreparedStatement stm =null;
+    //preparamos la sentencia SQL:
     if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR)){
       stm = con.prepareStatement(LIST_USERS_FROM_GESTOR);
     }else if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_REST)){
       stm = con.prepareStatement(LIST_USERS_FROM_REST);
     }    
+    //añadimos los parámetros
     stm.setString(1, id);
     System.out.println(BD+" sentencia --> "+stm);
+    //ejecutamos la sentencia
     ResultSet resultSet = stm.executeQuery();
-  
+    //por cada resultado que haya en la lista creamos un usuario (básico) nuevo y lo añadimos al listdo
+    while (resultSet.next()){
+      Usuario user = Utiles.createEmpleadoFromResultSet(resultSet, true);     
+      listado.add((Empleado)user);
+    }    
+    Gson gson = new Gson();
+    String arrayJSON = gson.toJson(listado);
+    ret = Utiles.mensajeOK(peticion);
+    ret.setData(arrayJSON);   
   } catch (SQLException ex) {
-    //TODO
+    ret = Utiles.mensajeErrorDB(peticion);
   }
   return ret;
 }

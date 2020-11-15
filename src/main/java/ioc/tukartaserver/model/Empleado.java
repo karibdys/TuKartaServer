@@ -224,6 +224,9 @@ public String toString(){
   if (this.gestor!=null){
     builder.append("\ngestor contratante: "+this.gestor.getNombre());
   }
+  if (this.trabajadorDe!=null){
+    builder.append("\nRestaurante: "+this.trabajadorDe.getId()+" --> "+this.trabajadorDe.getNombre());
+  }
   if (this.rol!=null){
     builder.append("\nrol: "+this.rol);
   }  

@@ -225,7 +225,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         token = gson.fromJson(tokenString, TokenSesion.class);
         //sacamos los datos a cambiar
         Empleado emp = gson.fromJson(dataString, Empleado.class);
-        respuesta = gestorServer.procesarMensjaeUpdateUser(token, emp);        
+        respuesta = gestorServer.procesarMensajeUpdateUser(token, emp);        
         break;
       case Mensaje.FUNCION_UPDATE_GESTOR:
         System.out.println(CONCLI+"procesando petición de actualizar datos de un gestor");
@@ -233,7 +233,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         token = gson.fromJson(tokenString, TokenSesion.class);
         //sacamos los datos a cambiar
         Usuario user = gson.fromJson(dataString, Usuario.class);
-        respuesta = gestorServer.procesarMensjaeUpdateUser(token, user);        
+        respuesta = gestorServer.procesarMensajeUpdateUser(token, user);        
         break;
       case Mensaje.FUNCION_LIST_USERS_FROM_GESTOR:
         System.out.println(CONCLI+"procesando petición de listar empleados asociados a un gestor");

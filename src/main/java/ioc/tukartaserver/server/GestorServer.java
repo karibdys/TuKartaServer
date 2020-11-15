@@ -3,7 +3,6 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
-import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.TokenSesion;
@@ -240,7 +239,7 @@ public MensajeRespuesta procesarMensajeBajaUser(TokenSesion token, String email)
  * @param usuario OBjeto de tipo Usuario o Empleado con la información a cambiar en la base de datos
  * @return MensajeRespuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No lleva datos extras
  */
-public MensajeRespuesta procesarMensjaeUpdateUser(TokenSesion token, Object usuario){
+public MensajeRespuesta procesarMensajeUpdateUser(TokenSesion token, Object usuario){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token

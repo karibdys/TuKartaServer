@@ -5,6 +5,8 @@
  */
 package ioc.tukartaserver.pruebas;
 
+import com.google.gson.Gson;
+import ioc.tukartaserver.gestorDB.GestorDB;
 import static ioc.tukartaserver.gestorDB.GestorDB.LIST_USERS_FROM_GESTOR;
 import static ioc.tukartaserver.gestorDB.GestorDB.LIST_USERS_FROM_REST;
 import ioc.tukartaserver.model.Empleado;
@@ -42,16 +44,25 @@ public static void main (String... args) throws ClassNotFoundException, SQLExcep
   Connection con = DriverManager.getConnection(LOCAL_URL,USER,PASS); 
   MensajeRespuesta ret = null;
   ArrayList<Empleado> listado = new ArrayList<>();
-  String id = "res1TuKarta";
+  String id = "marc@tukarta.com";
   try {
     PreparedStatement stm =null;
-    stm = con.prepareStatement(LIST_USERS_FROM_REST);
+    stm = con.prepareStatement(LIST_USERS_FROM_GESTOR);
     stm.setString(1, id);
     System.out.println(" sentencia --> "+stm);
     ResultSet res = stm.executeQuery();
     while (res.next()){
-      System.out.println(res.getString("email"));
+      Usuario user = Utiles.createEmpleadoFromResultSet(res, false);
+      System.out.println(user.getEmail());
+      listado.add((Empleado)user);
+      System.out.println("\n"+user+"\n");
     }
+    System.out.println("Total usuarios: "+listado.size());
+    Gson gson = new Gson();
+    String arrayJSON = gson.toJson(listado);
+    ret = Utiles.mensajeOK("listusers");
+    ret.setData(arrayJSON);
+    System.out.println("*****************\n"+ret);
   
   } catch (SQLException ex) {
     System.err.println(ex.getMessage());

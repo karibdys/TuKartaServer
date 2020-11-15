@@ -69,13 +69,13 @@ public void startClient() {
       empMod.setSalario(1700);
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       /*******************PRUEBA DE LOGIN************************/          
- 
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de login"); 
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN_ADMIN, userJson, (String) null);
-     
+      */
       
       /*******************PRUEBA DE LOGOFF************************/
       /*
@@ -125,6 +125,7 @@ public void startClient() {
       userGestor.setEmail("gestor@tukarta.com");
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_BAJA_USER, userGestor, token);
       */
+      
       /*******************PRUEBA DE UPDATE USER************************/
       /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de update_emp");   
@@ -133,6 +134,13 @@ public void startClient() {
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_EMP, empMod, token);
       */
       
+      /*******************PRUEBA DE UPDATE USER************************/
+  
+      System.out.println(CLIENTE+"Procediendo a hacer petición de list_data_users");   
+      TokenSesion token = new TokenSesion(user);
+      token.setToken("BEfJTDmyMI");        
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
+    
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         
       //convertimos el mensajeRes en JSON     
