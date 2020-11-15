@@ -187,7 +187,7 @@ public String toString(){
   builder.append("------\nMENSAJE:");
   builder.append("\nCódigo: "+code.getCode()+"\nMensaje: "+code.getMessage());
   builder.append("\nPetición respondida: "+peticion);
-  builder.append("\nDatos extras: "+data);
+  builder.append("\nDatos: "+data);
   if(dataUser!=null){
     builder.append("\nUsuario: "+dataUser);
   }    

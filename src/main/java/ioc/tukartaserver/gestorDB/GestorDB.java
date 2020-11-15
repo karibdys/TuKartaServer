@@ -18,8 +18,10 @@ import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GestorDB {
 
@@ -37,6 +39,8 @@ public static final String TABLA_PROD = "producto";
 //sentencias
 public static final String SELECT_USER = "SELECT * FROM usuario WHERE email = ?";
 public static final String BAJA_USER = "UPDATE usuario SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
+public static final String LIST_USERS_FROM_GESTOR = "SELECT email, usuario, nombre, apellidos, trabajadorde, salario, rol FROM usuario WHERE gestor = ?";
+public static final String LIST_USERS_FROM_REST = "SELECT email, usuario, nombre, apellidos, salario, rol FROM usuario WHERE trabajadorde = ?";
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -51,11 +55,7 @@ private static final String BD ="GESTOR BD: ";
  * @throws SQLException en caso de no acceder a la conexión por datos incorrectos
  * @throws ClassNotFoundException si no se ha encontrado la clase que gestiona el driver
  */
-public GestorDB() throws SQLException, ClassNotFoundException {
-    Class.forName(CLASE);    
-    con = DriverManager.getConnection(LOCAL_URL,USER,PASS);     
-    System.out.println(BD+"Conexión establecida");  
-}
+public GestorDB() throws SQLException, ClassNotFoundException {}
 
 /**
  * Devuelve el objeto Connection de este gestor
@@ -102,7 +102,8 @@ public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
     System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
     
     //hacemos la petición a la base de datos
-    try {              
+    try {             
+      openConnection();
       Statement statement = con.createStatement();    
       ResultSet result = statement.executeQuery(sentencia);
       if (result.next()) {
@@ -125,19 +126,18 @@ public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
         System.out.println(BD+"El resultset es nulo");
         codigoRet = new Codes(Codes.CODIGO_ERR_PK_NOT_FOUND);
       }
-
       //preparamos el mensaje con los datos
-      mensajeRes= new MensajeRespuesta (codigoRet, null, null, userRes);    
+      mensajeRes= new MensajeRespuesta (codigoRet, null, null, userRes);          
       if (isGestor){
         mensajeRes.setPeticion(Mensaje.FUNCION_LOGIN_ADMIN);
       }else{
-        mensajeRes.setPeticion(Mensaje.FUNCION_LOGIN);
-        
+        mensajeRes.setPeticion(Mensaje.FUNCION_LOGIN);        
       }
       result.close();
       statement.close();
       System.out.println (BD+"conexión finalizada");
       statement.close();
+      closeConnection();
     } catch (Exception ex) {
       codigoRet = new Codes(Codes.CODIGO_ERR);
       System.out.println(BD+ex.getMessage());
@@ -160,6 +160,7 @@ public MensajeRespuesta selectDataUser(String email){
   }else{
     //si son todos correctos, entonces empezamos el proceso
     try{
+      openConnection();
       PreparedStatement stm = con.prepareStatement(SELECT_USER);
       stm.setString(1, email);
       System.out.println(BD+" sentencia --> "+stm);
@@ -180,7 +181,8 @@ public MensajeRespuesta selectDataUser(String email){
       }else{
         System.out.println(BD+" usuario no encontrado");
         ret = Utiles.mensajeErrorPKNotFound(peticion);
-      }      
+      } 
+      closeConnection();
     }catch(SQLException ex){
       ret = Utiles.mensajeErrorDB(peticion);
     }   
@@ -206,6 +208,7 @@ public MensajeRespuesta addData(Object dato, String peticion){
   //si la sentencia creada no está vacía, procedemos a hacer la petición
   if(!sentencia.equals("")){
     try {
+      openConnection();
       //si el dato es de tipo usuario, habrá que hacer un insert a la tabla Usuario
       Statement statement = con.createStatement();
       if(statement.executeUpdate(sentencia)==1){
@@ -218,6 +221,7 @@ public MensajeRespuesta addData(Object dato, String peticion){
         System.out.println(BD+" dato no insertado correctamente");
       };
       statement.close();
+      closeConnection();
     } catch (SQLException ex) {
       //si tenemos una excepción en la base de datos específica, intentamos sacarla
       String sqlstate = ex.getSQLState();
@@ -253,6 +257,7 @@ public MensajeRespuesta bajaUser(String email){
     java.sql.Date fecha_baja = Utiles.convertDateJavaToSQL(new Date());    
     PreparedStatement stm;
     try {
+      openConnection();
       stm = con.prepareStatement(BAJA_USER);
       stm.setDate(1, fecha_baja);
       stm.setString(2, email);
@@ -265,6 +270,7 @@ public MensajeRespuesta bajaUser(String email){
       }else{
         throw new SQLException();
       }
+      closeConnection();
     } catch (SQLException ex) {            
         ret = Utiles.mensajeErrorDB(peticion);
     }      
@@ -292,6 +298,7 @@ public MensajeRespuesta updateData(Object dato, String peticion){
   }  
   if(!sentencia.equals("")){
     try {
+      openConnection();
       //si el dato es de tipo usuario, habrá que hacer un insert a la tabla Usuario
       Statement statement = con.createStatement();
       if(statement.executeUpdate(sentencia)!=0){
@@ -304,19 +311,39 @@ public MensajeRespuesta updateData(Object dato, String peticion){
         System.out.println(BD+" dato no actualizado correctamente");
       };
       statement.close();
+      closeConnection();
     } catch (SQLException ex) {
       //si tenemos una excepción en la base de datos específica, intentamos sacarla
       ret = Utiles.mensajeErrorDB(peticion);
-      System.out.println(ex.getMessage());
-      
+      System.out.println(ex.getMessage());      
     }      
   }else {
     //si llegamos aquí es que no se ha formado bien la sentencia porque no es un tipo de dato soportado (aún)
     ret = Utiles.mensajeErrorFuncionNoSoportada(peticion);
+  }  
+  return ret;  
+}
+
+
+
+public MensajeRespuesta listUsersFrom(String id, String peticion){
+  MensajeRespuesta ret = null;
+  ArrayList<Empleado> listado = new ArrayList<>();
+  try {
+    PreparedStatement stm =null;
+    if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR)){
+      stm = con.prepareStatement(LIST_USERS_FROM_GESTOR);
+    }else if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_REST)){
+      stm = con.prepareStatement(LIST_USERS_FROM_REST);
+    }    
+    stm.setString(1, id);
+    System.out.println(BD+" sentencia --> "+stm);
+    ResultSet resultSet = stm.executeQuery();
+  
+  } catch (SQLException ex) {
+    //TODO
   }
-  
   return ret;
-  
 }
 
 /******************
@@ -393,10 +420,21 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
  }
  
  
+ public void openConnection(){
+  try {    
+    Class.forName(CLASE);
+    con = DriverManager.getConnection(LOCAL_URL,USER,PASS);      
+    System.out.println(BD+"conexión abierta");
+  } catch (Exception ex) {
+    Logger.getLogger(GestorDB.class.getName()).log(Level.SEVERE, null, ex);
+  }    
+ }
+ 
  public void closeConnection(){
    try{ 
      if(con!=null && !con.isClosed()){
        con.close();
+       System.out.println(BD+"conexión cerrada");
      }
    }catch (SQLException e){
     System.out.println(e.getMessage());

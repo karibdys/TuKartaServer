@@ -267,8 +267,6 @@ public static String ParseDate(Date fecha){
   }
 
   
- 
-  
   /**
  * Método para construir fechas conrrectas para insertar en la base de datos. 
  * @param uDate Date en formato Java

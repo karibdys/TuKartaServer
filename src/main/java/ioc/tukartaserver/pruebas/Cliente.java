@@ -69,21 +69,20 @@ public void startClient() {
       empMod.setSalario(1700);
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       /*******************PRUEBA DE LOGIN************************/          
-      /*
+ 
       System.out.println(CLIENTE+"Procediendo a hacer petición de login"); 
       //lo convertimos en JSON
       String userJson = gson.toJson(user);
       //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN_ADMIN, userJson, (String) null);
-      */
+     
       
       /*******************PRUEBA DE LOGOFF************************/
-      /*       
-      System.out.println(CLIENTE+"Procediendo a hacer petición de logout");      
-      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de logout");            
       String userJson = gson.toJson(user);
       TokenSesion token = new TokenSesion(user);
-      token.setToken("HBlbbNWEhR");
+      token.setToken("oiYqgNGodc");
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGOFF, userJson, token);
       */
      
@@ -91,10 +90,9 @@ public void startClient() {
       /*******************PRUEBA DE SELECT DATA USER************************/
       /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de select_data_user");      
-      Usuario user = new Usuario("Marc", "marcPass", "marc@tukarta.com", null, null, true);
       String userJson = gson.toJson(user);
       TokenSesion token = new TokenSesion(user);
-      token.setToken("VdUPBmIPNe");
+      token.setToken("tGpkzSvAEr");
        Usuario userRet = new Usuario();
       userRet.setEmail("manu@tukarta.com");
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DATOS_OTRO_USER, userRet, token);   
@@ -105,7 +103,7 @@ public void startClient() {
       /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
       TokenSesion token = new TokenSesion(user);
-      token.setToken("VbzpbetnGR");  
+      token.setToken("tGpkzSvAEr");  
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_EMP, pepe, token);
       */
       
@@ -128,12 +126,12 @@ public void startClient() {
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_BAJA_USER, userGestor, token);
       */
       /*******************PRUEBA DE UPDATE USER************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de update_emp");   
       TokenSesion token = new TokenSesion(user);
       token.setToken("hQffmzTHaf");        
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_EMP, empMod, token);
-      
+      */
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         

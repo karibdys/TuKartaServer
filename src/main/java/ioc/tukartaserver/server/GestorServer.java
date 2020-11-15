@@ -8,6 +8,7 @@ import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
+import ioc.tukartaserver.model.Utiles;
 import ioc.tukartaserver.security.GestorSesion;
 import java.io.BufferedReader;
 import java.io.PrintStream;
@@ -110,30 +111,39 @@ public void setOut(PrintStream out) {
  */
 public MensajeRespuesta processMensajeLogin(Usuario usuario, boolean isGestor){
   respuesta =null;
+  String pet = (isGestor)? Mensaje.FUNCION_LOGIN_ADMIN:Mensaje.FUNCION_LOGIN;
+  //comprobamos que hay datos en la petición:
   if (usuario==null||usuario.getEmail()==null || usuario.getPwd()==null){
-    //mandar mensaje malo
-    String pet = (isGestor)? Mensaje.FUNCION_LOGIN_ADMIN:Mensaje.FUNCION_LOGIN;
-    respuesta = new MensajeRespuesta (new Codes(Codes.CODIGO_DATOS_INCORRECTOS), pet);
+    //si alguno de los datos es nulo, entonces enviamos un mensaje de error    
+    respuesta = Utiles.mensajeErrorDatosIncorrectos(pet);    
   }else{   
-    System.out.println(SERVER+"Accediendo a la base de datos.");
+    //si no, continuamos con el login
+    //primero comprobamos que el usuario ha mandado los datos correctos y que está en la base de datis
     respuesta = gestorDB.loginMens(usuario.getEmail(), usuario.getPwd(), isGestor);
-    code = respuesta.getCode();
-    String codeString = code.getCode();    
+    String codeString = respuesta.getCode().getCode();    
     System.out.println(SERVER+"código recibido del gestor de la base de datos: "+codeString);
-    if(codeString==Codes.CODIGO_OK) {    
-      //si todo es OK generamos el token      
+    if(codeString.equals(Codes.CODIGO_OK)) {     
+      //si el código es un código "10", entonces generamos un token
       TokenSesion token = new TokenSesion(usuario);
-      //comprobamos que el token se registra y si es así, lo mandamos
-      if (gestorSesion.addSesion(token)){                    
-        respuesta.setData(token);        
+      //comprobamos que no hay sesión iniciada para este usuario
+      if(gestorSesion.isToken(usuario.getEmail())){
+        System.out.println(SERVER+"el usuario tenía sesión iniciada");
+        //si el usuario tiene una sesión, lo que haremos será cerrarla antes de añadirla
+        gestorSesion.removeSesion(usuario.getEmail());               
+        System.out.println(SERVER+"sesión de usuario antigua cerrada");
+      }
+      //añadimos la sesión al gestor
+      if (!gestorSesion.addSesion(token)){
+        //si no se añade la asesión, cambiamos el mensaje respuesta por uno de error:
+        System.out.println(SERVER+"no se ha podido añadir la sesión del usuario");
+        respuesta = Utiles.mensajeError(pet);
       }else{
-        System.out.println(SERVER+"sesión no añadida");
-        //TODO comprobar el error de usuario no introducido en la sesión
-        respuesta = new MensajeRespuesta(code, Mensaje.FUNCION_LOGIN);
-        System.out.println("GESTOR SESIÓN: ERROR EN LA SESIÓN DE USUARIO");
-      }            
+        //si todo ha ido bien añadimos al mensaje respuesta el token del usuario
+        System.out.println(SERVER+"sesión de usuario añadida");
+        respuesta.setData(token);     
+      }
     }else {
-      respuesta = new MensajeRespuesta(code, respuesta.getPeticion());
+      respuesta = Utiles.mensajeError(pet);
     }  
   }
   return respuesta;
@@ -205,6 +215,12 @@ public MensajeRespuesta procesarMensajeAddUser(TokenSesion token, Usuario user, 
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición para dar de baja a un usuario en la base de datos. No lo elimina, sino que cambia algunos de sus atributos.
+ * @param token TokenSesion con la información de la sesión del usuario. 
+ * @param email String email del usuario a dar de baja
+ * @return MensajeRespuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No lleva datos extras
+ */
 public MensajeRespuesta procesarMensajeBajaUser(TokenSesion token, String email){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -218,7 +234,13 @@ public MensajeRespuesta procesarMensajeBajaUser(TokenSesion token, String email)
   return respuesta;
 }
 
-public MensajeRespuesta procesarMensajeUpdateEmp(TokenSesion token, Empleado empleado){
+/**
+ * Procesa un mensaje de petición para actualizar los datos de un Empleado en la base de datos. 
+ * @param token TokenSesion con la información de la sesión del usuario. 
+ * @param usuario OBjeto de tipo Usuario o Empleado con la información a cambiar en la base de datos
+ * @return MensajeRespuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No lleva datos extras
+ */
+public MensajeRespuesta procesarMensjaeUpdateUser(TokenSesion token, Object usuario){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
@@ -226,10 +248,24 @@ public MensajeRespuesta procesarMensajeUpdateEmp(TokenSesion token, Empleado emp
     respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
   }else{
     //si el código es un código 10, podemos seguir adelante.    
-    respuesta = gestorDB.updateData(empleado, Mensaje.FUNCION_UPDATE_EMP);
+    respuesta = gestorDB.updateData(usuario, Mensaje.FUNCION_UPDATE_EMP);
   }
   return respuesta;
 }
+
+public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String id){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es un código 10, podemos seguir adelante.    
+    respuesta = gestorDB.listUsersFrom(id, Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);
+  }
+  return respuesta;
+}
+
 
 
 /**

@@ -6,6 +6,7 @@ import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.security.GestorSesion;
@@ -166,11 +167,8 @@ public void procesarPeticion(MensajeSolicitud mensaje){
       case Mensaje.FUNCION_LOGIN:
         //sacamos los datos que, en este caso, serán Usuarios
         System.out.println(CONCLI+"procesando login");
-        userIn = gson.fromJson(dataString, Usuario.class);
-        //gestorServer.processLogin(userIn, false);        
-        respuesta = gestorServer.processMensajeLogin(userIn, false);
-        System.out.println(CONCLI+"mensaje recibido del gestor server:\n"+respuesta);
-        System.out.println(CONCLI+"enviando mensaje");
+        userIn = gson.fromJson(dataString, Usuario.class);     
+        respuesta = gestorServer.processMensajeLogin(userIn, false);        
         break;
       case Mensaje.FUNCION_LOGIN_ADMIN:
         System.out.println(CONCLI+"procesando login_admin");
@@ -205,7 +203,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         respuesta = gestorServer.procesarMensajeAddUser(token, userIn, false);
         break;
       case Mensaje.FUNCION_ADD_GESTOR:   
-        System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
+        System.out.println(CONCLI+"procesando petición de insertar datos de un gestor");
         //necesitamos el token para hacer la petición
         token = gson.fromJson(tokenString, TokenSesion.class);
         userIn = gson.fromJson(dataString, Usuario.class);
@@ -213,7 +211,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         respuesta = gestorServer.procesarMensajeAddUser(token, userIn, true);  ;
         break;
       case Mensaje.FUNCION_BAJA_USER:
-        System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
+        System.out.println(CONCLI+"procesando petición de dar de baja un usuario");
         //necesitamos el token para hacer la petición
         token = gson.fromJson(tokenString, TokenSesion.class);
         //sacamos el usuario que hay que eliminar
@@ -222,13 +220,34 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         respuesta = gestorServer.procesarMensajeBajaUser(token, email);        
         break;
       case Mensaje.FUNCION_UPDATE_EMP:
-        System.out.println(CONCLI+"procesando petición de insertar datos de un usuario");
+        System.out.println(CONCLI+"procesando petición de actualizar datos de un usuario");
         //necesitamos el token para hacer la petición
         token = gson.fromJson(tokenString, TokenSesion.class);
         //sacamos los datos a cambiar
         Empleado emp = gson.fromJson(dataString, Empleado.class);
-        respuesta = gestorServer.procesarMensajeUpdateEmp(token, emp);        
+        respuesta = gestorServer.procesarMensjaeUpdateUser(token, emp);        
         break;
+      case Mensaje.FUNCION_UPDATE_GESTOR:
+        System.out.println(CONCLI+"procesando petición de actualizar datos de un gestor");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        //sacamos los datos a cambiar
+        Usuario user = gson.fromJson(dataString, Usuario.class);
+        respuesta = gestorServer.procesarMensjaeUpdateUser(token, user);        
+        break;
+      case Mensaje.FUNCION_LIST_USERS_FROM_GESTOR:
+        System.out.println(CONCLI+"procesando petición de listar empleados asociados a un gestor");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        respuesta = gestorServer.procesarMensajeListUsersFrom(token, token.getUsuario());
+        break;    
+      case Mensaje.FUNCION_LIST_USERS_FROM_REST:
+        System.out.println(CONCLI+"procesando petición de listar empleados asociados a un restaurante");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        String id = gson.fromJson(dataString, Restaurante.class).getId();
+        respuesta = gestorServer.procesarMensajeListUsersFrom(token, id);
+        break;   
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;

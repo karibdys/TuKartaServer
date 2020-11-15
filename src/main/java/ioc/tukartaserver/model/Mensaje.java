@@ -22,7 +22,8 @@ public static final String FUNCION_ADD_GESTOR = "add_gestor";
 public static final String FUNCION_BAJA_USER = "baja_user";
 public static final String FUNCION_UPDATE_EMP ="update_user_empleado";
 public static final String FUNCION_UPDATE_GESTOR ="update_user_gestor";
-public static final String FUNCION_UPDATE_OTHER_USER ="update_other_user";
+public static final String FUNCION_LIST_USERS_FROM_GESTOR = "list_users_from_gestor";
+public static final String FUNCION_LIST_USERS_FROM_REST = "list_users_from_restaurant";
 
 public static final String ATT_PETICION = "peticion";
 public static final String ATT_TOKEN = "token";

@@ -12,6 +12,7 @@ import java.util.HashMap;
  */
 public class GestorSesion {
 
+//el gestor de tokens es un HashMap con el email del usuario como key y el token como value
 private HashMap<String, TokenSesion> sesiones;
 
 private static final String GESTOR = "GESTOR SESIÓN: ";
@@ -62,15 +63,11 @@ public boolean addSesion (TokenSesion token){
   boolean ret = false;
   //comprobamos que el token no es nulo
   if (token!=null){
-    try{
-      int numSesion = sesiones.size();
+    try{    
       this.sesiones.put(token.getUsuario(), token);
-      int numSesionAct = sesiones.size();
-      if(numSesion!=numSesionAct){
-        System.out.println(GESTOR+"sesión añadida con éxito");
-        System.out.println(GESTOR+"tamaño del listado: "+sesiones.size());
-        ret = true;
-      }
+      System.out.println(GESTOR+"sesión añadida con éxito");
+      System.out.println(GESTOR+"tamaño del listado: "+sesiones.size());
+      ret = true;      
     }catch (Exception ex){
       System.out.println(GESTOR+"sesión no añadida con éxito");  
     }
@@ -99,7 +96,7 @@ public boolean isToken(String usuario){
  */
 public boolean isToken(Usuario usuario){  
   String userString = usuario.getUsuario();  
-  if (userString==null){    
+  if (userString.isEmpty()){    
     return false;
   }else{
     return sesiones.containsKey(userString);
@@ -134,4 +131,15 @@ public boolean removeSesion(TokenSesion token){
     return ret;
   }  
 }
+
+public boolean removeSesion(String email){
+  boolean ret = false;
+  //comprobamos que el token no es nulo
+  if (email!=null && isToken(email)){
+    //comprobamos que el usuario tiene la misma sesión:      
+    sesiones.remove(email);
+    ret = true;
+  }
+  return ret;
+}  
 }
