@@ -134,13 +134,14 @@ public void startClient() {
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_EMP, empMod, token);
       */
       
-      /*******************PRUEBA DE UPDATE USER************************/
-  
+      /*******************PRUEBA DE LIST USER************************/
+ 
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_data_users");   
       TokenSesion token = new TokenSesion(user);
-      token.setToken("BEfJTDmyMI");        
+      token.setToken("zqMZpWKvAj");        
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
-    
+  
+      
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         
       //convertimos el mensajeRes en JSON     

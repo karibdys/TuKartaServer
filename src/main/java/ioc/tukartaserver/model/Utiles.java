@@ -292,12 +292,15 @@ public static String ParseDate(Date fecha){
      if (!basic){       
        if (result.getDate("fecha_alta")!=null){
          user.setFecha_alta(Utiles.convertDateSQLtoJava(result.getDate("fecha_alta")));
+         System.out.println("    UTILES: "+user.getFecha_alta());
        }
        if (result.getDate("fecha_modificacion")!=null){
          user.setFecha_modificacion(Utiles.convertDateSQLtoJava(result.getDate("fecha_modificacion")));
+         System.out.println("    UTILES: "+user.getFecha_modificacion());
        }     
        if (result.getDate("fecha_baja")!=null){
          user.setFecha_baja(Utiles.convertDateSQLtoJava(result.getDate("fecha_baja")));
+         System.out.println("    UTILES: "+user.getFecha_baja());
        }
      }
      //Si el usuario es de tipo Empleado, entonces crearemos el empleado

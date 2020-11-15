@@ -346,8 +346,8 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
     ResultSet resultSet = stm.executeQuery();
     //por cada resultado que haya en la lista creamos un usuario (básico) nuevo y lo añadimos al listdo
     while (resultSet.next()){
-      Usuario user = Utiles.createEmpleadoFromResultSet(resultSet, true);     
-      listado.add((Empleado)user);
+      Empleado user = Utiles.createEmpleadoFromResultSet(resultSet, false);          
+      listado.add(user);
     }    
     Gson gson = new Gson();
     String arrayJSON = gson.toJson(listado);
