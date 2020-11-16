@@ -12,9 +12,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Empleado;
+import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Gestor;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.Pedido;
+import ioc.tukartaserver.model.Producto;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
@@ -36,12 +39,15 @@ private Connection con;
 //tablas
 public static final String TABLA_USERS = "usuario";
 public static final String TABLA_PROD = "producto";
+public static final String TABLA_PEDIDO = "pedido";
+public static final String TABLA_PEDIDO_ESTADO = "pedido_estado";
 
 //sentencias
 public static final String SELECT_USER = "SELECT * FROM usuario WHERE email = ?";
 public static final String BAJA_USER = "UPDATE usuario SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
 public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.gestor = ?";
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.trabajadorde = ?";
+public static final String INSERT_PEDIDO_ESTADO = "INSERT into "+TABLA_PEDIDO_ESTADO+" VALUES (?, ?, ?, ?)";
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -205,6 +211,9 @@ public MensajeRespuesta addData(Object dato, String peticion){
     //tipo empleado
     sentencia = Utiles.sentenciaUsuarioToInsertSQL((Empleado)dato);   
     System.out.println(BD+"sentencia: "+sentencia); 
+  }else if(dato instanceof Pedido){
+    //tipo pedido
+    sentencia = Utiles.sentenciaPedidoToInsertSQL((Pedido)dato);
   }  
   //si la sentencia creada no está vacía, procedemos a hacer la petición
   if(!sentencia.equals("")){
@@ -239,6 +248,43 @@ public MensajeRespuesta addData(Object dato, String peticion){
     //si llegamos aquí es que no se ha formado bien la sentencia porque no es un tipo de dato soportado (aún)
     ret = Utiles.mensajeErrorFuncionNoSoportada(peticion);
   }
+  return ret;
+}
+
+
+public MensajeRespuesta addDataCombinada (ArrayList<Producto> productos, ArrayList<Estado> estados, String idPedido){
+  MensajeRespuesta ret = null;
+  String sentencia = "select count(id) from "+TABLA_PEDIDO_ESTADO;
+  int idInicial =0;
+  try{
+    openConnection();
+    //primera petición
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      idInicial = result.getInt(1);
+    }
+    result.close();
+    pstm.close();
+    int listaSize = productos.size();
+    int pos =0;
+    do{      
+      idInicial++;
+      sentencia = "INSERT INTO pedido_estado VALUES ("+idInicial+", '"+idPedido+"', '"+productos.get(pos).getId()+"', '"+estados.get(pos).getEstado()+"')";
+      System.out.println(BD+"Sentencia -->"+sentencia);
+      Statement stm = con.createStatement();      
+      stm.executeUpdate(sentencia);    
+      System.out.println(BD+"Dato "+(pos+1)+" de "+listaSize);      
+      stm.close();
+      pos++;     
+    }while (pos<listaSize);        
+    ret = Utiles.mensajeOK(Mensaje.FUNCION_ADD_PEDIDO);
+    closeConnection();
+  }catch (Exception ex){
+    System.out.println(ex.getMessage());
+    ret = Utiles.mensajeErrorDB(Mensaje.FUNCION_ADD_PEDIDO);
+    //Borrar pedido
+  }  
   return ret;
 }
 

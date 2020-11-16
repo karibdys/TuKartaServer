@@ -62,6 +62,7 @@ CREATE TABLE pedido (
 	empleado 	varchar(30) NOT NULL, 
 	mesa		varchar(30) NOT NULL,
 	precio_final float,
+	fecha		date,
 	activo		boolean,
 	
 	CONSTRAINT "FK_pedido_empleado" FOREIGN KEY (empleado) REFERENCES public.usuario (email) ON UPDATE CASCADE ON DELETE SET NULL,
@@ -129,9 +130,9 @@ INSERT INTO pedido VALUES('pedido1T', 'manu@tukarta.com', 'mesa1CanFortunata', 0
 INSERT INTO pedido VALUES('pedido2T', 'david@tukarta.com', 'mesa1CanFortunata', 0, true);
 
 -- pedido_estado
-INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido1M', 'P001', 'preparando');
-INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido1M', 'B001', 'listo');
-INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido2M', 'B001', 'listo');
+INSERT INTO pedido_estado (id_pedido, id_producto, estado, fecha) VALUES ('pedido1M', 'P001', 'preparando','2020-11-15 12:10:00');
+INSERT INTO pedido_estado (id_pedido, id_producto, estado, fecha) VALUES ('pedido1M', 'B001', 'listo','2020-11-15 12:10:00');
+INSERT INTO pedido_estado (id_pedido, id_producto, estado, fecha) VALUES ('pedido2M', 'B001', 'listo', '2020-11-15 12:10:00');
 
 INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido1T', 'P002', 'preparando');
 INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido2T', 'B001', 'preparando');

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -150,7 +151,7 @@ public static String ParseDate(Date fecha){
  }
  
  /***********************
-  * CONVERSORES A SQL
+  * CONVERSORES A SQL DE USUARIO
   ********************/
    
   /**
@@ -328,6 +329,28 @@ public static String ParseDate(Date fecha){
      return user;
    }
  }
+ 
+ /***********************
+  * CONVERSORES A SQL DE PEDIDO
+  ********************/
+   /**
+   * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Pedidoa la base de datos en función de sus parámetros definidos. 
+   * @param pedido Pedido con los datos necesarios para insertarlo en la base de datos.
+   * @return String con la sentencia INSERT SQL completa
+   */
+  public static String sentenciaPedidoToInsertSQL (Pedido pedido){
+    StringBuilder builder = new StringBuilder();
+    builder.append("INSERT INTO "+GestorDB.TABLA_PEDIDO+" (\"id\", \"empleado\", \"mesa\", \"fecha\", \"activo\") VALUES (");
+    //le metemos los datos
+    builder.append("'"+ pedido.getId()+"'");
+    builder.append(", '"+ pedido.getEmpleado().getEmail()+"'");
+    builder.append(", '"+ pedido.getMesa().getId()+"'");
+    builder.append(", '"+Utiles.ParseDate(pedido.getFecha())+"'");
+    builder.append(", 'true'");
+    builder.append(")");
+    
+    return builder.toString();    
+  }
   
   /**
  * Método para construir fechas conrrectas para insertar en la base de datos. 

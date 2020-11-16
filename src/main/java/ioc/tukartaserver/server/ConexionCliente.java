@@ -6,6 +6,7 @@ import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
@@ -162,6 +163,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
     String dataString = mensaje.getData();
     String tokenString = mensaje.getToken();
     Usuario userIn=null;
+    Pedido pedidoIn=null;
     TokenSesion token = null;
     switch (mensaje.getPeticion()){
       case Mensaje.FUNCION_LOGIN:
@@ -239,7 +241,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         System.out.println(CONCLI+"procesando petición de listar empleados asociados a un gestor");
         //necesitamos el token para hacer la petición
         token = gson.fromJson(tokenString, TokenSesion.class);
-        respuesta = gestorServer.procesarMensajeListUsersFrom(token, token.getUsuario());
+        respuesta = gestorServer.procesarMensajeListUsersFrom(token, null);
         break;    
       case Mensaje.FUNCION_LIST_USERS_FROM_REST:
         System.out.println(CONCLI+"procesando petición de listar empleados asociados a un restaurante");
@@ -247,6 +249,13 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         token = gson.fromJson(tokenString, TokenSesion.class);
         String id = gson.fromJson(dataString, Restaurante.class).getId();
         respuesta = gestorServer.procesarMensajeListUsersFrom(token, id);
+        break;   
+      case Mensaje.FUNCION_ADD_PEDIDO:
+        System.out.println(CONCLI+"procesando petición de añadir un nuevo pedido");
+        //necesitamos el token para hacer la petición
+        token = gson.fromJson(tokenString, TokenSesion.class);
+        pedidoIn = gson.fromJson(dataString, Pedido.class);
+        respuesta = gestorServer.procesarMensajeAddPedido(token, pedidoIn);        
         break;   
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));

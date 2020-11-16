@@ -8,7 +8,7 @@ import java.util.Date;
  * Clase que representa a un pedido que genera un empleado en una mesa determinada. 
  * @author Manu Mora
  */
-class Pedido {
+public class Pedido {
 
 private String id;
 private ArrayList<Producto> lista_productos;
@@ -51,6 +51,9 @@ public Pedido(Empleado empleado, Mesa mesa) {
     this.empleado = empleado;
     this.fecha = fecha;
     this.mesa = mesa;
+  }
+
+  public Pedido() {    
   }
 
 /******************
@@ -180,7 +183,7 @@ public void setPrecio_final(float precio_final) {
  * Establece una fecha de creación del pedido
  * @param fecha Date con la fecha a establecer
  */
-public void serFecha(Date fecha){
+public void setFecha(Date fecha){
   this.fecha=fecha;
 }
 

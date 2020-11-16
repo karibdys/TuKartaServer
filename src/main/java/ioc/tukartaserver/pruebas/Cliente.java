@@ -8,9 +8,13 @@ package ioc.tukartaserver.pruebas;
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Empleado;
+import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.Mesa;
+import ioc.tukartaserver.model.Pedido;
+import ioc.tukartaserver.model.Producto;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
@@ -20,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Date;
 
 import org.json.JSONObject;
 
@@ -67,6 +73,32 @@ public void startClient() {
       Empleado pepe = new Empleado ("Pepe", "pepePass", "pepe@tukarta.com", null, null, user, Rol.CAMARERO);
       Empleado empMod = new Empleado ("Manué", "manuPass", "manu@tukarta.com", "Manuel Jesús", null, user, Rol.CAMARERO);
       empMod.setSalario(1700);
+      Mesa mesa = new Mesa("mesa1CanMarc", 4);
+      Pedido pedido = new Pedido();
+      pedido.setId("pedido3M");
+      pedido.setEmpleado(emp);
+      pedido.setFecha(new Date());
+      pedido.setMesa(mesa);
+      pedido.setActivo(true);
+      ArrayList<Producto> listaProd = new ArrayList<>();
+      Producto prod1 = new Producto();
+      prod1.setId("P002");
+      listaProd.add(prod1);
+      listaProd.add(prod1);
+      listaProd.add(prod1);
+      
+      Producto prod2 = new Producto();
+      prod2.setId("B001");
+      listaProd.add(prod2);
+      pedido.setLista_productos(listaProd);
+      
+      ArrayList<Estado> listaEstados = new ArrayList<>();
+      listaEstados.add(Estado.PREPARADO);
+      listaEstados.add(Estado.PREPARADO);
+      listaEstados.add(Estado.PREPARADO);
+      listaEstados.add(Estado.EN_PREPARACIÓN);
+      pedido.setEstado_productos(listaEstados);
+      
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       /*******************PRUEBA DE LOGIN************************/          
       /*
@@ -135,12 +167,24 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE LIST USER************************/
- 
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_data_users");   
       TokenSesion token = new TokenSesion(user);
-      token.setToken("zqMZpWKvAj");        
-      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
-  
+      token.setToken("REzEklFEEQ");      
+      Restaurante rest = new Restaurante ("res1Marc", "CanMarc");
+      //MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_REST, rest, token);
+      */
+      
+      
+      /*******************PRUEBA DE ADD DATA PEDIDO ************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
+      TokenSesion token = new TokenSesion(user);
+      token.setToken("aCywcPEarE");  
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PEDIDO, pedido, token);
+ 
+      
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         

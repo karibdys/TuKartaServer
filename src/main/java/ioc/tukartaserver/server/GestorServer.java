@@ -5,6 +5,7 @@ import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
@@ -98,7 +99,7 @@ public void setOut(PrintStream out) {
 }
   
 /******************
- * MÉTODOS AUXILIARES 
+ * GESTIÓN DE USUARIOS
  ******************
  */
 
@@ -252,6 +253,12 @@ public MensajeRespuesta procesarMensajeUpdateUser(TokenSesion token, Object usua
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición para listar todos los empleados asociados a un gestor o a un restaurante. 
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param id id 
+ * @return 
+ */
 public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String id){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -260,9 +267,39 @@ public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String i
     respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
   }else{
     //si el código es un código 10, podemos seguir adelante.    
-    respuesta = gestorDB.listUsersFrom(id, Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);
+    if (id.isEmpty()){
+      //si el id es nulo, significa que el token tiene el id porque es una petición de GESTOR
+      respuesta = gestorDB.listUsersFrom(token.getUsuario(), Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);
+    }else{
+      //si el id no es nulo es que es una petición de RESTAURANTE
+      respuesta = gestorDB.listUsersFrom(id, Mensaje.FUNCION_LIST_USERS_FROM_REST);
+    }    
   }
   return respuesta;
+}
+
+/******************
+ * GESTIÓN DE PEDIDOS
+ ******************
+ */
+
+public MensajeRespuesta procesarMensajeAddPedido(TokenSesion token, Pedido pedido){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es un código 10, podemos seguir adelante.    
+    respuesta = gestorDB.addData(pedido, Mensaje.FUNCION_ADD_PEDIDO);    
+    //comprobamos si el pedido viene con productos. Si viene con productos tendremos que hacer una segunda sentencia INSERT 
+    //además, comprobamos que la respuesta del gestor de la base de datos es de código 10
+    if ((pedido.getLista_productos().size()>0)&& respuesta.getCode().getCode().equals(Codes.CODIGO_OK)){                  
+      System.out.println(SERVER+"iniciando sentencias de inserción de pedido_estado");
+      respuesta = gestorDB.addDataCombinada(pedido.getLista_productos(), pedido.getEstado_productos(), pedido.getId());      
+    }    
+  }
+  return respuesta;  
 }
 
 

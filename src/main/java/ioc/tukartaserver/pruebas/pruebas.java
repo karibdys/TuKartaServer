@@ -5,23 +5,23 @@
  */
 package ioc.tukartaserver.pruebas;
 
-import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
-import static ioc.tukartaserver.gestorDB.GestorDB.LIST_USERS_FROM_GESTOR;
-import static ioc.tukartaserver.gestorDB.GestorDB.LIST_USERS_FROM_REST;
 import ioc.tukartaserver.model.Empleado;
+import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Mensaje;
-import ioc.tukartaserver.model.MensajeRespuesta;
-import ioc.tukartaserver.model.Rol;
+import ioc.tukartaserver.model.Mesa;
 import ioc.tukartaserver.model.Usuario;
+import ioc.tukartaserver.model.Pedido;
+import ioc.tukartaserver.model.Producto;
 import ioc.tukartaserver.model.Utiles;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -35,11 +35,64 @@ private static final String USER = "tukarta";
 private static final String PASS = "TuKartaP4$$"; 
 
 
-public static void main (String... args) throws ClassNotFoundException, SQLException{    
+public static void main (String... args) throws SQLException, ClassNotFoundException {   
+  Usuario usuarioCorrecto = new Usuario ("karibdys", "manuPass", "manu@tukarta.com", "manu", "mora", false);
+  Empleado emp = new Empleado (usuarioCorrecto);
+  Mesa mesa = new Mesa("mesa1", 4);
+  Class.forName(CLASE);    
+  Connection con = DriverManager.getConnection(LOCAL_URL,USER,PASS); 
+  Pedido pedido = new Pedido();
+  pedido.setId("MCANMARC_2");
+  pedido.setEmpleado(emp);
+  pedido.setMesa(mesa);
+  pedido.setFecha(new Date());
+  pedido.setActivo(true);
+  ArrayList<Producto> listaProd = new ArrayList<>();
+  Producto prod1 = new Producto();
+  prod1.setId("P002");
+  listaProd.add(prod1);
+  listaProd.add(prod1);
+  listaProd.add(prod1);
+  Producto prod2 = new Producto();
+  prod2.setId("B001");
+  listaProd.add(prod2);
+  pedido.setLista_productos(listaProd);
+  
+  ArrayList<Estado> listaEstados = new ArrayList<>();
+  listaEstados.add(Estado.PREPARADO);
+  listaEstados.add(Estado.PREPARADO);
+  listaEstados.add(Estado.PREPARADO);
+  listaEstados.add(Estado.EN_PREPARACIÓN);
+  pedido.setEstado_productos(listaEstados);
+  
+  ArrayList<Producto> productos = pedido.getLista_productos();
+  ArrayList<Estado> estados = pedido.getEstado_productos();
+  System.out.println(Utiles.sentenciaPedidoToInsertSQL(pedido));
+  int pos =0;
+  PreparedStatement pstm = null;
+  pstm = con.prepareStatement("SELECT count(id) FROM pedido_estado");
+  ResultSet res = pstm.executeQuery();
+  int idInicial=0;
+  if (res.next()){
+    idInicial=res.getInt(1);
+  }
+  
+   do{
+      pstm = con.prepareStatement(GestorDB.INSERT_PEDIDO_ESTADO);
+      idInicial++;
+      //introducimos los datos
+      pstm.setInt(1, idInicial);
+      pstm.setString(2, pedido.getId());
+      pstm.setString(3, productos.get(pos).getId());
+      pstm.setString(4, estados.get(pos).getEstado());
+      System.out.println(pstm);
+      pos++;      
+    }while (pos<productos.size());        
+  
   /*
    * Pruebas de conexion 
    */  
-  
+  /*
   Class.forName(CLASE);    
   Connection con = DriverManager.getConnection(LOCAL_URL,USER,PASS); 
   MensajeRespuesta ret = null;
@@ -67,6 +120,9 @@ public static void main (String... args) throws ClassNotFoundException, SQLExcep
   } catch (SQLException ex) {
     System.err.println(ex.getMessage());
   }
+  */
+  
+  
 }
   
 }
