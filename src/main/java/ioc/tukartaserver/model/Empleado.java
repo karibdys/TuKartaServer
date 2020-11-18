@@ -23,6 +23,13 @@ private Boolean isActive;
  */
 
 /**
+ * Constructos básico de un Empleado. Crea un Empleado sin datos
+ */
+public Empleado() {
+  super();
+}
+
+/**
  * Constructor básico de la clase Empleado.
  * @param nombreUser nombre de usuario del empleado
  * @param pass contraseña del empleado
@@ -59,8 +66,7 @@ public Empleado (Usuario user){
   super(user.getUsuario(), user.getPwd(), user.getEmail(), user.getNombre(), user.getApellidos(), false);
 }
 
-public Empleado() {
-}
+
 
 public Empleado (String nombreUser, String pass, String email, String nombreReal, String apellidoReal, Date fechaAlta, Date fechaMod, Date fechaBaja, boolean isGestor){
   super (nombreUser, pass, email, nombreReal, apellidoReal, fechaAlta, fechaMod, fechaBaja, isGestor);  

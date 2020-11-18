@@ -330,6 +330,22 @@ public static String ParseDate(Date fecha){
    }
  }
  
+ 
+public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLException {
+  Pedido ret = new Pedido();
+  ret.setId(result.getString("id"));
+  Empleado emp = new Empleado ();
+  emp.setEmail(result.getString("empleado"));
+  ret.setEmpleado(emp);
+  Mesa mesa = new Mesa(result.getString("mesa"));
+  ret.setMesa(mesa);
+  ret.setFecha(result.getDate("fecha"));
+  ret.setPrecio_final(result.getFloat("precio_final"));
+  ret.setActivo(true);
+  
+  return ret;
+}
+ 
  /***********************
   * CONVERSORES A SQL DE PEDIDO
   ********************/
@@ -345,7 +361,12 @@ public static String ParseDate(Date fecha){
     builder.append("'"+ pedido.getId()+"'");
     builder.append(", '"+ pedido.getEmpleado().getEmail()+"'");
     builder.append(", '"+ pedido.getMesa().getId()+"'");
-    builder.append(", '"+Utiles.ParseDate(pedido.getFecha())+"'");
+    if (pedido.getFecha()!=null){
+      builder.append(", '"+Utiles.ParseDate(pedido.getFecha())+"'");
+    }else{
+      builder.append(", '"+Utiles.ParseDate(new Date())+"'");
+    }
+    
     builder.append(", 'true'");
     builder.append(")");
     

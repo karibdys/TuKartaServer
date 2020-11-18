@@ -26,8 +26,7 @@ private boolean isGestor;
 /**
  * Constructor básico de un usuario sin parámetros.
  */
-public Usuario(){
-   
+public Usuario(){   
 }
 
 /**
@@ -161,8 +160,7 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
    * @param nomUsuario String
    */
   public void setUsuario(String nomUsuario) {
-    this.usuario = nomUsuario;
-    this.fecha_modificacion= new Date();
+    this.usuario = nomUsuario;  
   }
   
 /**
@@ -171,7 +169,6 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
  */
   public void setPwd(String password) {
     this.pwd = password;
-    this.fecha_modificacion= new Date();
   }
 
   /**
@@ -180,7 +177,6 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
    */
   public void setEmail(String email) {
     this.email = email;
-    this.fecha_modificacion= new Date();
   }
 
   /**
@@ -189,7 +185,6 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
    */
   public void setNombre(String nombre) {
     this.nombre = nombre;
-    this.fecha_modificacion= new Date();
   }
 
   /**
@@ -198,7 +193,6 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
    */
   public void setApellidos(String apellido) {
     this.apellidos = apellido;
-    this.fecha_modificacion= new Date();
   }
   
   /**
@@ -231,7 +225,6 @@ public Usuario (String nombreUser, String pass, String email, String nombreReal,
    */
   public void setFecha_baja(Date fechaBaja) {
     this.fecha_baja = fechaBaja;
-    this.fecha_modificacion= new Date();
   }  
  
   /**

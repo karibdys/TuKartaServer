@@ -48,6 +48,7 @@ public static final String BAJA_USER = "UPDATE usuario SET pwd = null, fecha_baj
 public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.gestor = ?";
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.trabajadorde = ?";
 public static final String INSERT_PEDIDO_ESTADO = "INSERT into "+TABLA_PEDIDO_ESTADO+" VALUES (?, ?, ?, ?)";
+public static final String LIST_PEDIDO_FROM_USER = "SELECT* from PEDIDO WHERE empleado = ? AND activo = ?";
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -218,7 +219,7 @@ public MensajeRespuesta addData(Object dato, String peticion){
   //si la sentencia creada no está vacía, procedemos a hacer la petición
   if(!sentencia.equals("")){
     try {
-      openConnection();
+      openConnection();  
       //si el dato es de tipo usuario, habrá que hacer un insert a la tabla Usuario
       Statement statement = con.createStatement();
       if(statement.executeUpdate(sentencia)==1){
@@ -258,6 +259,8 @@ public MensajeRespuesta addDataCombinada (ArrayList<Producto> productos, ArrayLi
   int idInicial =0;
   try{
     openConnection();
+    //eliminamos la opción de autocommit:
+    con.setAutoCommit(false);
     //primera petición
     PreparedStatement pstm = con.prepareStatement(sentencia);
     ResultSet result = pstm.executeQuery();
@@ -268,6 +271,7 @@ public MensajeRespuesta addDataCombinada (ArrayList<Producto> productos, ArrayLi
     pstm.close();
     int listaSize = productos.size();
     int pos =0;
+    //insertamos tantas líneas como haya en el listado de productos
     do{      
       idInicial++;
       sentencia = "INSERT INTO pedido_estado VALUES ("+idInicial+", '"+idPedido+"', '"+productos.get(pos).getId()+"', '"+estados.get(pos).getEstado()+"')";
@@ -279,11 +283,13 @@ public MensajeRespuesta addDataCombinada (ArrayList<Producto> productos, ArrayLi
       pos++;     
     }while (pos<listaSize);        
     ret = Utiles.mensajeOK(Mensaje.FUNCION_ADD_PEDIDO);
+    //si todo ha ido bien, podemos cerrar la conexión
+    con.setAutoCommit(true);
     closeConnection();
   }catch (Exception ex){
     System.out.println(ex.getMessage());
     ret = Utiles.mensajeErrorDB(Mensaje.FUNCION_ADD_PEDIDO);
-    //Borrar pedido
+    //TODO Borrar pedido
   }  
   return ret;
 }
@@ -394,6 +400,36 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
     while (resultSet.next()){
       Empleado user = Utiles.createEmpleadoFromResultSet(resultSet, false);          
       listado.add(user);
+    }    
+    Gson gson = new Gson();
+    String arrayJSON = gson.toJson(listado);
+    ret = Utiles.mensajeOK(peticion);
+    ret.setData(arrayJSON);   
+  } catch (SQLException ex) {
+    ret = Utiles.mensajeErrorDB(peticion);
+  }
+  return ret;
+}
+
+
+public MensajeRespuesta listPedidoFrom(String id, String peticion){
+  MensajeRespuesta ret = null;
+  ArrayList<Pedido> listado = new ArrayList<>();
+  try {
+    openConnection();
+    PreparedStatement stm =null;
+    //preparamos la sentencia SQL:
+    stm = con.prepareStatement(LIST_PEDIDO_FROM_USER);    
+    //añadimos los parámetros
+    stm.setString(1, id);
+    stm.setBoolean(2, true);
+    System.out.println(BD+" sentencia --> "+stm);
+    //ejecutamos la sentencia
+    ResultSet resultSet = stm.executeQuery();
+    //por cada resultado que haya en la lista creamos un Pedido nuevo y lo añadimos al listdo
+    while (resultSet.next()){
+      Pedido pedido = Utiles.createPedidoFromResultSet(resultSet);
+      listado.add(pedido);
     }    
     Gson gson = new Gson();
     String arrayJSON = gson.toJson(listado);

@@ -32,6 +32,13 @@ public Mesa(String id, int numComensales) {
   this.id = id;
   this.num_comensales = numComensales;
 }
+/**
+ * Crea un objeto de tipo mesa. Requiera su ID 
+ * @param id String id de la mesa 
+ */
+public Mesa(String id) {
+  this.id = id; 
+}
 
 
 /******************

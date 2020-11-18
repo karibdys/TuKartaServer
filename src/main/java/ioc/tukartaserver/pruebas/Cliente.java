@@ -104,10 +104,10 @@ public void startClient() {
       /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de login"); 
       //lo convertimos en JSON
-      String userJson = gson.toJson(user);
+      String userJson = gson.toJson(emp);
       //creamos el mensajeRes      
-      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN_ADMIN, userJson, (String) null);
-      */
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN, userJson, (String) null);
+     */
       
       /*******************PRUEBA DE LOGOFF************************/
       /*
@@ -174,16 +174,25 @@ public void startClient() {
       Restaurante rest = new Restaurante ("res1Marc", "CanMarc");
       //MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_REST, rest, token);
-      */
-      
+      */      
       
       /*******************PRUEBA DE ADD DATA PEDIDO ************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
       TokenSesion token = new TokenSesion(user);
       token.setToken("aCywcPEarE");  
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PEDIDO, pedido, token);
- 
+      */
+      
+      /*******************PRUEBA DE LIST PEDIDO ************************/
+    
+      System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedido_from_user");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("XpQXGnhlfJ");  
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_FROM_USER, null, token);
+  
+      
+      
       
       
       /*******************FINAL DE PETICIÓN ************************/
@@ -197,9 +206,7 @@ public void startClient() {
     System.out.println(CLIENTE+"esperando al server..."); 
     String codigo="";
     do{                
-      mensajeString = in.readLine();
-      System.out.println(CLIENTE+"Recibiendo mensaje:");     
-      System.out.println(mensajeString);
+      mensajeString = in.readLine();  
       System.out.println(CLIENTE+"Mensaje en formato Mensaje:");
       mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);
       System.out.println(mensajeRes);

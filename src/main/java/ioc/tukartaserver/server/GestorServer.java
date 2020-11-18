@@ -3,6 +3,7 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Pedido;
@@ -302,8 +303,30 @@ public MensajeRespuesta procesarMensajeAddPedido(TokenSesion token, Pedido pedid
   return respuesta;  
 }
 
+public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String mail, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    String email ="";
+    //si el código es un código 10, podemos seguir adelante.        
+    if (mail==null){
+      email = token.getUsuario();
+    }else{
+      email = mail;
+    }
+    respuesta = gestorDB.listPedidoFrom(email, peticion);
+  }
+  return respuesta;
+}
 
 
+/******************
+ * MÉTODOS AUXILIARES
+ ******************
+ */
 /**
  * Envía un mensaje, ya sea de tipo respuesta o solicitud
  * @param mensaje MensajeRepuesta completo 
