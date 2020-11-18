@@ -185,14 +185,22 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE LIST PEDIDO ************************/
-    
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedido_from_user");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("XpQXGnhlfJ");  
-      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_FROM_USER, null, token);
-  
+      token.setToken("GGTfJXyQlX");  
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_FROM_USER, null, token);        
+      */
       
+      /*******************PRUEBA DE DELETE DATA PEDIDO ************************/
       
+      System.out.println(CLIENTE+"Procediendo a hacer petición de delete_pedido");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("dSxpknfzKb");  
+      pedido = new Pedido();
+      pedido.setId("pedido3M");
+      
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DELETE_PEDIDO, pedido, token);
       
       
       /*******************FINAL DE PETICIÓN ************************/

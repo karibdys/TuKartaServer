@@ -24,6 +24,7 @@ public static final String FUNCION_LIST_USERS_FROM_GESTOR = "list_users_from_ges
 public static final String FUNCION_LIST_USERS_FROM_REST = "list_users_from_restaurant";
 public static final String FUNCION_LIST_PEDIDO_FROM_USER = "list_pedido_from_user";
 public static final String FUNCION_LIST_PEDIDO_FROM_OTHER_USER = "list_pedido_from_other_user";
+public static final String FUNCION_DELETE_PEDIDO = "delete_pedido";
 
 //gestión de Pedidos
 public static final String FUNCION_ADD_PEDIDO = "add_pedido";

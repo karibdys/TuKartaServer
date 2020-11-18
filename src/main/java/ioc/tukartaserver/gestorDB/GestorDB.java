@@ -49,6 +49,7 @@ public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM usuario LEFT 
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.trabajadorde = ?";
 public static final String INSERT_PEDIDO_ESTADO = "INSERT into "+TABLA_PEDIDO_ESTADO+" VALUES (?, ?, ?, ?)";
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from PEDIDO WHERE empleado = ? AND activo = ?";
+public static final String DELETE_PEDIDO = "DELETE FROM pedido WHERE id = ?";
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -375,6 +376,31 @@ public MensajeRespuesta updateData(Object dato, String peticion){
     ret = Utiles.mensajeErrorFuncionNoSoportada(peticion);
   }  
   return ret;  
+}
+
+public MensajeRespuesta deleteData(String id, String peticion){
+  MensajeRespuesta ret = null;
+  String sentencia ="";
+  PreparedStatement pstm = null;
+  switch (peticion){
+    case Mensaje.FUNCION_DELETE_PEDIDO:
+      sentencia = DELETE_PEDIDO;
+      break;
+    default:
+      return Utiles.mensajeErrorFuncionNoSoportada(peticion);      
+  }
+  try{
+    openConnection();
+    pstm =con.prepareStatement(sentencia);
+    pstm.setString(1, id);
+    pstm.executeUpdate();
+    ret = Utiles.mensajeOK(peticion);
+    pstm.close();
+    closeConnection();
+  }catch (SQLException e){
+    ret = Utiles.mensajeErrorDB(peticion);
+  }
+  return ret;
 }
 
 

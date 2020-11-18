@@ -303,6 +303,18 @@ public MensajeRespuesta procesarMensajeAddPedido(TokenSesion token, Pedido pedid
   return respuesta;  
 }
 
+public MensajeRespuesta procesarMensajeDeletePedido(TokenSesion token, String idPedido){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    respuesta = gestorDB.deleteData(idPedido, Mensaje.FUNCION_DELETE_PEDIDO);
+  }
+  return respuesta;
+}
+
 public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String mail, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
