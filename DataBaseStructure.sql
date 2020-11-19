@@ -70,7 +70,7 @@ CREATE TABLE pedido (
 );
 
 CREATE TABLE pedido_estado (
-	ID SERIAL PRIMARY KEY,
+	id varchar(30) PRIMARY KEY,
   	id_pedido	varchar(30),
 	id_producto varchar(30),
 	estado estado,
@@ -130,10 +130,10 @@ INSERT INTO pedido VALUES('pedido1T', 'manu@tukarta.com', 'mesa1CanFortunata', 0
 INSERT INTO pedido VALUES('pedido2T', 'david@tukarta.com', 'mesa1CanFortunata', 0, true);
 
 -- pedido_estado
-INSERT INTO pedido_estado (id_pedido, id_producto, estado, fecha) VALUES ('pedido1M', 'P001', 'preparando','2020-11-15 12:10:00');
-INSERT INTO pedido_estado (id_pedido, id_producto, estado, fecha) VALUES ('pedido1M', 'B001', 'listo','2020-11-15 12:10:00');
-INSERT INTO pedido_estado (id_pedido, id_producto, estado, fecha) VALUES ('pedido2M', 'B001', 'listo', '2020-11-15 12:10:00');
+INSERT INTO pedido_estado VALUES ('pedido1M-1', 'pedido1M', 'P001', 'preparando');
+INSERT INTO pedido_estado VALUES ('pedido1M-2', 'pedido1M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido2M-1', 'pedido2M', 'B001', 'listo');
 
-INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido1T', 'P002', 'preparando');
-INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido2T', 'B001', 'preparando');
-INSERT INTO pedido_estado (id_pedido, id_producto, estado) VALUES ('pedido2T', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido1T-1','pedido1T', 'P002', 'preparando');
+INSERT INTO pedido_estado VALUES ('pedido2T-1','pedido2T', 'B001', 'preparando');
+INSERT INTO pedido_estado VALUES ('pedido2T-2','pedido2T', 'B001', 'listo');

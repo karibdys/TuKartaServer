@@ -177,12 +177,12 @@ public void startClient() {
       */      
       
       /*******************PRUEBA DE ADD DATA PEDIDO ************************/
-
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("vZRESMJPTH");  
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PEDIDO, pedido, token);
-     
+      */
       
       /*******************PRUEBA DE LIST PEDIDO ************************/
       /*
@@ -202,6 +202,15 @@ public void startClient() {
       
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DELETE_PEDIDO, pedido, token);
       */
+      
+      /*******************PRUEBA DE ADD PRODUCTO TO ************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_pedido_to");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("YiWUWcSngI");  
+      String[] datos = {"B001", "pedido1M", null};
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PRODUCTO_TO, datos, token);
+      
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         

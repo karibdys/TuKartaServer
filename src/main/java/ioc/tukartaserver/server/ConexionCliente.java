@@ -253,6 +253,11 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         String pedidoId = gson.fromJson(dataString, Pedido.class).getId();
         respuesta = gestorServer.procesarMensajeDeletePedido(token, pedidoId);
        break;
+      case Mensaje.FUNCION_ADD_PRODUCTO_TO:
+        System.out.println(CONCLI+"procesando petición de añadir producto a un pedido");
+        String[] datosProd = gson.fromJson(dataString, String[].class);
+        respuesta = gestorServer.procesarMensajeAddProductoTo(token, datosProd, Mensaje.FUNCION_ADD_PRODUCTO_TO);
+        break;
       case Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES:
         break;
       default:    

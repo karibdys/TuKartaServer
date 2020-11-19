@@ -134,9 +134,9 @@ public static String ParseDate(Date fecha){
  }
   
   /**
-  * Construyen un mensaje genérico de error producido en la Base de Datos al no coincidir la contraseña con el usuari introducido CÓDIGO 62
+  * Construyen un mensaje genérico de error producido en la Base de Datos al no coincidir la contraseña con el usuari introducido CÓDIGO 63
   * @param peticion String nombre de la petición a responder
-  * @return MensajeRespuesta con el código 62 y la petición a respondida
+  * @return MensajeRespuesta con el código 63 y la petición a respondida
   */
   public static MensajeRespuesta mensajeErrorUserRep(String peticion){
    return new MensajeRespuesta(new Codes(Codes.CODIGO_ERROR_DATA_REP), peticion);  

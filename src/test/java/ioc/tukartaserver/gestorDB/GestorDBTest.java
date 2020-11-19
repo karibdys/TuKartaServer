@@ -5,12 +5,13 @@ import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Usuario;
-import ioc.tukartaserver.model.Utiles;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -31,6 +32,9 @@ private static String PASS_CORRECTA="manuPass";
 private static String PASS_CORRECTA_ADMIN="marcPass";
 private static String PASS_INCORRECTA="randomPass";
 private static String MAIL_PRUEBAS = "prueba@tukarta.com";
+
+private static final String ID_PEDIDO_PRUEBAS = "pedido1M";
+private static final String ID_PRODUCTO_PRUEBAS = "B001";
 
 public GestorDBTest() {
 }
@@ -144,8 +148,7 @@ public void tearDown() {
     }else{
      assertEquals(expResult, codeResult); 
     }    
-  }
-  
+  }  
   
   /**
    * Comprueba que devuelve correctamente un código 61 cuando un usuario correcto intenta acceder a una sesión de administrador
@@ -164,7 +167,6 @@ public void tearDown() {
      assertEquals(expResult, codeResult); 
     }    
   }
-
   
   /**
    * Comprueba que devuelve correctamente un código 62 cuando un usuario correcto accede con una pass incorretca
@@ -182,8 +184,7 @@ public void tearDown() {
     }else{
      assertEquals(expResult, codeResult); 
     }    
-  }
-  
+  } 
     
   /**
    * Comprueba que devuelve correctamente un código 62 cuando un usuario correcto accede con una pass incorretca
@@ -200,8 +201,7 @@ public void tearDown() {
     }else{
      assertEquals(expResult, codeResult); 
     }    
-  }
-  
+  } 
  
   /**
    * Comprueba que devuelve correctamente un código 10 con token cuando un usuario correcto accede con una pass correcta
@@ -223,8 +223,6 @@ public void tearDown() {
       }     
     }    
   }
-  
-
   
   /**
    * Comprueba que devuelve correctamente un código 10 con token cuando un usuario correcto accede con una pass correcta
@@ -292,12 +290,14 @@ public void tearDown() {
     String email = "marc@tukarta.com";
     boolean isGestor =true;
     Usuario expResult = new Usuario("Marc", null, email, "Marc", "Abad", isGestor);
+    gestor.openConnection();
     Connection con = gestor.getCon();
     PreparedStatement stm = con.prepareStatement(GestorDB.SELECT_USER);
     stm.setString(1, email);
     ResultSet result = stm.executeQuery();
     result.next();
     Usuario resultado = gestor.createUserFromResult(result, isGestor);
+    gestor.closeConnection();
     assertEquals(expResult.getEmail(), resultado.getEmail());
   }
   
@@ -324,13 +324,16 @@ public void tearDown() {
     ResultSet result = null;
     Usuario resultado = null;
     try{
+      gestor.openConnection();
       Connection con = gestor.getCon();
       PreparedStatement stm = con.prepareStatement(GestorDB.SELECT_USER);
       stm.setString(1, email);
       result = stm.executeQuery();
       result.next();
       resultado = gestor.createUserFromResult(result, false);
+      gestor.closeConnection();
     }catch (SQLException ex){
+      System.out.println(ex.getMessage());
       fail("Fallo en la base de datos");
     }
     System.out.println("usuario esperado: "+empEsperado);
@@ -413,10 +416,13 @@ public void tearDown() {
    */
   @Test
   public void bajaUser_empleadoCorrecto() {
+    System.out.println("\n**********************\nPrueba BAJA USUARIO CORRECTO\n");
+
     //metemos un usuario en la base de datos para que esté dado de alta
     try{
       insertUserPrueba();
     }catch (SQLException ex){
+       System.out.println(ex.getMessage());
       fail("No se ha podido hacer la prueba por problemas al conectar con la base de datos");
     }
     //damos de baja al usuario
@@ -425,7 +431,8 @@ public void tearDown() {
     try{
       deleteUserPrueba();
     }catch(SQLException ex){
-      fail("No se ha podido hacer la prueba por problemas al conectar con la base de datos");
+      System.out.println(ex.getMessage());
+      fail("error al borrar el usuario de prueba");
     }
     //Esperamos un código 10
     String expResult = Codes.CODIGO_OK;
@@ -450,6 +457,8 @@ public void tearDown() {
    */
   @Test
   public void bajaUser_empleadoNoEnBD() {
+    System.out.println("\n**********************\nPrueba BAJA USUARIO NO EN LA BASE DE DATOS\n");
+
     //damos de baja al usuario sin meterlo en la base de datos
     MensajeRespuesta res = gestor.bajaUser(MAIL_PRUEBAS);           
     //Esperamos un código 10
@@ -457,6 +466,104 @@ public void tearDown() {
     String resultadoReal = res.getCode().getCode();
     assertEquals(expResult, resultadoReal);    
   }
+  
+  
+  /*  
+  *************
+   ADD_PRODUCTO_ESTADO (SIMPLE)
+  ***************/
+  
+  /**
+  * Comprueba que el mensaje que retorna el método lleva un código 10 al introducir un conjunto de datos correcto (id de producto y de pedido que existen en la BD) y con un estado nulo
+  */
+  @Test
+  public void addProductoEstado_productoSi_pedidoSi_estadoNull(){
+    String[] datos = {ID_PRODUCTO_PRUEBAS, ID_PEDIDO_PRUEBAS, null};
+    String expResult = Codes.CODIGO_OK;
+    //esperamos un código 10
+    MensajeRespuesta res = gestor.addProductoEstado(datos[0], datos[1], datos[2], Mensaje.FUNCION_ADD_PRODUCTO_TO);
+    String resultadoReal = res.getCode().getCode();
+    //como se habrá insertado un registro, lo eliminamos
+    try {
+      deleteProductoDePedidoPrueba();
+    } catch (SQLException ex) {
+      fail("Error en la base de datos");
+    }
+    
+    assertEquals(expResult, resultadoReal);   
+  }
+  
+  /**
+  * Comprueba que el mensaje que retorna el método lleva un código 61 al introducir un producto que no está en la base de datos y con un estado nulo
+  */
+  @Test
+  public void addProductoEstado_productoNo_pedidoSi_estadoNull(){
+    String[] datos = {"X099", ID_PEDIDO_PRUEBAS, null};
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;
+    //esperamos un código 61
+    MensajeRespuesta res = gestor.addProductoEstado(datos[0], datos[1], datos[2], Mensaje.FUNCION_ADD_PRODUCTO_TO);
+    String resultadoReal = res.getCode().getCode();     
+    assertEquals(expResult, resultadoReal);   
+  }
+  
+  /**
+  * Comprueba que el mensaje que retorna el método lleva un código 61 al introducir un id de pedido que no está en la base de datos y con un estado nulo
+  */
+  @Test
+   public void addProductoEstado_productoSi_pedidoNo_estadoNull(){
+    String[] datos = {ID_PRODUCTO_PRUEBAS, "pedidoError", null};
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;
+    //esperamos un código 61
+    MensajeRespuesta res = gestor.addProductoEstado(datos[0], datos[1], datos[2], Mensaje.FUNCION_ADD_PRODUCTO_TO);
+    String resultadoReal = res.getCode().getCode();     
+    assertEquals(expResult, resultadoReal);   
+  }
+  
+  /**
+  * Comprueba que el mensaje que retorna el método lleva un código 10 al introducir un conjunto de datos correcto (id de producto y de pedido que existen en la BD) y con un estado no nulo
+  */
+  @Test
+  public void addProductoEstado_productoSi_pedidoSi_estadoSi(){
+     String[] datos = {ID_PRODUCTO_PRUEBAS, ID_PEDIDO_PRUEBAS, "pendiente"};
+    String expResult = Codes.CODIGO_OK;
+    //esperamos un código 10
+    MensajeRespuesta res = gestor.addProductoEstado(datos[0], datos[1], datos[2], Mensaje.FUNCION_ADD_PRODUCTO_TO);
+    String resultadoReal = res.getCode().getCode();
+    //como se habrá insertado un registro, lo eliminamos
+    try {
+      deleteProductoDePedidoPrueba();
+    } catch (SQLException ex) {
+      fail("Error en la base de datos");
+    }
+    assertEquals(expResult, resultadoReal);   
+  }
+  
+  /**
+  * Comprueba que el mensaje que retorna el método lleva un código 61 al introducir un producto que no está en la base de datos y con un estado no nulo
+  */
+  @Test
+  public void addProductoEstado_productoNo_pedidoSi_estadoSi(){
+    String[] datos = {"X099", ID_PEDIDO_PRUEBAS, "pendiente"};
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;
+    //esperamos un código 61
+    MensajeRespuesta res = gestor.addProductoEstado(datos[0], datos[1], datos[2], Mensaje.FUNCION_ADD_PRODUCTO_TO);
+    String resultadoReal = res.getCode().getCode();     
+    assertEquals(expResult, resultadoReal);   
+  }
+  
+   /**
+  * Comprueba que el mensaje que retorna el método lleva un código 61 al introducir un id de pedido que no está en la base de datos y con un estado no nulo
+  */
+  @Test
+  public void addProductoEstado_productoSi_pedidoNo_estadoSi(){
+    String[] datos = {ID_PRODUCTO_PRUEBAS, "pedidoError", "pendiente"};
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;
+    //esperamos un código 61
+    MensajeRespuesta res = gestor.addProductoEstado(datos[0], datos[1], datos[2], Mensaje.FUNCION_ADD_PRODUCTO_TO);
+    String resultadoReal = res.getCode().getCode();     
+    assertEquals(expResult, resultadoReal);   
+  }
+  
   
    
   /*  
@@ -470,11 +577,13 @@ public void tearDown() {
    * @throws SQLException SQLException si hay errores al acceder o ejecutar la sentencia INSERT
    */
   public void insertUserPrueba() throws SQLException{
+    gestor.openConnection();
     Connection con = gestor.getCon();
     String sentenciaInsert = "INSERT INTO usuario (\"usuario\", \"pwd\", \"email\", \"fecha_alta\", \"fecha_modificacion\", \"isgestor\") VALUES ('Prueba', 'pruebaPass', '"+MAIL_PRUEBAS+"', '2020-11-20', '2020-11-20', false)";
     PreparedStatement stm = con.prepareStatement(sentenciaInsert);
     stm.executeUpdate();
     stm.close();    
+    gestor.closeConnection();
   }
   
   /**
@@ -482,10 +591,22 @@ public void tearDown() {
    * @throws SQLException SQLException si no se puede acceder a la base de datos o no se puede borrar el usuario
    */
   public void deleteUserPrueba() throws SQLException{
+    gestor.openConnection();
      Connection con = gestor.getCon();
      String sentenciaDelete = "DELETE FROM usuario where email = '"+MAIL_PRUEBAS+"'";   
      PreparedStatement stm = con.prepareStatement(sentenciaDelete);
      stm.executeUpdate();
      stm.close();    
+     gestor.closeConnection();
+  }
+  
+  public void deleteProductoDePedidoPrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();    
+    String sentencia = "DELETE FROM pedido_estado WHERE id = (SELECT id FROM pedido_estado WHERE id_pedido = '"+ID_PEDIDO_PRUEBAS+"' order by id desc limit 1)";
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    pstm.executeUpdate();
+    pstm.close();
+    gestor.closeConnection();
   }
 }

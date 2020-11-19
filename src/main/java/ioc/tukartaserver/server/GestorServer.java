@@ -305,7 +305,7 @@ public MensajeRespuesta procesarMensajeAddPedido(TokenSesion token, Pedido pedid
     //además, comprobamos que la respuesta del gestor de la base de datos es de código 10
     if ((pedido.getLista_productos().size()>0)&& respuesta.getCode().getCode().equals(Codes.CODIGO_OK)){                  
       System.out.println(SERVER+"iniciando sentencias de inserción de pedido_estado");
-      respuesta = gestorDB.addDataCombinada(pedido.getLista_productos(), pedido.getEstado_productos(), pedido.getId());      
+      respuesta = gestorDB.addProductoEstado(pedido.getLista_productos(), pedido.getEstado_productos(), pedido.getId());      
     }    
   }
   return respuesta;  
@@ -355,6 +355,19 @@ public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String 
   return respuesta;
 }
 
+
+public MensajeRespuesta procesarMensajeAddProductoTo(TokenSesion token, String[] datos, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es 10, podemos continuar    
+    respuesta  = gestorDB.addProductoEstado(datos[0], datos[1], datos[2], peticion);
+  }
+  return respuesta;
+}
 
 /******************
  * MÉTODOS AUXILIARES

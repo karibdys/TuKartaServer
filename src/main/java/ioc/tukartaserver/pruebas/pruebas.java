@@ -70,10 +70,14 @@ public static void main (String... args) throws SQLException, ClassNotFoundExcep
   }
 */
 Gson gson = new Gson();
-Empleado emp = new Empleado();
-emp.setEmail("manu@tukarta.com");
-System.out.println(gson.toJson(emp));
-
+String[] data ={"hola", "qué", "tal", "estás"};
+String dataJson = gson.toJson(data);
+System.out.println(dataJson);
+String[] dataRet = gson.fromJson(dataJson, String[].class);
+System.out.println("\nListado recuperado");
+for(String d : dataRet){
+  System.out.println(d);
+}
   
   
 }

@@ -52,6 +52,11 @@ public static final String INSERT_PEDIDO_ESTADO = "INSERT into "+TABLA_PEDIDO_ES
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
 public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
+public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
+public static final String ADD_PRODUCTO_ESTADO = "INSERT INTO "+TABLA_PEDIDO_ESTADO+" VALUES (?,?,?,?)";
+
+public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
+public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -81,7 +86,7 @@ public void setConnection(Connection con){
 }
 
 /******************
- * MÉTODOS DE PETICIONES
+ * GESTIÓN DE USUARIOS
  ******************
  */
 
@@ -202,6 +207,85 @@ public MensajeRespuesta selectDataUser(String email){
 }
 
 /**
+ * Permite establecer los parámetros de un registro de Usuarios como "dado de baja", lo que implica que su pass, gestor, restaurante y otros parámetros serán null y su salario será "0".
+ * @param email El email del Usuario a dar de baja de la base de datos
+ * @return MensajeRespuesta con el código de confirmación o error del proceso
+ */
+public MensajeRespuesta bajaUser(String email){
+  MensajeRespuesta ret = null;
+  //comprobamos que el email es válido
+  if (email==null){
+    ret = Utiles.mensajeErrorDatosIncorrectos(Mensaje.FUNCION_BAJA_USER);
+  }else{   
+    String peticion = Mensaje.FUNCION_BAJA_USER;
+    //para dar de baja necesito la fecha de hoy
+    java.sql.Date fecha_baja = Utiles.convertDateJavaToSQL(new Date());    
+    PreparedStatement stm;
+    try {
+      openConnection();
+      stm = con.prepareStatement(BAJA_USER);
+      stm.setDate(1, fecha_baja);
+      stm.setString(2, email);
+      System.out.println(BD+" sentencia --> "+stm);
+      int rows = stm.executeUpdate();
+      if (rows ==1){
+        ret = Utiles.mensajeOK(peticion);
+      }else if (rows==0){
+        ret = Utiles.mensajeErrorNoUser(peticion);      
+      }else{
+        throw new SQLException();
+      }
+      closeConnection();
+    } catch (SQLException ex) {            
+        ret = Utiles.mensajeErrorDB(peticion);
+    }      
+  }    
+  return ret;      
+}
+
+/**
+ * Obtiene y devuelve un listado de Usuarios pertenecientes a un id determinado. Este id puede ser un gestor, en cuyo caso sería un email, o un restaurante, en cuyo caso sería un id
+ * @param id String con el email del gestor o el id del restaurante al que ceñimos la búsqueda 
+ * @param peticion String con el nombre de la petición que estamos haciendo. Gracias a él determinados el elemento a filtrar. 
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del listado convertidos en Empleado
+ */
+public MensajeRespuesta listUsersFrom(String id, String peticion){
+  MensajeRespuesta ret = null;
+  ArrayList<Empleado> listado = new ArrayList<>();
+  try {
+    openConnection();
+    PreparedStatement stm =null;
+    //preparamos la sentencia SQL:
+    if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR)){
+      stm = con.prepareStatement(LIST_USERS_FROM_GESTOR);
+    }else if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_REST)){
+      stm = con.prepareStatement(LIST_USERS_FROM_REST);
+    }    
+    //añadimos los parámetros
+    stm.setString(1, id);
+    System.out.println(BD+" sentencia --> "+stm);
+    //ejecutamos la sentencia
+    ResultSet resultSet = stm.executeQuery();
+    //por cada resultado que haya en la lista creamos un usuario (básico) nuevo y lo añadimos al listdo
+    while (resultSet.next()){
+      Empleado user = Utiles.createEmpleadoFromResultSet(resultSet, false);          
+      listado.add(user);
+    }    
+    Gson gson = new Gson();
+    String arrayJSON = gson.toJson(listado);
+    ret = Utiles.mensajeOK(peticion);
+    ret.setData(arrayJSON);   
+  } catch (SQLException ex) {
+    ret = Utiles.mensajeErrorDB(peticion);
+  }
+  return ret;
+}
+
+/*****************
+ * MÉTODOS GENERALES
+ *****************/
+
+/**
  * Permite añadir un objeto de cualquier tipo a la base de datos. El propio método se encarga de verificar que los objetos que se les pasan como parámetros son registros válidos en la Base de datos
  * @param dato un objeto que la base de datos acepte como, por ejemplo, un Usuario, Empleado, Producto o Pedido
  * @param peticion Nombre de la petición que hace el cliente al servidor como, por ejemplo, add_empl o add_gestor
@@ -255,84 +339,6 @@ public MensajeRespuesta addData(Object dato, String peticion){
   return ret;
 }
 
-
-public MensajeRespuesta addDataCombinada (ArrayList<Producto> productos, ArrayList<Estado> estados, String idPedido){
-  MensajeRespuesta ret = null;
-  String sentencia = "select count(id) from "+TABLA_PEDIDO_ESTADO;
-  int idInicial =0;
-  try{
-    openConnection();
-    //eliminamos la opción de autocommit:
-    con.setAutoCommit(false);
-    //primera petición
-    PreparedStatement pstm = con.prepareStatement(sentencia);
-    ResultSet result = pstm.executeQuery();
-    if (result.next()){
-      idInicial = result.getInt(1);
-    }
-    result.close();
-    pstm.close();
-    int listaSize = productos.size();
-    int pos =0;
-    //insertamos tantas líneas como haya en el listado de productos
-    do{      
-      idInicial++;
-      sentencia = "INSERT INTO pedido_estado VALUES ("+idInicial+", '"+idPedido+"', '"+productos.get(pos).getId()+"', '"+estados.get(pos).getEstado()+"')";
-      System.out.println(BD+"Sentencia -->"+sentencia);
-      Statement stm = con.createStatement();      
-      stm.executeUpdate(sentencia);    
-      System.out.println(BD+"Dato "+(pos+1)+" de "+listaSize);      
-      stm.close();
-      pos++;     
-    }while (pos<listaSize);        
-    ret = Utiles.mensajeOK(Mensaje.FUNCION_ADD_PEDIDO);
-    //si todo ha ido bien, podemos cerrar la conexión
-    con.setAutoCommit(true);
-    closeConnection();
-  }catch (Exception ex){
-    System.out.println(ex.getMessage());
-    ret = Utiles.mensajeErrorDB(Mensaje.FUNCION_ADD_PEDIDO);
-    //TODO Borrar pedido
-  }  
-  return ret;
-}
-
-/**
- * Permite establecer los parámetros de un registro de Usuarios como "dado de baja", lo que implica que su pass, gestor, restaurante y otros parámetros serán null y su salario será "0".
- * @param email El email del Usuario a dar de baja de la base de datos
- * @return MensajeRespuesta con el código de confirmación o error del proceso
- */
-public MensajeRespuesta bajaUser(String email){
-  MensajeRespuesta ret = null;
-  //comprobamos que el email es válido
-  if (email==null){
-    ret = Utiles.mensajeErrorDatosIncorrectos(Mensaje.FUNCION_BAJA_USER);
-  }else{   
-    String peticion = Mensaje.FUNCION_BAJA_USER;
-    //para dar de baja necesito la fecha de hoy
-    java.sql.Date fecha_baja = Utiles.convertDateJavaToSQL(new Date());    
-    PreparedStatement stm;
-    try {
-      openConnection();
-      stm = con.prepareStatement(BAJA_USER);
-      stm.setDate(1, fecha_baja);
-      stm.setString(2, email);
-      System.out.println(BD+" sentencia --> "+stm);
-      int rows = stm.executeUpdate();
-      if (rows ==1){
-        ret = Utiles.mensajeOK(peticion);
-      }else if (rows==0){
-        ret = Utiles.mensajeErrorNoUser(peticion);      
-      }else{
-        throw new SQLException();
-      }
-      closeConnection();
-    } catch (SQLException ex) {            
-        ret = Utiles.mensajeErrorDB(peticion);
-    }      
-  }    
-  return ret;      
-}
 
 /**
  * Permite actualizar un registro de una tabla. Necesita, como mínimo, el campo Primary Key de dicho objeto. 
@@ -424,63 +430,10 @@ public MensajeRespuesta deleteData(String id, String peticion){
   return ret;
 }
 
-public MensajeRespuesta deleteProductosFromPedido(String id, String peticion){
-  MensajeRespuesta res = null;
-  try{
-    openConnection();
-    con.setAutoCommit(false);
-    PreparedStatement pstm = con.prepareStatement(DELETE_PROD_FROM);
-    pstm.setString(1, id);
-    pstm.executeUpdate();
-    con.commit();
-    pstm.close();
-    con.setAutoCommit(true);
-    closeConnection();
-    res = Utiles.mensajeOK(peticion);
-  }catch (SQLException ex){
-    res = Utiles.mensajeErrorDB(peticion);
-  }
-  return res;
-}
-
-
-/**
- * Obtiene y devuelve un listado de Usuarios pertenecientes a un id determinado. Este id puede ser un gestor, en cuyo caso sería un email, o un restaurante, en cuyo caso sería un id
- * @param id String con el email del gestor o el id del restaurante al que ceñimos la búsqueda 
- * @param peticion String con el nombre de la petición que estamos haciendo. Gracias a él determinados el elemento a filtrar. 
- * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del listado convertidos en Empleado
+/******************
+ * GESTIÓN DE PEDIDOS
+ ******************
  */
-public MensajeRespuesta listUsersFrom(String id, String peticion){
-  MensajeRespuesta ret = null;
-  ArrayList<Empleado> listado = new ArrayList<>();
-  try {
-    openConnection();
-    PreparedStatement stm =null;
-    //preparamos la sentencia SQL:
-    if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR)){
-      stm = con.prepareStatement(LIST_USERS_FROM_GESTOR);
-    }else if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_REST)){
-      stm = con.prepareStatement(LIST_USERS_FROM_REST);
-    }    
-    //añadimos los parámetros
-    stm.setString(1, id);
-    System.out.println(BD+" sentencia --> "+stm);
-    //ejecutamos la sentencia
-    ResultSet resultSet = stm.executeQuery();
-    //por cada resultado que haya en la lista creamos un usuario (básico) nuevo y lo añadimos al listdo
-    while (resultSet.next()){
-      Empleado user = Utiles.createEmpleadoFromResultSet(resultSet, false);          
-      listado.add(user);
-    }    
-    Gson gson = new Gson();
-    String arrayJSON = gson.toJson(listado);
-    ret = Utiles.mensajeOK(peticion);
-    ret.setData(arrayJSON);   
-  } catch (SQLException ex) {
-    ret = Utiles.mensajeErrorDB(peticion);
-  }
-  return ret;
-}
 
 /**
  * Obtiene y devuelve un listado de Pedido pertenecientes a un Empleado determinado
@@ -515,6 +468,135 @@ public MensajeRespuesta listPedidoFrom(String id, String peticion){
     ret = Utiles.mensajeErrorDB(peticion);
   }
   return ret;
+}
+
+/******************
+ * GESTIÓN DE PRODUCTOS
+ ******************
+ */
+
+/**
+ * Permite meter en la base de datos un listado de productos y sus estados a un pedido abierto
+ * @param productos ArrayList<Producto> con el listado de productos a insertar
+ * @param estados  ArrayList<Estado> con el listado de estados de cada producto a insertar.
+ * @param idPedido String con el id del pedido al que se tienen que asociar
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. No incluye datos adicionales
+ */
+public MensajeRespuesta addProductoEstado (ArrayList<Producto> productos, ArrayList<Estado> estados, String idPedido){
+  MensajeRespuesta ret = null;
+  int idInicial =0;
+  try{
+    openConnection();
+    //eliminamos la opción de autocommit:
+    con.setAutoCommit(false);
+    //primera petición
+    PreparedStatement pstm = con.prepareStatement(COUNT_PEDIDO);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      idInicial = result.getInt(1);
+    }
+    result.close();
+    pstm.close();
+    int listaSize = productos.size();
+    int pos =0;
+    //insertamos tantas líneas como haya en el listado de productos
+    do{      
+      idInicial++;
+      String id_registro = idPedido+"-"+idInicial;
+      String sentencia = "INSERT INTO pedido_estado VALUES ("+id_registro+", '"+idPedido+"', '"+productos.get(pos).getId()+"', '"+estados.get(pos).getEstado()+"')";
+      System.out.println(BD+"Sentencia -->"+sentencia);
+      Statement stm = con.createStatement();      
+      stm.executeUpdate(sentencia);    
+      System.out.println(BD+"Dato "+(pos+1)+" de "+listaSize);      
+      stm.close();
+      pos++;     
+    }while (pos<listaSize);        
+    ret = Utiles.mensajeOK(Mensaje.FUNCION_ADD_PEDIDO);
+    //si todo ha ido bien, podemos cerrar la conexión
+    con.setAutoCommit(true);
+    closeConnection();
+  }catch (Exception ex){
+    System.out.println(ex.getMessage());
+    ret = Utiles.mensajeErrorDB(Mensaje.FUNCION_ADD_PEDIDO);
+    //TODO Borrar pedido
+  }  
+  return ret;
+}
+
+
+/**
+ * Permite meter en la base de datos un  producto y su estado a un pedido abierto
+ * @param idProd String con el id del producto a insertar
+ * @param estado  Estado asociado al producto a insertar. Si es nulo se asociará directamente el estado "pendiente"
+ * @param idPedido String con el id del pedido al que se tienen que asociar
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. No incluye datos adicionales
+ */
+public MensajeRespuesta addProductoEstado(String idProd, String idPedido, String estado, String peticion){
+  MensajeRespuesta ret = null;
+  String idRegistro = "";
+  //comprobación del Estado
+  if (estado ==null){    
+    estado = Estado.EN_PREPARACIÓN.getEstado();
+    log("Creando nuevo estado: "+estado);
+  }
+  try{
+    openConnection();    
+    //primera petición
+    PreparedStatement pstm = con.prepareStatement(COUNT_PEDIDO);
+    pstm.setString(1, idPedido);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      idRegistro = idPedido+"-"+(result.getInt(1)+1);
+      log("id del pedido: "+idRegistro);
+    }
+    result.close();
+    pstm.close();
+    //comprobamos que el producto está:
+    if (comprobarProducto(idProd)){
+      //comprobamos que el pedido existe
+      if(comprobarPedido(idPedido)){
+        Statement stm = con.createStatement();
+        //si todo ha ido bien, ya tenemos el id del producto a insertar
+        String sentencia = "INSERT INTO pedido_estado VALUES ('"+idRegistro+"', '"+idPedido+"', '"+idProd+"', '"+estado+"')";    
+        stm.executeUpdate(sentencia);
+        stm.close();
+        closeConnection();
+        ret = Utiles.mensajeOK(peticion);
+      }else{
+          //si no existe el pedido, se lanza un error de que no se ha encontrado la primary key
+         ret = Utiles.mensajeErrorPKNotFound(peticion);
+      }
+      
+    }else{
+      //si no existe el producto, se lanza un error de que no se ha encontrado la primary key
+      ret = Utiles.mensajeErrorPKNotFound(peticion);
+    }
+    
+  }catch (SQLException ex){
+    log("error: "+ex.getMessage());   
+    ret = Utiles.mensajeErrorDB(peticion);
+  }
+  return ret;
+}
+
+
+public MensajeRespuesta deleteProductosFromPedido(String id, String peticion){
+  MensajeRespuesta res = null;
+  try{
+    openConnection();
+    con.setAutoCommit(false);
+    PreparedStatement pstm = con.prepareStatement(DELETE_PROD_FROM);
+    pstm.setString(1, id);
+    pstm.executeUpdate();
+    con.commit();
+    pstm.close();
+    con.setAutoCommit(true);
+    closeConnection();
+    res = Utiles.mensajeOK(peticion);
+  }catch (SQLException ex){
+    res = Utiles.mensajeErrorDB(peticion);
+  }
+  return res;
 }
 
 /******************
@@ -610,6 +692,34 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    }catch (SQLException e){
     System.out.println(e.getMessage());
    }
+ }
+ 
+ public static void log(String texto){
+   System.out.println(BD+": "+texto);
+ }
+ 
+ public boolean comprobarProducto (String idProd) throws SQLException{
+   boolean prod = false;   
+   openConnection();
+   PreparedStatement pstm = con.prepareStatement(COMPROBAR_PROD);
+   pstm.setString(1, idProd);
+   ResultSet res= pstm.executeQuery();
+   if(res.next()){
+     prod=true;
+   }      
+   return prod;
+ }
+ 
+ public boolean comprobarPedido(String idPedido) throws SQLException{
+   boolean prod = false;   
+   openConnection();
+   PreparedStatement pstm = con.prepareStatement(COMPROBAR_PEDIDO);
+   pstm.setString(1, idPedido);
+   ResultSet res= pstm.executeQuery();
+   if(res.next()){
+     prod=true;
+   }      
+   return prod; 
  }
  
 }
