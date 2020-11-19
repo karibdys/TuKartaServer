@@ -352,12 +352,23 @@ public MensajeRespuesta updateData(Object dato, String peticion){
   //primero tenemos que saber qué tipo de dato viene asociado
   if (dato instanceof Empleado){
     //tipo empleado
-    sentencia = Utiles.sentenciaUsuarioToUpdateSQL((Empleado)dato);   
-    System.out.println(BD+"sentencia: "+sentencia);
+    sentencia = Utiles.sentenciaUsuarioToUpdateSQL((Empleado)dato);       
   }else if (dato instanceof Usuario){
     //tipo gestor/usuario
-    sentencia = Utiles.sentenciaUsuarioToInsertSQL((Usuario)dato);   
+    sentencia = Utiles.sentenciaUsuarioToUpdateSQL((Usuario)dato);   
+  } else if (dato instanceof Pedido){    
+    try{
+      if(comprobarPedido(((Pedido) dato).getId())){
+        sentencia = Utiles.sentenciaPedidoToUpdateSQL((Pedido)dato);
+      }else{
+        throw new SQLException();
+      }
+    }catch (SQLException ex){
+      return ret = Utiles.mensajeErrorPKNotFound(peticion);
+    }
+    
   }  
+  log("sentencia: "+sentencia);
   if(!sentencia.equals("")){
     try {
       openConnection();
@@ -579,18 +590,20 @@ public MensajeRespuesta addProductoEstado(String idProd, String idPedido, String
   return ret;
 }
 
-
+/**
+ * Elimina todos los productos asociados a un pedido 
+ * @param id String con el id del pedido cuyos productos queremos eliminar
+ * @param peticion String con la petición a ejecutar
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. No incluye datos adicionales
+ */
 public MensajeRespuesta deleteProductosFromPedido(String id, String peticion){
   MensajeRespuesta res = null;
   try{
-    openConnection();
-    con.setAutoCommit(false);
+    openConnection();   
     PreparedStatement pstm = con.prepareStatement(DELETE_PROD_FROM);
     pstm.setString(1, id);
     pstm.executeUpdate();
-    con.commit();
-    pstm.close();
-    con.setAutoCommit(true);
+    pstm.close();    
     closeConnection();
     res = Utiles.mensajeOK(peticion);
   }catch (SQLException ex){

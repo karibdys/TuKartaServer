@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="25" failures="0" name="ioc.tukartaserver.gestorDB.GestorDBTest" time="3.08" errors="0" skipped="0">
+<testsuite tests="27" failures="0" name="ioc.tukartaserver.gestorDB.GestorDBTest" time="3.741" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="java.vm.version" value="11.0.2+9-LTS"/>
@@ -65,29 +65,31 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoNo_estadoSi" time="0.904"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_gestorOK" time="0.113"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoAdmin" time="0.072"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoNo_estadoSi" time="0.936"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_gestorOK" time="0.126"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoAdmin" time="0.07"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_EmpleadoEmailNull" time="0"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoSi_estadoSi" time="0.312"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoSi_estadoNull" time="0.257"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoAdmin" time="0.062"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_usuarioNoExiste" time="0.06"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="constructorSentenciaLoginAdmin" time="0.006"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoNo_pedidoSi_estadoSi" time="0.144"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoNoEnBD" time="0.06"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_GestorOK" time="0.07"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="datosNullLogin" time="0"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoPassOkAdmin" time="0.061"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_EmpleadoOK" time="0.193"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoPassOkNoAdmin" time="0.064"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassAdmin" time="0.073"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassNoAdmin" time="0.059"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoSi_estadoSi" time="0.421"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoSi_estadoNull" time="0.383"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoAdmin" time="0.076"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="selectDataUser_usuarioNoExiste" time="0.061"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="constructorSentenciaLoginAdmin" time="0.005"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoNo_pedidoSi_estadoSi" time="0.15"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoNoEnBD" time="0.059"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_GestorOK" time="0.061"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="datosNullLogin" time="0.001"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="updateData_pedidoNO" time="0.069"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="updateData_pedidoOK" time="0.313"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoPassOkAdmin" time="0.067"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="construirUserFromResult_EmpleadoOK" time="0.197"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoPassOkNoAdmin" time="0.059"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassAdmin" time="0.065"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioEncontradoNoPassNoAdmin" time="0.071"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="constructorSentenciaLoginNoAdmin" time="0.001"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoNo_estadoNull" time="0.181"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoCorrecto" time="0.194"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoNoAdmin" time="0.067"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoSi_pedidoNo_estadoNull" time="0.172"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoCorrecto" time="0.185"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="login_usuarioNoEncontradoNoAdmin" time="0.065"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="bajaUser_empleadoNull" time="0"/>
   <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="datosNullLoginAdmin" time="0"/>
-  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoNo_pedidoSi_estadoNull" time="0.127"/>
+  <testcase classname="ioc.tukartaserver.gestorDB.GestorDBTest" name="addProductoEstado_productoNo_pedidoSi_estadoNull" time="0.128"/>
 </testsuite>

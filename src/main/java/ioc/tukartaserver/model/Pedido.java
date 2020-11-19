@@ -11,6 +11,7 @@ import java.util.Date;
 public class Pedido {
 
 private String id;
+//private ArrayList<String> lista_id;
 private ArrayList<Producto> lista_productos;
 private ArrayList<Estado> estado_productos;
 private Empleado empleado;

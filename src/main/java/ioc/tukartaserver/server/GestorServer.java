@@ -329,6 +329,18 @@ public MensajeRespuesta procesarMensajeDeletePedido(TokenSesion token, String id
   return respuesta;
 }
 
+public MensajeRespuesta procesarMensajeUpdatePedido(TokenSesion token, Pedido pedido){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_UPDATE_PEDIDO);
+  }else{
+    respuesta = gestorDB.updateData(pedido, Mensaje.FUNCION_UPDATE_PEDIDO);
+  }
+  return respuesta;
+}
+
 /**
  * Procesa un mensaje de petición para listar los Pedidos activos pertenecientes a un usuario determinado
  * @param token TokenSesion con la información de la sesión del usuario

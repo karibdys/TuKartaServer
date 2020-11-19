@@ -253,6 +253,11 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         String pedidoId = gson.fromJson(dataString, Pedido.class).getId();
         respuesta = gestorServer.procesarMensajeDeletePedido(token, pedidoId);
        break;
+      case Mensaje.FUNCION_UPDATE_PEDIDO:
+        System.out.println(CONCLI+"procesando petición de actualizar un pedido");
+        pedidoIn = gson.fromJson(dataString, Pedido.class);
+        respuesta = gestorServer.procesarMensajeUpdatePedido(token, pedidoIn);
+        break;
       case Mensaje.FUNCION_ADD_PRODUCTO_TO:
         System.out.println(CONCLI+"procesando petición de añadir producto a un pedido");
         String[] datosProd = gson.fromJson(dataString, String[].class);

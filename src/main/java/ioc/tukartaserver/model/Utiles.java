@@ -268,6 +268,9 @@ public static String ParseDate(Date fecha){
     builder.append(" WHERE email = '"+user.getEmail()+"'");
     return builder.toString();
   }
+  
+  
+
 
   
   /**
@@ -371,6 +374,24 @@ public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLExcep
     builder.append(")");
     
     return builder.toString();    
+  }
+  
+    public static  String sentenciaPedidoToUpdateSQL (Pedido pedido){
+    StringBuilder builder = new StringBuilder();
+    builder.append("UPDATE "+GestorDB.TABLA_PEDIDO+" SET ");
+    builder.append("\"id\" = '"+pedido.getId()+"'");
+    if (pedido.getEmpleado()!=null){
+      builder.append(", \"empleado\" = '"+pedido.getEmpleado().getEmail()+"'");
+    }
+    if (pedido.getMesa()!=null){
+      builder.append(", \"mesa\" = '"+pedido.getMesa().getId()+"'");
+    }
+    if (pedido.getPrecio_final()!=0){
+      builder.append(", \"precio_final\" = "+pedido.getPrecio_final());
+    }
+    builder.append(", \"activo\" = '"+pedido.isActivo()+"'");
+    builder.append(" WHERE id = '"+pedido.getId()+"'");
+    return builder.toString();
   }
   
   /**

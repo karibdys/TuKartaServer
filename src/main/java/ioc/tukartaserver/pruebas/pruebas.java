@@ -69,15 +69,11 @@ public static void main (String... args) throws SQLException, ClassNotFoundExcep
     System.err.println(ex.getMessage());
   }
 */
-Gson gson = new Gson();
-String[] data ={"hola", "qué", "tal", "estás"};
-String dataJson = gson.toJson(data);
-System.out.println(dataJson);
-String[] dataRet = gson.fromJson(dataJson, String[].class);
-System.out.println("\nListado recuperado");
-for(String d : dataRet){
-  System.out.println(d);
-}
+  Pedido pedido = new Pedido();
+  String sentencia = "";
+  pedido.setPrecio_final(1500);
+  sentencia = Utiles.sentenciaPedidoToUpdateSQL(pedido);
+  System.out.println(sentencia);
   
   
 }

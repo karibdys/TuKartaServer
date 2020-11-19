@@ -204,12 +204,25 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE ADD PRODUCTO TO ************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_pedido_to");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("YiWUWcSngI");  
       String[] datos = {"B001", "pedido1M", null};
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PRODUCTO_TO, datos, token);
+      */
+      
+       /*******************PRUEBA DE UPDATE PEDIDO************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de update_pedido");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("iQucZTDsTe");        
+      Pedido pedidoNuevo = new Pedido();
+      pedidoNuevo.setId("pedido1M");
+      pedidoNuevo.setPrecio_final(100);
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_PEDIDO, pedidoNuevo, token);
+      
+      
       
       
       /*******************FINAL DE PETICIÓN ************************/

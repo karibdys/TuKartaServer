@@ -4,6 +4,7 @@ import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Usuario;
 import java.sql.Connection;
 import java.sql.Date;
@@ -33,8 +34,10 @@ private static String PASS_CORRECTA_ADMIN="marcPass";
 private static String PASS_INCORRECTA="randomPass";
 private static String MAIL_PRUEBAS = "prueba@tukarta.com";
 
-private static final String ID_PEDIDO_PRUEBAS = "pedido1M";
+private static final String ID_PEDIDO_PRUEBAS = "201120/2021-mesa1CanMarc";
 private static final String ID_PRODUCTO_PRUEBAS = "B001";
+private static final String ID_MESA_PRUEBAS = "mesa1CanMarc";
+private static final float PRECIO_FINAL_PRUEBAS =100;
 
 public GestorDBTest() {
 }
@@ -468,6 +471,61 @@ public void tearDown() {
   }
   
   
+  
+    /*  
+  *************
+   UPDATE_PEDIDO
+  ***************/
+  @Test
+  public void updateData_pedidoOK(){
+    System.out.println("\n**********************\nPrueba UPDATE PEDIDO CORRECTO\n");
+
+    MensajeRespuesta respuesta=null;
+
+    float precioFinal =0;
+    try {
+      addPedidoPrueba();
+      Pedido pedido = new Pedido();
+      pedido.setId(ID_PEDIDO_PRUEBAS);
+      pedido.setPrecio_final(PRECIO_FINAL_PRUEBAS);
+      respuesta = gestor.updateData(pedido, Mensaje.FUNCION_UPDATE_PEDIDO);        
+      gestor.openConnection();
+      Connection con = gestor.getCon();
+      PreparedStatement pstm = con.prepareStatement("SELECT precio_final FROM pedido WHERE id = '"+ID_PEDIDO_PRUEBAS+"'");
+      ResultSet set = pstm.executeQuery();
+      if (set.next()){
+        precioFinal = set.getFloat(1);
+      }
+      deletePedidoPrueba();
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+      fail("Error de SQL");
+    }
+    String expResult = Codes.CODIGO_OK;
+    String respuestaReal = respuesta.getCode().getCode();
+    if (precioFinal == PRECIO_FINAL_PRUEBAS){
+      assertEquals(expResult, respuestaReal);
+    }else{
+      fail("no se ha actualizado bien el pedido");
+    }
+    
+  }
+  
+  @Test
+  public void updateData_pedidoNO(){
+    System.out.println("\n**********************\nPrueba UPDATE PEDIDO QUE NO ESTÁ EN LA BASE DE DATOS\n");
+    MensajeRespuesta respuesta=null;
+    Pedido pedido = new Pedido();
+    pedido.setId("pedidoraro");
+    pedido.setPrecio_final(PRECIO_FINAL_PRUEBAS);
+    respuesta = gestor.updateData(pedido, Mensaje.FUNCION_UPDATE_PEDIDO);                          
+    
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;
+    String respuestaReal = respuesta.getCode().getCode();
+    
+    assertEquals(expResult, respuestaReal);            
+  }
+  
   /*  
   *************
    ADD_PRODUCTO_ESTADO (SIMPLE)
@@ -478,6 +536,12 @@ public void tearDown() {
   */
   @Test
   public void addProductoEstado_productoSi_pedidoSi_estadoNull(){
+    //añadimos el pedido
+    try{
+      addPedidoPrueba();
+    }catch(SQLException ex){
+      fail("No se ha podido insertar el pedido de prueba");
+    }
     String[] datos = {ID_PRODUCTO_PRUEBAS, ID_PEDIDO_PRUEBAS, null};
     String expResult = Codes.CODIGO_OK;
     //esperamos un código 10
@@ -486,6 +550,7 @@ public void tearDown() {
     //como se habrá insertado un registro, lo eliminamos
     try {
       deleteProductoDePedidoPrueba();
+      deletePedidoPrueba();
     } catch (SQLException ex) {
       fail("Error en la base de datos");
     }
@@ -524,6 +589,12 @@ public void tearDown() {
   */
   @Test
   public void addProductoEstado_productoSi_pedidoSi_estadoSi(){
+    //añadimos pedido de prueba
+    try{
+      addPedidoPrueba();
+    }catch(SQLException ex){
+      fail("No se ha podido insertar el pedido de prueba");
+    }
      String[] datos = {ID_PRODUCTO_PRUEBAS, ID_PEDIDO_PRUEBAS, "pendiente"};
     String expResult = Codes.CODIGO_OK;
     //esperamos un código 10
@@ -532,6 +603,7 @@ public void tearDown() {
     //como se habrá insertado un registro, lo eliminamos
     try {
       deleteProductoDePedidoPrueba();
+      deletePedidoPrueba();
     } catch (SQLException ex) {
       fail("Error en la base de datos");
     }
@@ -594,6 +666,26 @@ public void tearDown() {
     gestor.openConnection();
      Connection con = gestor.getCon();
      String sentenciaDelete = "DELETE FROM usuario where email = '"+MAIL_PRUEBAS+"'";   
+     PreparedStatement stm = con.prepareStatement(sentenciaDelete);
+     stm.executeUpdate();
+     stm.close();    
+     gestor.closeConnection();
+  }
+  
+  public void addPedidoPrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();    
+    String sentencia = "INSERT INTO pedido VALUES ('"+ID_PEDIDO_PRUEBAS+"', '"+USER_CORRECTO+"', '"+ID_MESA_PRUEBAS+"', 0, true, '2020-11-20')";
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    pstm.executeUpdate();
+    pstm.close();
+    gestor.closeConnection();
+  }
+  
+  public void deletePedidoPrueba() throws SQLException{
+    gestor.openConnection();
+     Connection con = gestor.getCon();
+     String sentenciaDelete = "DELETE FROM pedido where id= '"+ID_PEDIDO_PRUEBAS+"'";   
      PreparedStatement stm = con.prepareStatement(sentenciaDelete);
      stm.executeUpdate();
      stm.close();    
