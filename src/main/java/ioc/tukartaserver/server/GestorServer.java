@@ -3,7 +3,6 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
-import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Pedido;
@@ -258,7 +257,7 @@ public MensajeRespuesta procesarMensajeUpdateUser(TokenSesion token, Object usua
  * Procesa un mensaje de petición para listar todos los empleados asociados a un gestor o a un restaurante. 
  * @param token TokenSesion con la información de la sesión del usuario
  * @param id id 
- * @return 
+ * @return MensajeRespuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Incluye los datos de los usuarios listados
  */
 public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String id){
   //comprobamos si el token es válido o no
@@ -284,6 +283,12 @@ public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String i
  ******************
  */
 
+/**
+ * Procesa un mensaje de petición para añadir un pedido al listado.
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param pedido Pedido a insertar
+ * @return MensajeRespuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No lleva datos extras
+ */
 public MensajeRespuesta procesarMensajeAddPedido(TokenSesion token, Pedido pedido){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -303,6 +308,12 @@ public MensajeRespuesta procesarMensajeAddPedido(TokenSesion token, Pedido pedid
   return respuesta;  
 }
 
+/**
+ * Procesa un mensaje de petición para eliminar un pedido al listado.
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param idPedido String con el ID del pedido a eliminar
+ * @return MensajeRespuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No lleva datos extras
+ */
 public MensajeRespuesta procesarMensajeDeletePedido(TokenSesion token, String idPedido){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -315,6 +326,13 @@ public MensajeRespuesta procesarMensajeDeletePedido(TokenSesion token, String id
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición para listar los Pedidos activos pertenecientes a un usuario determinado
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param mail String con el id del Empleado del que queremos ver los pedidos
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Incluye los datos de los pedidos listados. 
+ */
 public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String mail, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -357,7 +375,11 @@ public void endConnection(){
   sendMensaje(respuesta);
 }
 
-
+/**
+ * Comprueba si una sesión está activa o no
+ * @param token TokenSesion a verificar en el listado de sesiones
+ * @return true si la sesión está en el listado de sesiones y false si no
+ */
 private Codes comprobarSesion(TokenSesion token){
   Codes codigoRet = null;
   //comprobamos que el token es válido
@@ -369,8 +391,7 @@ private Codes comprobarSesion(TokenSesion token){
       codigoRet = new Codes(Codes.CODIGO_OK);
     }else{
       codigoRet = new Codes(Codes.CODIGO_NO_SESION);
-    }
-       
+    }       
   }
   return codigoRet;
 } 

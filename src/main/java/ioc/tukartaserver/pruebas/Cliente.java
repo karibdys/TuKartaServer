@@ -196,7 +196,7 @@ public void startClient() {
       
       System.out.println(CLIENTE+"Procediendo a hacer petición de delete_pedido");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("dSxpknfzKb");  
+      token.setToken("nsafoOfcuu");  
       pedido = new Pedido();
       pedido.setId("pedido3M");
       

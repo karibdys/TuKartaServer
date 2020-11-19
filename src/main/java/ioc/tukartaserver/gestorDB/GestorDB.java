@@ -40,16 +40,18 @@ private Connection con;
 public static final String TABLA_USERS = "usuario";
 public static final String TABLA_PROD = "producto";
 public static final String TABLA_PEDIDO = "pedido";
+public static final String TABLA_RESTAURANTE = "restaurante";
 public static final String TABLA_PEDIDO_ESTADO = "pedido_estado";
 
 //sentencias
-public static final String SELECT_USER = "SELECT * FROM usuario WHERE email = ?";
-public static final String BAJA_USER = "UPDATE usuario SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
-public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.gestor = ?";
-public static final String LIST_USERS_FROM_REST = "SELECT * FROM usuario LEFT JOIN restaurante ON usuario.trabajadorde = restaurante.id WHERE usuario.trabajadorde = ?";
+public static final String SELECT_USER = "SELECT * FROM "+TABLA_USERS+" WHERE email = ?";
+public static final String BAJA_USER = "UPDATE "+TABLA_USERS+" SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
+public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.gestor = ?";
+public static final String LIST_USERS_FROM_REST = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.trabajadorde = ?";
 public static final String INSERT_PEDIDO_ESTADO = "INSERT into "+TABLA_PEDIDO_ESTADO+" VALUES (?, ?, ?, ?)";
-public static final String LIST_PEDIDO_FROM_USER = "SELECT* from PEDIDO WHERE empleado = ? AND activo = ?";
-public static final String DELETE_PEDIDO = "DELETE FROM pedido WHERE id = ?";
+public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
+public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
+public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -378,33 +380,76 @@ public MensajeRespuesta updateData(Object dato, String peticion){
   return ret;  
 }
 
+/**
+ * Permite eliminar un registro de una tabla determinada
+ * @param id String con la clave primaria del registro a eliminar
+ * @param peticion String con el nombre de la petición a ejecutar. Gracias a él se identificará la tabla de la que queremos eliminar el pedido. 
+ * @return MensajeRespuesta con el código de confirmación o error del proceso
+ */
 public MensajeRespuesta deleteData(String id, String peticion){
   MensajeRespuesta ret = null;
   String sentencia ="";
   PreparedStatement pstm = null;
   switch (peticion){
     case Mensaje.FUNCION_DELETE_PEDIDO:
+      //eliminamos los productos que hay asociados a este pedido
+      ret = deleteProductosFromPedido(id, peticion);
+      System.out.println(BD+"productos eliminados");
+      //si hay algún fallo eliminando estos productos, mandamos un error
+      if(!ret.getCode().getCode().equals(Codes.CODIGO_OK)){
+        return ret;        
+      }
+      //si todo ha ido bien, continuamos con la petición
       sentencia = DELETE_PEDIDO;
+      System.out.println(BD+"pedido preparado para eliminar: \n"+sentencia);
       break;
     default:
       return Utiles.mensajeErrorFuncionNoSoportada(peticion);      
   }
   try{
+    //abrimos la conexión y creamos el objeto PreparedStatement con la sentencia asignada según la petición
     openConnection();
     pstm =con.prepareStatement(sentencia);
     pstm.setString(1, id);
     pstm.executeUpdate();
+    //si no ha habido fallos, devolvemos un mensaje OK
     ret = Utiles.mensajeOK(peticion);
     pstm.close();
     closeConnection();
   }catch (SQLException e){
+    //si ha habido fallos devolvemos un mensaje de error en la base de datos
     ret = Utiles.mensajeErrorDB(peticion);
   }
+  
   return ret;
 }
 
+public MensajeRespuesta deleteProductosFromPedido(String id, String peticion){
+  MensajeRespuesta res = null;
+  try{
+    openConnection();
+    con.setAutoCommit(false);
+    PreparedStatement pstm = con.prepareStatement(DELETE_PROD_FROM);
+    pstm.setString(1, id);
+    pstm.executeUpdate();
+    con.commit();
+    pstm.close();
+    con.setAutoCommit(true);
+    closeConnection();
+    res = Utiles.mensajeOK(peticion);
+  }catch (SQLException ex){
+    res = Utiles.mensajeErrorDB(peticion);
+  }
+  return res;
+}
 
 
+/**
+ * Obtiene y devuelve un listado de Usuarios pertenecientes a un id determinado. Este id puede ser un gestor, en cuyo caso sería un email, o un restaurante, en cuyo caso sería un id
+ * @param id String con el email del gestor o el id del restaurante al que ceñimos la búsqueda 
+ * @param peticion String con el nombre de la petición que estamos haciendo. Gracias a él determinados el elemento a filtrar. 
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del listado convertidos en Empleado
+ */
 public MensajeRespuesta listUsersFrom(String id, String peticion){
   MensajeRespuesta ret = null;
   ArrayList<Empleado> listado = new ArrayList<>();
@@ -437,7 +482,12 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
   return ret;
 }
 
-
+/**
+ * Obtiene y devuelve un listado de Pedido pertenecientes a un Empleado determinado
+ * @param id String con el email del Empleado
+ * @param peticion String con el nombre de la petición que estamos haciendo. 
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del listado convertidos en Empleado
+ */
 public MensajeRespuesta listPedidoFrom(String id, String peticion){
   MensajeRespuesta ret = null;
   ArrayList<Pedido> listado = new ArrayList<>();
