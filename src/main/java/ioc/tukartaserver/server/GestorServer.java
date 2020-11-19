@@ -296,7 +296,10 @@ public MensajeRespuesta procesarMensajeAddPedido(TokenSesion token, Pedido pedid
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
     respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
   }else{
-    //si el código es un código 10, podemos seguir adelante.    
+    //si el código es un código 10, podemos seguir adelante. 
+    //generamos un ID para el pedido:
+    pedido.setId(Pedido.generarId(pedido.getMesa()));
+    //añadimos el producto
     respuesta = gestorDB.addData(pedido, Mensaje.FUNCION_ADD_PEDIDO);    
     //comprobamos si el pedido viene con productos. Si viene con productos tendremos que hacer una segunda sentencia INSERT 
     //además, comprobamos que la respuesta del gestor de la base de datos es de código 10

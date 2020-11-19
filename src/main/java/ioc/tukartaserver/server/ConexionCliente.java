@@ -253,6 +253,8 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         String pedidoId = gson.fromJson(dataString, Pedido.class).getId();
         respuesta = gestorServer.procesarMensajeDeletePedido(token, pedidoId);
        break;
+      case Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES:
+        break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;

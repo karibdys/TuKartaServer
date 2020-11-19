@@ -75,7 +75,7 @@ public void startClient() {
       empMod.setSalario(1700);
       Mesa mesa = new Mesa("mesa1CanMarc", 4);
       Pedido pedido = new Pedido();
-      pedido.setId("pedido3M");
+
       pedido.setEmpleado(emp);
       pedido.setFecha(new Date());
       pedido.setMesa(mesa);
@@ -177,12 +177,12 @@ public void startClient() {
       */      
       
       /*******************PRUEBA DE ADD DATA PEDIDO ************************/
-      /*
+
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
-      TokenSesion token = new TokenSesion(user);
-      token.setToken("aCywcPEarE");  
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("vZRESMJPTH");  
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PEDIDO, pedido, token);
-      */
+     
       
       /*******************PRUEBA DE LIST PEDIDO ************************/
       /*
@@ -193,7 +193,7 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE DELETE DATA PEDIDO ************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de delete_pedido");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("nsafoOfcuu");  
@@ -201,7 +201,7 @@ public void startClient() {
       pedido.setId("pedido3M");
       
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DELETE_PEDIDO, pedido, token);
-      
+      */
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         
