@@ -263,6 +263,9 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         String[] datosProd = gson.fromJson(dataString, String[].class);
         respuesta = gestorServer.procesarMensajeAddProductoTo(token, datosProd, Mensaje.FUNCION_ADD_PRODUCTO_TO);
         break;
+      case Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER:
+        String idEmp = gson.fromJson(dataString, Empleado.class).getEmail();
+        respuesta = gestorServer.procesarMensajeListPedidoCompletoFrom(token, idEmp, Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER);
       case Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES:
         break;
       default:    

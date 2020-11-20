@@ -24,6 +24,7 @@ import ioc.tukartaserver.model.Utiles;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,13 +51,17 @@ public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM "+TABLA_USERS
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.trabajadorde = ?";
 public static final String INSERT_PEDIDO_ESTADO = "INSERT into "+TABLA_PEDIDO_ESTADO+" VALUES (?, ?, ?, ?)";
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
+public static final String LIST_PEDIDO_COMPLETO_FROM_USER = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.empleado = ? AND pedido.activo = true";
+public static final String LIST_PRODUCTO_FROM_PEDIDO = "SELECT "+TABLA_PEDIDO_ESTADO+".id, "+TABLA_PEDIDO_ESTADO+".id_producto, "+TABLA_PROD+".nombre, "+TABLA_PROD+".alergenos, "+TABLA_PEDIDO_ESTADO+".estado FROM "+TABLA_PEDIDO_ESTADO+" LEFT JOIN producto ON "+TABLA_PEDIDO_ESTADO+".id_producto = "+TABLA_PROD+".id WHERE "+TABLA_PEDIDO_ESTADO+".id=?";
 public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String ADD_PRODUCTO_ESTADO = "INSERT INTO "+TABLA_PEDIDO_ESTADO+" VALUES (?,?,?,?)";
 
+
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
+
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -300,7 +305,17 @@ public MensajeRespuesta addData(Object dato, String peticion){
     sentencia = Utiles.sentenciaUsuarioToInsertSQL((Empleado)dato);   
     System.out.println(BD+"sentencia: "+sentencia); 
   }else if(dato instanceof Pedido){
-    //tipo pedido
+    try {
+      //tipo pedido
+      if (comprobarPedido(((Pedido) dato).getId())){
+        //si el pedido ya está en la base de datos, lanzamos un error de PK repetida
+        return Utiles.mensajeErrorUserRep(peticion);
+      }
+    } catch (SQLException ex) {
+      //si da un error al acceder a la DB, lanzamos un error de BD
+      return Utiles.mensajeErrorDB(peticion);
+    }
+    //si todo ha ido bien, continuamos con la petición
     sentencia = Utiles.sentenciaPedidoToInsertSQL((Pedido)dato);
   }  
   //si la sentencia creada no está vacía, procedemos a hacer la petición
@@ -321,16 +336,8 @@ public MensajeRespuesta addData(Object dato, String peticion){
       statement.close();
       closeConnection();
     } catch (SQLException ex) {
-      //si tenemos una excepción en la base de datos específica, intentamos sacarla
-      String sqlstate = ex.getSQLState();
-      if(sqlstate.startsWith("230")){
-        //si el error es que la clase está duplicada, mandamos ese mensaje
-        ret = Utiles.mensajeErrorUserRep(peticion);
-      }else{
-        //si el error es otro, entonces mandamos un error genérico
-        ret = Utiles.mensajeError(peticion);
-        System.out.println(ex.getMessage());
-      }
+      ret = Utiles.mensajeError(peticion);
+      System.out.println(ex.getMessage());    
     }      
   }else {
     //si llegamos aquí es que no se ha formado bien la sentencia porque no es un tipo de dato soportado (aún)
@@ -357,13 +364,16 @@ public MensajeRespuesta updateData(Object dato, String peticion){
     //tipo gestor/usuario
     sentencia = Utiles.sentenciaUsuarioToUpdateSQL((Usuario)dato);   
   } else if (dato instanceof Pedido){    
+    //comprobamos que el pedido existe
     try{
       if(comprobarPedido(((Pedido) dato).getId())){
+        //si existe, creamos la sentencia
         sentencia = Utiles.sentenciaPedidoToUpdateSQL((Pedido)dato);
       }else{
         throw new SQLException();
       }
     }catch (SQLException ex){
+      //si no existe, lanzamos el error
       return ret = Utiles.mensajeErrorPKNotFound(peticion);
     }
     
@@ -408,8 +418,17 @@ public MensajeRespuesta deleteData(String id, String peticion){
   String sentencia ="";
   PreparedStatement pstm = null;
   switch (peticion){
-    case Mensaje.FUNCION_DELETE_PEDIDO:
-      //eliminamos los productos que hay asociados a este pedido
+    case Mensaje.FUNCION_DELETE_PEDIDO:    
+      //comprobamos que el pedido existe
+      try {        
+        if(!comprobarPedido(id)){
+          throw new SQLException();
+        }
+      } catch (SQLException ex) {
+        //si no se encuentra el pedido, lanzamos un error de PK 
+        return Utiles.mensajeErrorPKNotFound(peticion);
+      }
+      //si el pedido sí existe, eliminamos los productos que hay asociados a este pedido      
       ret = deleteProductosFromPedido(id, peticion);
       System.out.println(BD+"productos eliminados");
       //si hay algún fallo eliminando estos productos, mandamos un error
@@ -420,6 +439,7 @@ public MensajeRespuesta deleteData(String id, String peticion){
       sentencia = DELETE_PEDIDO;
       System.out.println(BD+"pedido preparado para eliminar: \n"+sentencia);
       break;
+
     default:
       return Utiles.mensajeErrorFuncionNoSoportada(peticion);      
   }
@@ -447,7 +467,7 @@ public MensajeRespuesta deleteData(String id, String peticion){
  */
 
 /**
- * Obtiene y devuelve un listado de Pedido pertenecientes a un Empleado determinado
+ * Obtiene y devuelve un listado de Pedido pertenecientes a un Empleado determinado SIN LOS PRODUCTOS
  * @param id String con el email del Empleado
  * @param peticion String con el nombre de la petición que estamos haciendo. 
  * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del listado convertidos en Empleado
@@ -480,6 +500,66 @@ public MensajeRespuesta listPedidoFrom(String id, String peticion){
   }
   return ret;
 }
+
+/**
+ * 
+ * @param id
+ * @param peticion
+ * @return 
+ */
+public MensajeRespuesta listPedidoCompletoFrom (String id, String peticion){
+  MensajeRespuesta ret = null;
+  HashMap<String, Pedido> listado = new HashMap<>();
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(LIST_PEDIDO_COMPLETO_FROM_USER);
+    pstm.setString(1, id);
+    ResultSet result = pstm.executeQuery();
+    while(result.next()){
+      String idPedido = result.getString("id");
+      if (listado.containsKey(idPedido)){
+        //si tiene ya el pedido, es que tenemos que añadirle un producto
+        //sacamos el pedido
+        Pedido pedidoAntiguo = listado.get(idPedido);
+        //sacamos el producto
+        String idProd = result.getString("id_producto");
+        Producto productoNuevo = getProductoFromId(idProd);
+        //metemos el producto en el pedido
+        pedidoAntiguo.addProducto(productoNuevo);
+        //metemos el pedido en el producto
+        listado.put(idPedido, pedidoAntiguo);
+      }else{
+        //si no tiene el pedido, es que hay que crearlo
+        Pedido pedidoNuevo = Utiles.createPedidoFromResultSet(result);
+        //ahora sacamos el producto
+        String idProd = result.getString("id_producto");
+        Producto productoNuevo = getProductoFromId(idProd);
+        //metemos el producto en el pedido
+        pedidoNuevo.addProducto(productoNuevo);
+        //metemos el pedido en el producto
+        listado.put(idPedido, pedidoNuevo);
+      }
+    }
+  } catch (SQLException ex) {
+    return Utiles.mensajeErrorDB(peticion);
+  }
+  //si todo ha ido bien, entonces creamos un array de pedidos
+  ArrayList<Pedido> listadoFinal = new ArrayList<>();
+  for (String key: listado.keySet()) {
+    listadoFinal.add(listado.get(key));
+  }
+  
+  //pasamos el pedido a String JSON
+  Gson gson = new Gson();
+  String pedidosJson = gson.toJson(listadoFinal);
+  //creamos el mensaje respuesta
+  ret = Utiles.mensajeOK(peticion);
+  //insertamos los datos del array
+  ret.setData(pedidosJson);
+  //devolvemos el listado
+  return ret;
+}
+
 
 /******************
  * GESTIÓN DE PRODUCTOS
@@ -612,6 +692,13 @@ public MensajeRespuesta deleteProductosFromPedido(String id, String peticion){
   return res;
 }
 
+/*
+public MensajeRespuesta listProductosFromPedido (String idPedido, String peticion){
+  MensajeRespuesta res = null;
+  
+}
+*/
+
 /******************
  * MÉTODOS AUXILIARES
  ******************
@@ -685,6 +772,76 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    }
  }
  
+ /**
+  * Obtiene un objeto Producto a partir de un Id 
+  * @param idProd String id del Producto a encontrar
+  * @return Producto correspondiente al ID indicado.
+  * @throws SQLException 
+  */
+ public Producto getProductoFromId(String idProd) throws SQLException{
+   openConnection();
+   PreparedStatement pstm = con.prepareStatement("SELECT * FROM producto WHERE id = ?");
+   pstm.setString(1, idProd);
+   ResultSet res = pstm.executeQuery();
+   Producto ret = null;
+   if (res.next()){
+      ret = Utiles.createProductoFromResultSet(res, this);
+   }
+   pstm.close();
+   closeConnection();
+   return ret;
+ }
+ 
+/**
+ * Confirma si un producto está o no en la base de datos
+ * @param idProd String id del producto a comprobar
+ * @return true si el producto existe en la base de datos y false si no
+ * @throws SQLException 
+ */ 
+  public boolean comprobarProducto (String idProd) throws SQLException{
+   boolean prod = false;   
+   openConnection();
+   PreparedStatement pstm = con.prepareStatement(COMPROBAR_PROD);
+   pstm.setString(1, idProd);
+   log("sentencia --> "+pstm);
+   ResultSet res= pstm.executeQuery();   
+   if(res.next()){
+     System.out.println("Hay");
+     prod=true;
+   }      
+   return prod;
+ }
+ 
+  /**
+   * Confirma si hay un pedido en la base de datos o no
+   * @param idPedido String con el id del Pedido a comprobar
+   * @return true si el pedido existe y false si no
+   * @throws SQLException 
+   */
+ public boolean comprobarPedido(String idPedido) throws SQLException{
+   boolean prod = false;   
+   openConnection();
+   PreparedStatement pstm = con.prepareStatement(COMPROBAR_PEDIDO);
+   pstm.setString(1, idPedido);
+   ResultSet res= pstm.executeQuery();
+   if(res.next()){
+     prod=true;
+   }      
+   return prod; 
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  public void openConnection(){
   try {    
@@ -711,28 +868,7 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    System.out.println(BD+": "+texto);
  }
  
- public boolean comprobarProducto (String idProd) throws SQLException{
-   boolean prod = false;   
-   openConnection();
-   PreparedStatement pstm = con.prepareStatement(COMPROBAR_PROD);
-   pstm.setString(1, idProd);
-   ResultSet res= pstm.executeQuery();
-   if(res.next()){
-     prod=true;
-   }      
-   return prod;
- }
+
  
- public boolean comprobarPedido(String idPedido) throws SQLException{
-   boolean prod = false;   
-   openConnection();
-   PreparedStatement pstm = con.prepareStatement(COMPROBAR_PEDIDO);
-   pstm.setString(1, idPedido);
-   ResultSet res= pstm.executeQuery();
-   if(res.next()){
-     prod=true;
-   }      
-   return prod; 
- }
  
 }

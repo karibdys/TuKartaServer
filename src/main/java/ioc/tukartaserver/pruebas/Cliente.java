@@ -188,9 +188,18 @@ public void startClient() {
       /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedido_from_user");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("GGTfJXyQlX");  
+      token.setToken("SBOtoUqGRU");  
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_FROM_USER, null, token);        
       */
+       
+      /*******************PRUEBA DE LIST PEDIDO COMPLETO ************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedido_completo_from_user");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("hFKJKxAHql");  
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER, emp, token);        
+      
+      
       
       /*******************PRUEBA DE DELETE DATA PEDIDO ************************/
       /*
@@ -213,7 +222,7 @@ public void startClient() {
       */
       
        /*******************PRUEBA DE UPDATE PEDIDO************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de update_pedido");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("iQucZTDsTe");        
@@ -221,7 +230,7 @@ public void startClient() {
       pedidoNuevo.setId("pedido1M");
       pedidoNuevo.setPrecio_final(100);
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_PEDIDO, pedidoNuevo, token);
-      
+      */
       
       
       

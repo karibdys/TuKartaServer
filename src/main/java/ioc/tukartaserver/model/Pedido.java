@@ -12,13 +12,13 @@ public class Pedido {
 
 private String id;
 //private ArrayList<String> lista_id;
-private ArrayList<Producto> lista_productos;
-private ArrayList<Estado> estado_productos;
+private ArrayList<Producto> lista_productos = new ArrayList<>();
+private ArrayList<Estado> estado_productos = new ArrayList<>();
 private Empleado empleado;
 private Date fecha;
 private Mesa mesa;  
-private float precio_final;
-private boolean activo;
+private float precio_final=0;
+private boolean activo=false;
 
 
 /******************

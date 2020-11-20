@@ -16,10 +16,12 @@ public class Producto {
 
 protected String id;
 protected String nombre;
-protected HashSet<Alergeno> alergenos;
+protected HashSet<Alergeno> alergenos = new HashSet<>();
 protected float precio;
 protected int disponibles;
 protected int tiempo_elaboracion;
+protected float precio_real;
+protected ArrayList<Producto> contenido = new ArrayList<>();
 private byte[] imagen;
 
 /******************
@@ -87,6 +89,14 @@ public float getPrecio() {
 }
 
 /**
+ * Devuelve el precio_real establecido para el Producto
+ * @return float precio del Producto
+ */
+public float getPrecio_Real() {
+  return precio_real;
+}
+
+/**
  * Devuelve la cantidad del Producto que está disponible
  * @return int con la cantidad de producto disponible
  */
@@ -125,18 +135,34 @@ public void setNombre(String nombre) {
 
 /**
  * Establece un listado de Alernos al Producto
- * @param alergenos ArrayList<Alergeno>
+ * @param alergenos Array[Alergenos] de Alérgenos
  */
 public void setAlergeno(Alergeno[] alergenos) {
   this.alergenos = this.alergenos;
 }
 
+
+/**
+ * Establece un HashSet de Alernos al Producto
+ * @param alergenos HashSet<Alergeno>
+ */
+public void setAlergeno(HashSet<Alergeno> alergenos) {
+  this.alergenos = this.alergenos;
+}
 /**
  * Establece un precio al Producto
  * @param precio float con el precio del producto
  */
 public void setPrecio(float precio) {
   this.precio = precio;
+}
+
+/**
+ * Establece un precio_real al Producto
+ * @param precio float con el precio del producto
+ */
+public void setPrecio_real(float precio) {
+  this.precio_real = precio;
 }
 
 /**
@@ -153,6 +179,10 @@ public void setDisponibles(int disponibles) {
  */
 public void setTiempo_elaboracion(int tiempo_elaboracion) {
   this.tiempo_elaboracion = tiempo_elaboracion;
+}
+
+public void setContenido(ArrayList<Producto> prod){
+  this.contenido=prod;
 }
 
 /******************
@@ -195,6 +225,33 @@ public void removeAlergeno(Alergeno alergeno){
   if (this.hasAlergeno(alergeno)){
     this.alergenos.remove(alergeno);
   }
+}
+
+@Override
+public String toString(){
+  StringBuilder builder = new StringBuilder();  
+  builder.append("PRODUCTO: "+this.id+": "+this.nombre);
+  builder.append("\n  precio: "+this.precio);
+  builder.append("\n  precio real: "+this.precio_real);
+  if(this.alergenos!=null){
+    for(Alergeno ale: alergenos){
+      builder.append("\n  Alérgenos:");
+      builder.append("\n    --> "+ ale.getTipo());
+    }
+    
+  }
+  if(this.tiempo_elaboracion!=0){
+    builder.append("\n  tiempo de elaboración: "+this.tiempo_elaboracion);
+  }
+  if(this.contenido!=null){
+    builder.append("\n  Contenido:");
+    for (Producto prod : contenido){
+      builder.append("\n    --> "+ prod.getNombre());
+    }
+    
+  }
+  builder.append("\n  unidades disponible: "+this.disponibles);
+  return builder.toString();  
 }
 
 }

@@ -38,6 +38,7 @@ private static final String ID_PEDIDO_PRUEBAS = "201120/2021-mesa1CanMarc";
 private static final String ID_PRODUCTO_PRUEBAS = "B001";
 private static final String ID_MESA_PRUEBAS = "mesa1CanMarc";
 private static final float PRECIO_FINAL_PRUEBAS =100;
+private static final String ID_PROD_PRUEBAS = "Prueba001";
 
 public GestorDBTest() {
 }
@@ -637,6 +638,45 @@ public void tearDown() {
   }
   
   
+ /*  
+  *************
+   COMPROBAR PEDIDO
+  ***************
+  */
+  
+  @Test
+  public void comprobarProducto_si(){
+    boolean respuesta = false;
+  try {
+    //añadimos el producto de prueba
+    addProductoPrueba();
+    respuesta = gestor.comprobarProducto(ID_PROD_PRUEBAS);   
+    deleteProductoPrueba();
+  } catch (SQLException ex) {
+    fail("no se ha podido acceder a la base de datos");
+  }
+  assertTrue(respuesta);
+    
+  }
+  
+   @Test
+  public void comprobarProducto_no(){
+  try {
+    //añadimos el producto de prueba    
+    boolean respuesta = gestor.comprobarProducto(ID_PEDIDO_PRUEBAS);
+    assertFalse(respuesta);
+  } catch (SQLException ex) {
+    fail("no se ha podido acceder a la base de datos");
+  }
+  }
+    
+  
+  /*  
+  *************
+   COMPROBAR PRODUCTO
+  ***************
+  */
+      
    
   /*  
   *************
@@ -698,6 +738,32 @@ public void tearDown() {
     String sentencia = "DELETE FROM pedido_estado WHERE id = (SELECT id FROM pedido_estado WHERE id_pedido = '"+ID_PEDIDO_PRUEBAS+"' order by id desc limit 1)";
     PreparedStatement pstm = con.prepareStatement(sentencia);
     pstm.executeUpdate();
+    pstm.close();
+    gestor.closeConnection();
+  }
+  
+  public void addProductoPrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();    
+    String sentencia = "INSERT INTO producto VALUES ('"+ID_PROD_PRUEBAS+"', 'Producto Prueba', null, 25, 10, 0, null, 0, null)";
+    System.out.println(sentencia);
+    PreparedStatement pstm = con.prepareStatement(sentencia);    
+    if (pstm.executeUpdate()>0){
+      System.out.println("SENTENCIA INTRODUCIDA");
+    };
+    pstm.close();
+    gestor.closeConnection();
+  }
+  
+  public void deleteProductoPrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();    
+    String sentencia = "DELETE FROM producto WHERE id = '"+ID_PROD_PRUEBAS+"'";
+        System.out.println(sentencia);
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    if (pstm.executeUpdate()>0){
+      System.out.println("Eliminando registro");
+    };
     pstm.close();
     gestor.closeConnection();
   }

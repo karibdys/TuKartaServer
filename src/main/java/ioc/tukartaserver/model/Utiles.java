@@ -1,12 +1,15 @@
 package ioc.tukartaserver.model;
 
 import ioc.tukartaserver.gestorDB.GestorDB;
+import java.sql.Array;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  *  Clase con métodos variados y útiles para la gestión del servidor
@@ -134,7 +137,7 @@ public static String ParseDate(Date fecha){
  }
   
   /**
-  * Construyen un mensaje genérico de error producido en la Base de Datos al no coincidir la contraseña con el usuari introducido CÓDIGO 63
+  * Construyen un mensaje genérico de error producido en la Base de Datos al estar la Primary Key repetida en la base de datos
   * @param peticion String nombre de la petición a responder
   * @return MensajeRespuesta con el código 63 y la petición a respondida
   */
@@ -270,9 +273,6 @@ public static String ParseDate(Date fecha){
   }
   
   
-
-
-  
   /**
   * Crea un usuario a partir de un ResultSet. Puede ser un usuario completo (con todos los datos) o simple (sin los datos menos importantes. Nunca llevará la contraseña.
   * @param result ResultSet que contiene el dato del Usuario
@@ -344,10 +344,69 @@ public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLExcep
   ret.setMesa(mesa);
   ret.setFecha(result.getDate("fecha"));
   ret.setPrecio_final(result.getFloat("precio_final"));
-  ret.setActivo(true);
+  ret.setActivo(result.getBoolean("activo"));
   
   return ret;
 }
+
+public static Producto createProductoFromResultSet(ResultSet result, GestorDB gestor) throws SQLException{
+  Producto producto = new Producto();
+  //id
+  producto.setId(result.getString("id"));
+  //nombre
+  producto.setNombre(result.getString("nombre"));
+  //alergenos
+  if (result.getArray("alergenos").toString().length()>2){
+    System.out.print("Añadiendo alérgenos");
+    String array = result.getArray("alergenos").toString();
+    HashSet<Alergeno> listado = createAlergenoFromArray(array);    
+    System.out.println("TAMAÑO 2: "+listado.size());    
+    for(Alergeno a: listado){
+      System.out.println(a.getTipo());
+      producto.addAlergeno(a);
+    }
+  }  
+  //precio
+  producto.setPrecio(result.getFloat("precio"));
+  
+  //disponible
+  producto.setDisponibles(result.getInt("disponible"));
+  //tiempo_elaboracion
+  producto.setTiempo_elaboracion(result.getInt("tiempo_elaboracion"));
+  
+  //contenido
+  if (result.getArray("contenido")!=null){
+    Array arrayTemp = result.getArray("contenido");        
+    String[] content = (String[])arrayTemp.getArray();
+    ArrayList<Producto> listadoProd = new ArrayList<>();
+    for (String idProd: content){
+      Producto prod = gestor.getProductoFromId(idProd);
+      listadoProd.add(prod);
+    }
+    producto.setContenido(listadoProd);
+  }
+  //precio_real
+  
+  producto.setPrecio_real(result.getFloat("precio_real"));
+  
+  //TODO imagen
+  return producto;
+}
+
+public static HashSet<Alergeno> createAlergenoFromArray(String cadena){
+  HashSet<Alergeno> listadoAlerg = new HashSet<>();
+  String cadena2 = cadena.substring(1, cadena.length()-1);
+  System.out.println("  CADENA: "+cadena2);
+  String[] arrayString = cadena2.split(",");
+  for (String alerg: arrayString){
+    System.out.println(alerg.toUpperCase());
+    Alergeno alergeno = Alergeno.valueOf(alerg.toUpperCase());        
+    listadoAlerg.add(alergeno);
+  }
+  System.out.println("TAMAÑO: "+listadoAlerg.size());
+  return listadoAlerg;
+}
+
  
  /***********************
   * CONVERSORES A SQL DE PEDIDO

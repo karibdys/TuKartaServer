@@ -7,6 +7,7 @@ package ioc.tukartaserver.pruebas;
 
 import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
+import ioc.tukartaserver.model.Alergeno;
 import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Mensaje;
@@ -48,34 +49,23 @@ public static void main (String... args) throws SQLException, ClassNotFoundExcep
   String id = "manu@tukarta.com";
   try {
     PreparedStatement stm =null;
-    stm = con.prepareStatement(LIST_PEDIDO_FROM_USER);
-    stm.setString(1, id);
+    stm = con.prepareStatement("SELECT * FROM PRODUCTO WHERE id = 'M001'");
     System.out.println(" sentencia --> "+stm);
     ResultSet res = stm.executeQuery();
     while (res.next()){
-      Pedido pedido = Utiles.createPedidoFromResultSet(res);
-      System.out.println(pedido.getId());
-      listado.add(pedido);
-      System.out.println("\n"+pedido+"\n");
+      Producto producto = Utiles.createProductoFromResultSet(res, new GestorDB());
+      System.out.println(producto);
+      
     }
-    System.out.println("Total usuarios: "+listado.size());
-    Gson gson = new Gson();
-    String arrayJSON = gson.toJson(listado);
-    ret = Utiles.mensajeOK("list_pedido_from_user");
-    ret.setData(arrayJSON);
+   
     System.out.println("*****************\n"+ret);
   
   } catch (SQLException ex) {
     System.err.println(ex.getMessage());
-  }
-*/
-  Pedido pedido = new Pedido();
-  String sentencia = "";
-  pedido.setPrecio_final(1500);
-  sentencia = Utiles.sentenciaPedidoToUpdateSQL(pedido);
-  System.out.println(sentencia);
-  
-  
+  }*/
+  GestorDB db = new GestorDB();
+  System.out.println(db.comprobarProducto("B001"));
+
 }
   
 }

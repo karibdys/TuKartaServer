@@ -6,11 +6,11 @@ package ioc.tukartaserver.model;
  */
 public enum Alergeno {
   PESCADO ("pescado"), 
-  FRUTOS_SECOS ("frutos secos"), 
+  FRUTOS_SECOS ("frutos_secos"), 
   LACTEOS ("lacteos"), 
   MOLUSCOS ("moluscos"), 
   GLUTEN("gluten"),
-  CRUSTACEO("crustáceos"),
+  CRUSTACEO("crustaceos"),
   HUEVO("huevo"),
   CACAHUETE("cacahuete"),
   SOJA("soja"),
