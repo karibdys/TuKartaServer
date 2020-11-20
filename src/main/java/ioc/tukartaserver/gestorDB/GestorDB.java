@@ -57,6 +57,7 @@ public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE i
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String ADD_PRODUCTO_ESTADO = "INSERT INTO "+TABLA_PEDIDO_ESTADO+" VALUES (?,?,?,?)";
+public static final String DELETE_PRODUCTO_ESTADO = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ? AND id_producto = ? AND estado = ?";
 
 
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
@@ -523,9 +524,10 @@ public MensajeRespuesta listPedidoCompletoFrom (String id, String peticion){
         Pedido pedidoAntiguo = listado.get(idPedido);
         //sacamos el producto
         String idProd = result.getString("id_producto");
+        String estProd = result.getString("estado");        
         Producto productoNuevo = getProductoFromId(idProd);
         //metemos el producto en el pedido
-        pedidoAntiguo.addProducto(productoNuevo);
+        pedidoAntiguo.addProducto(productoNuevo, Estado.valueOf(estProd.toUpperCase()));
         //metemos el pedido en el producto
         listado.put(idPedido, pedidoAntiguo);
       }else{
@@ -533,9 +535,10 @@ public MensajeRespuesta listPedidoCompletoFrom (String id, String peticion){
         Pedido pedidoNuevo = Utiles.createPedidoFromResultSet(result);
         //ahora sacamos el producto
         String idProd = result.getString("id_producto");
+        String estProd = result.getString("estado");  
         Producto productoNuevo = getProductoFromId(idProd);
         //metemos el producto en el pedido
-        pedidoNuevo.addProducto(productoNuevo);
+        pedidoNuevo.addProducto(productoNuevo, Estado.valueOf(estProd.toUpperCase()));
         //metemos el pedido en el producto
         listado.put(idPedido, pedidoNuevo);
       }
@@ -627,7 +630,7 @@ public MensajeRespuesta addProductoEstado(String idProd, String idPedido, String
   String idRegistro = "";
   //comprobación del Estado
   if (estado ==null){    
-    estado = Estado.EN_PREPARACIÓN.getEstado();
+    estado = Estado.PREPARANDO.getEstado();
     log("Creando nuevo estado: "+estado);
   }
   try{
@@ -668,6 +671,30 @@ public MensajeRespuesta addProductoEstado(String idProd, String idPedido, String
     ret = Utiles.mensajeErrorDB(peticion);
   }
   return ret;
+}
+
+public MensajeRespuesta deleteProductoEstado (String idProd, String idPedido, String estado, String peticion){
+  MensajeRespuesta ret = null;
+  try{
+    openConnection();
+    String sentencia = "DELETE FROM pedido_estado WHERE id_pedido = '"+idPedido+"' AND id_producto = '"+idProd+"'";
+    if (estado!=null){
+      sentencia += " ' AND estado = '"+estado+"'";    
+    }
+    log("sentencia --> "+sentencia);
+    Statement stm = con.createStatement();
+    int num = stm.executeUpdate(sentencia);
+    if (num>0){
+      ret = Utiles.mensajeOK(peticion);
+    }else{
+      throw new SQLException();
+    }
+    stm.close();
+    closeConnection();
+  }catch (SQLException ex){
+    ret = Utiles.mensajeErrorDB(peticion);
+  }
+  return ret;  
 }
 
 /**
@@ -829,19 +856,6 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    }      
    return prod; 
  }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
  public void openConnection(){
   try {    

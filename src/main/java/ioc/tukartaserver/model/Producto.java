@@ -181,6 +181,7 @@ public void setTiempo_elaboracion(int tiempo_elaboracion) {
   this.tiempo_elaboracion = tiempo_elaboracion;
 }
 
+
 public void setContenido(ArrayList<Producto> prod){
   this.contenido=prod;
 }

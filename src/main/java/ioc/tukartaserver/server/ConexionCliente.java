@@ -165,6 +165,7 @@ public void procesarPeticion(MensajeSolicitud mensaje){
     Usuario userIn=null;
     Pedido pedidoIn=null;
     TokenSesion token = null;
+    String[] datosString=null;
     if (!mensaje.getPeticion().contains("login")){
       token = gson.fromJson(tokenString, TokenSesion.class);  
     }
@@ -260,13 +261,16 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         break;
       case Mensaje.FUNCION_ADD_PRODUCTO_TO:
         System.out.println(CONCLI+"procesando petición de añadir producto a un pedido");
-        String[] datosProd = gson.fromJson(dataString, String[].class);
-        respuesta = gestorServer.procesarMensajeAddProductoTo(token, datosProd, Mensaje.FUNCION_ADD_PRODUCTO_TO);
+        datosString = gson.fromJson(dataString, String[].class);
+        respuesta = gestorServer.procesarMensajeAddProductoTo(token, datosString, Mensaje.FUNCION_ADD_PRODUCTO_TO);
         break;
       case Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER:
         String idEmp = gson.fromJson(dataString, Empleado.class).getEmail();
         respuesta = gestorServer.procesarMensajeListPedidoCompletoFrom(token, idEmp, Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER);
-      case Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES:
+      case Mensaje.FUNCION_DELETE_PRODUCTO_FROM:
+        datosString = gson.fromJson(dataString, String[].class);
+        respuesta = gestorServer.procesarMensajeDeleteProductoFrom(token, datosString, Mensaje.FUNCION_DELETE_PRODUCTO_FROM);
+
         break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));

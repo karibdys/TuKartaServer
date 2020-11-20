@@ -5,9 +5,9 @@ package ioc.tukartaserver.model;
  * @author Manu Mora
  */
 public enum Estado {
-  NO_INICIADO ("pendiente"),
-  EN_PREPARACIÓN ("preparando"),
-  PREPARADO ("listo");
+  PENDIENTE ("pendiente"),
+  PREPARANDO ("preparando"),
+  LISTO ("listo");
   
   private String estado;
   private Estado (String estado){

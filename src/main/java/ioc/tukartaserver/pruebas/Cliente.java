@@ -93,10 +93,10 @@ public void startClient() {
       pedido.setLista_productos(listaProd);
       
       ArrayList<Estado> listaEstados = new ArrayList<>();
-      listaEstados.add(Estado.PREPARADO);
-      listaEstados.add(Estado.PREPARADO);
-      listaEstados.add(Estado.PREPARADO);
-      listaEstados.add(Estado.EN_PREPARACIÓN);
+      listaEstados.add(Estado.LISTO);
+      listaEstados.add(Estado.LISTO);
+      listaEstados.add(Estado.LISTO);
+      listaEstados.add(Estado.PREPARANDO);
       pedido.setEstado_productos(listaEstados);
       
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
@@ -193,12 +193,12 @@ public void startClient() {
       */
        
       /*******************PRUEBA DE LIST PEDIDO COMPLETO ************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedido_completo_from_user");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("hFKJKxAHql");  
+      token.setToken("AuhGiSKJUa");  
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER, emp, token);        
-      
+      */
       
       
       /*******************PRUEBA DE DELETE DATA PEDIDO ************************/
@@ -231,6 +231,14 @@ public void startClient() {
       pedidoNuevo.setPrecio_final(100);
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_PEDIDO, pedidoNuevo, token);
       */
+      
+       /*******************PRUEBA DE DELETE FROM  PEDIDO************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de delete_producto_from");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("LbmuOOSErv");  
+      String[] datos = {"B001", "pedido1M", null};
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DELETE_PRODUCTO_FROM, datos, token);
       
       
       

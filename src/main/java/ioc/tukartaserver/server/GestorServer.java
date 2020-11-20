@@ -399,6 +399,26 @@ public MensajeRespuesta procesarMensajeAddProductoTo(TokenSesion token, String[]
   return respuesta;
 }
 
+public MensajeRespuesta procesarMensajeDeleteProductoFrom(TokenSesion token, String[] datos, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es 10, podemos continuar 
+    if (datos.length==2){
+      respuesta  = gestorDB.deleteProductoEstado(datos[0], datos[1], null, peticion);
+    }else if(datos.length==3){
+      respuesta  = gestorDB.deleteProductoEstado(datos[0], datos[1], datos[2], peticion);
+    }else{
+      respuesta = Utiles.mensajeErrorDatosIncorrectos(peticion);
+    }
+    
+  }
+  return respuesta;
+}
+
 /******************
  * MÉTODOS AUXILIARES
  ******************

@@ -218,10 +218,10 @@ public static String generarId(Mesa mesa) {
  * Añade un Producto al listado de Productos, un Estado al listado de estados y actualiza el precio final del Pedido
  * @param prod 
  */
-public void addProducto(Producto prod){
+public void addProducto(Producto prod, Estado estado){
   //añade el producto y el estado
   lista_productos.add(prod);
-  estado_productos.add(Estado.NO_INICIADO);
+  estado_productos.add(Estado.PREPARANDO);
   //calcula el precio
   actualizarPrecio();
 }
