@@ -35,7 +35,9 @@ public static final String FUNCION_UPDATE_PEDIDO = "update_pedido";
 public static final String FUNCION_ADD_PRODUCTO_TO = "add_producto_to";
 public static final String FUNCION_LIST_PRODUCTOS_FROM_PEDIDO = "list_productos_from_pedido";
 public static final String FUNCION_DELETE_PRODUCTO_FROM ="delete_producto_from";
+public static final String FUNCION_DELETE_PRODUCTO_FROM_ID ="delete_producto_from_id";
 public static final String FUNCION_UPDATE_PRODUCTO_FROM = "update_producto_from";
+public static final String FUNCION_UPDATE_PRODUCTO_FROM_ID = "update_producto_from_id";
 //public static final String FUNCION_LIST_PRODUCTOS_PENDIENTES ="list_productos_pendientes";
 
 

@@ -10,6 +10,7 @@ ioc\tukartaserver\server\Server.class
 ioc\tukartaserver\main\InitServer$2.class
 ioc\tukartaserver\model\MensajeRespuesta.class
 ioc\tukartaserver\model\Alergeno.class
+ioc\tukartaserver\model\ProductoEstado.class
 ioc\tukartaserver\security\GestorSesion.class
 ioc\tukartaserver\server\ConexionCliente.class
 ioc\tukartaserver\model\Provincia.class

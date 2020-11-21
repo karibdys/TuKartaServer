@@ -408,13 +408,48 @@ public MensajeRespuesta procesarMensajeDeleteProductoFrom(TokenSesion token, Str
   }else{
     //si el código es 10, podemos continuar 
     if (datos.length==2){
-      respuesta  = gestorDB.deleteProductoEstado(datos[0], datos[1], null, peticion);
+      respuesta  = gestorDB.deleteProductoEstado(null, datos[0], datos[1], null, peticion);
     }else if(datos.length==3){
-      respuesta  = gestorDB.deleteProductoEstado(datos[0], datos[1], datos[2], peticion);
+      respuesta  = gestorDB.deleteProductoEstado(null, datos[0], datos[1], datos[2], peticion);
     }else{
       respuesta = Utiles.mensajeErrorDatosIncorrectos(peticion);
     }
     
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeDeleteProductoFrom(TokenSesion token, String dato, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es 10, podemos continuar 
+    respuesta  = gestorDB.deleteProductoEstado(dato, null, null, null, peticion);    
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeUpdateProductoFrom(TokenSesion token, String[] datos, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es 10, podemos continuar 
+    if (datos.length==2){
+      //si trae 2 elementos, es que nos están mandando el ID
+      respuesta  = gestorDB.updateProductoFromPedido(datos[0], null, null, null, datos[1], peticion);    
+    }else if (datos.length==4){
+      //si trae 4 es que nos está mandando los detalles
+      respuesta  = gestorDB.updateProductoFromPedido(null, datos[0], datos[1], datos[2], datos[3], peticion);    
+    }else{
+      //si hay más o menos datos están mal enviados:
+      respuesta = Utiles.mensajeErrorDatosIncorrectos(peticion);
+    }    
   }
   return respuesta;
 }

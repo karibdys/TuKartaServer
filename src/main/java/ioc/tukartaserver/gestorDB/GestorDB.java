@@ -49,16 +49,12 @@ public static final String SELECT_USER = "SELECT * FROM "+TABLA_USERS+" WHERE em
 public static final String BAJA_USER = "UPDATE "+TABLA_USERS+" SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
 public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.gestor = ?";
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.trabajadorde = ?";
-public static final String INSERT_PEDIDO_ESTADO = "INSERT into "+TABLA_PEDIDO_ESTADO+" VALUES (?, ?, ?, ?)";
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
 public static final String LIST_PEDIDO_COMPLETO_FROM_USER = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.empleado = ? AND pedido.activo = true";
 public static final String LIST_PRODUCTO_FROM_PEDIDO = "SELECT "+TABLA_PEDIDO_ESTADO+".id, "+TABLA_PEDIDO_ESTADO+".id_producto, "+TABLA_PROD+".nombre, "+TABLA_PROD+".alergenos, "+TABLA_PEDIDO_ESTADO+".estado FROM "+TABLA_PEDIDO_ESTADO+" LEFT JOIN producto ON "+TABLA_PEDIDO_ESTADO+".id_producto = "+TABLA_PROD+".id WHERE "+TABLA_PEDIDO_ESTADO+".id=?";
 public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
-public static final String ADD_PRODUCTO_ESTADO = "INSERT INTO "+TABLA_PEDIDO_ESTADO+" VALUES (?,?,?,?)";
-public static final String DELETE_PRODUCTO_ESTADO = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ? AND id_producto = ? AND estado = ?";
-
 
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
@@ -617,7 +613,6 @@ public MensajeRespuesta addProductoEstado (ArrayList<Producto> productos, ArrayL
   return ret;
 }
 
-
 /**
  * Permite meter en la base de datos un  producto y su estado a un pedido abierto
  * @param idProd String con el id del producto a insertar
@@ -673,15 +668,33 @@ public MensajeRespuesta addProductoEstado(String idProd, String idPedido, String
   return ret;
 }
 
-public MensajeRespuesta deleteProductoEstado (String idProd, String idPedido, String estado, String peticion){
+/**
+ * Elimina un producto determinado de un pedido abierto
+ * @param idProd String con el id del producto a eliminar
+ * @param idPedido String con el id del pedido al que pertenece el producto
+ * @param estado String con el estado que tiene el producto a eliminar. Puede ser nulo si no se sabe
+ * @param peticion String con la petición que se responde
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. No incluye datos adicionales
+ */
+public MensajeRespuesta deleteProductoEstado (String idRegistro, String idProd, String idPedido, String estado, String peticion){
   MensajeRespuesta ret = null;
-  try{
-    openConnection();
-    String sentencia = "DELETE FROM pedido_estado WHERE id_pedido = '"+idPedido+"' AND id_producto = '"+idProd+"'";
+  String sentencia ="";
+  if (idRegistro!=null){
+    log("por registro");
+    //si tenemos el registro, eliminamos justo ese registro
+    sentencia= "DELETE FROM pedido_estado WHERE id = '"+idRegistro+"'";
+  }else{
+    log("por similitud");
+    //si no hay un id de registro, eliminamos SOLO UN REGISTRO que coincida con esas condiciones
+    sentencia= "DELETE FROM pedido_estado WHERE id = (select id from pedido_estado  where id_pedido = '"+idPedido+"' AND id_producto = '"+idProd+"'";
     if (estado!=null){
-      sentencia += " ' AND estado = '"+estado+"'";    
+      sentencia += " AND estado = '"+estado+"'";    
     }
+    sentencia += " FETCH FIRST 1 ROWS ONLY)";        
     log("sentencia --> "+sentencia);
+  }  
+  try{
+    openConnection();           
     Statement stm = con.createStatement();
     int num = stm.executeUpdate(sentencia);
     if (num>0){
@@ -718,6 +731,47 @@ public MensajeRespuesta deleteProductosFromPedido(String id, String peticion){
   }
   return res;
 }
+
+/**
+ * Actualiza un único Producto de un Pedido
+ * @param idRegistro String con el id del registro del producto en el pedido a actualizar. Puede ser null
+ * @param idProducto String con el id del producto (no hace falta si se incluye idRegistro)
+ * @param idPedido String con el id del pedido (no hace falta si se incluye idRegistro)
+ * @param estadoOld Estado antiguo del producto a actualizar (no hace falta si se incluye idRegistro)
+ * @param estadoNew Estado nuego del producto a actualizar 
+ * @param peticion String petición que se responde
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. No incluye datos adicionales
+ */
+public MensajeRespuesta updateProductoFromPedido(String idRegistro, String idProducto, String idPedido, String estadoOld, String estadoNew, String peticion){
+  MensajeRespuesta ret = null;
+  String sentencia="";
+  if (idRegistro!=null){
+    //si tenemos el ID del registro, entonces modificamos exactamente ese
+    sentencia = "UPDATE pedido_estado SET estado = '"+estadoNew+"' WHERE id = '"+idRegistro+"'";
+  }else{
+    //si no, modificamos uno que coincida con las condiciones
+    sentencia = "UPDATE pedido_estado SET estado = '"+estadoNew+"' WHERE id = (SELECT id from pedido_estado WHERE id_pedido = '"+idPedido+"' AND id_producto = '"+idProducto+"' AND estado = '"+estadoOld+"')";
+  }
+  log("sentencia --> "+sentencia);
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    int num = pstm.executeUpdate();
+    if (num>0){
+      //si se ha producido alguna actualización
+      ret = Utiles.mensajeOK(peticion);
+    }else{
+      // si no, indicamos que no hay id con ese registro
+      ret = Utiles.mensajeErrorPKNotFound(peticion);
+    }    
+  }catch (SQLException ex){
+    //si ha habido algún otro error mandamos un error de DB
+    ret = Utiles.mensajeErrorDB(peticion);    
+  }
+  return ret;
+}
+
+
 
 /*
 public MensajeRespuesta listProductosFromPedido (String idPedido, String peticion){

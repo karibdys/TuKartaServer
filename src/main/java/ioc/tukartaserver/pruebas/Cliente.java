@@ -233,8 +233,17 @@ public void startClient() {
       */
       
        /*******************PRUEBA DE DELETE FROM  PEDIDO************************/
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de delete_producto_from sin id registro");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("LbmuOOSErv");  
+      String[] datos = {"B001", "pedido1M", null};
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DELETE_PRODUCTO_FROM, datos, token);
+      */
       
-      System.out.println(CLIENTE+"Procediendo a hacer petición de delete_producto_from");   
+      /*******************PRUEBA DE DELETE FROM  PEDIDO************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de delete_producto_from sin id registro");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("LbmuOOSErv");  
       String[] datos = {"B001", "pedido1M", null};

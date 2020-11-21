@@ -270,7 +270,16 @@ public void procesarPeticion(MensajeSolicitud mensaje){
       case Mensaje.FUNCION_DELETE_PRODUCTO_FROM:
         datosString = gson.fromJson(dataString, String[].class);
         respuesta = gestorServer.procesarMensajeDeleteProductoFrom(token, datosString, Mensaje.FUNCION_DELETE_PRODUCTO_FROM);
-
+        break;
+      case Mensaje.FUNCION_DELETE_PRODUCTO_FROM_ID:
+        //como solo debería venir en mensaje, no hacen falta más transformaciones
+        respuesta = gestorServer.procesarMensajeDeleteProductoFrom(token, datosString, Mensaje.FUNCION_DELETE_PRODUCTO_FROM_ID);
+        break;
+      case Mensaje.FUNCION_UPDATE_PRODUCTO_FROM:
+        datosString = gson.fromJson(dataString, String[].class);
+        respuesta = gestorServer.procesarMensajeUpdateProductoFrom(token, datosString, Mensaje.FUNCION_DELETE_PRODUCTO_FROM);
+        break;
+      case Mensaje.FUNCION_UPDATE_PRODUCTO_FROM_ID:
         break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));

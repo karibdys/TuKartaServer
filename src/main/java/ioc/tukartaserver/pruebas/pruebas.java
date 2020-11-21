@@ -12,10 +12,12 @@ import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.MensajeSolicitud;
 import ioc.tukartaserver.model.Mesa;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Producto;
+import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Utiles;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -63,9 +65,16 @@ public static void main (String... args) throws SQLException, ClassNotFoundExcep
   } catch (SQLException ex) {
     System.err.println(ex.getMessage());
   }*/
-  GestorDB db = new GestorDB();
-  System.out.println(db.comprobarProducto("B001"));
+  String[] ids = {"1","2","3"};
+  String idUnico = "a";
+  System.out.println("prueba 1: "+devolver(ids));
 
+
+
+}
+
+public static int devolver(String[] prod){
+  return prod.length;
 }
   
 }

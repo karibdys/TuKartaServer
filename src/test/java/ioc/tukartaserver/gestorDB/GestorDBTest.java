@@ -39,6 +39,7 @@ private static final String ID_PRODUCTO_PRUEBAS = "B001";
 private static final String ID_MESA_PRUEBAS = "mesa1CanMarc";
 private static final float PRECIO_FINAL_PRUEBAS =100;
 private static final String ID_PROD_PRUEBAS = "Prueba001";
+private static final String ID_REG_PROD_PRUEBAS = "registro1";
 
 public GestorDBTest() {
 }
@@ -637,7 +638,106 @@ public void tearDown() {
     assertEquals(expResult, resultadoReal);   
   }
   
+  /*  
+  **********************************
+  DELETE PRODUCTO FROM
+  *********************************/
   
+  /**
+   * Comprueba que funciona el método cuando se le pasa un id de registro concreto   
+   */
+  @Test
+  public void deleteProductoFrom_id_ok(){
+    System.out.println("\n**********************\nPrueba DELETE PRODUCTO EN PEDIDO POR ID\n");
+    MensajeRespuesta res=null;
+    String expResult = Codes.CODIGO_OK;  
+    try {
+      //necesitamos insertar un producto estado en un pedido de prueba
+      addPedidoPrueba();
+      addProductoPrueba();
+      addProductoEnPedidoPrueba();
+      //ahora comprobamos que todo funciona bien
+      res = gestor.deleteProductoEstado(ID_REG_PROD_PRUEBAS, null, null, null, Mensaje.FUNCION_DELETE_PRODUCTO_FROM_ID);           
+      if (res.getCode().getCode().equals(Codes.CODIGO_OK)){
+        System.out.println("intentando eliminar el registro creado");
+        deleteProductoPrueba();
+      }
+    } catch (SQLException ex) {     
+      System.out.print(ex.getMessage());
+    }finally{
+      try{
+         deleteProductoPrueba();
+         deletePedidoPrueba();
+      }catch (SQLException ex){
+        fail("error al eliminar los elementos");
+      }
+    }
+    assertEquals(expResult, res.getCode().getCode());
+  }
+  
+    /**
+   * Comprueba que funciona el método cuando se le pasa un id de registro concreto   
+   */
+  @Test
+  public void deleteProductoFrom_detalles_ok(){
+    System.out.println("\n**********************\nPrueba DELETE PRODUCTO EN PEDIDO POR DETALLES\n");
+    MensajeRespuesta res=null;
+    String expResult = Codes.CODIGO_OK;  
+    try {
+      //necesitamos insertar un producto estado en un pedido de prueba
+      addPedidoPrueba();
+      addProductoPrueba();
+      addProductoEnPedidoPrueba();
+      //ahora comprobamos que todo funciona bien
+      res = gestor.deleteProductoEstado(null, ID_PROD_PRUEBAS, ID_PEDIDO_PRUEBAS, "listo", Mensaje.FUNCION_DELETE_PRODUCTO_FROM);           
+      if (res.getCode().getCode().equals(Codes.CODIGO_OK)){
+        System.out.println("intentando eliminar el registro creado");
+        deleteProductoPrueba();
+      }
+    } catch (SQLException ex) {     
+      System.out.print(ex.getMessage());
+    }finally{
+      try{
+         deleteProductoPrueba();
+         deletePedidoPrueba();
+      }catch (SQLException ex){
+        fail("error al eliminar los elementos");
+      }
+    }
+    assertEquals(expResult, res.getCode().getCode());
+  }
+  
+  
+  
+   /**********************
+   UPDATE PEDIDO
+   **********************/
+  
+
+  public void updateProductoFrom_id_ok(){
+    System.out.println("\n**********************\nPrueba UPDATE PRODUCTO EN PEDIDO POR ID\n");
+    MensajeRespuesta res=null;
+    String expResult = Codes.CODIGO_OK;  
+    try {
+      //necesitamos insertar un producto estado en un pedido de prueba
+      addPedidoPrueba();
+      addProductoPrueba();
+      addProductoEnPedidoPrueba();
+      //ahora comprobamos que todo funciona bien
+      res = gestor.updateProductoFromPedido(ID_REG_PROD_PRUEBAS, null, null, null, "preparando", Mensaje.FUNCION_DELETE_PRODUCTO_FROM_ID);                        
+    } catch (SQLException ex) {     
+      System.out.print(ex.getMessage());
+    }finally{
+      try{
+        deleteProductoPrueba();
+        deleteProductoPrueba();
+        deletePedidoPrueba();
+      }catch (SQLException ex){
+        fail("error al eliminar los elementos");
+      }
+    }
+    assertEquals(expResult, res.getCode().getCode());
+  }
  /*  
   *************
    COMPROBAR PEDIDO
@@ -671,11 +771,7 @@ public void tearDown() {
   }
     
   
-  /*  
-  *************
-   COMPROBAR PRODUCTO
-  ***************
-  */
+  
       
    
   /*  
@@ -716,6 +812,18 @@ public void tearDown() {
     gestor.openConnection();
     Connection con = gestor.getCon();    
     String sentencia = "INSERT INTO pedido VALUES ('"+ID_PEDIDO_PRUEBAS+"', '"+USER_CORRECTO+"', '"+ID_MESA_PRUEBAS+"', 0, true, '2020-11-20')";
+    System.out.println("ADD_PEDIDO_PRUEBA: "+sentencia);
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    pstm.executeUpdate();
+    pstm.close();
+    gestor.closeConnection();
+  }
+  
+  public void addProductoEnPedidoPrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();                 
+    String sentencia = "INSERT INTO pedido_estado VALUES ('"+ID_REG_PROD_PRUEBAS+"', '"+ID_PEDIDO_PRUEBAS+"', '"+ID_PROD_PRUEBAS+"', 'listo')";
+    System.out.println("ADD_PRODUCTO_A_PEDIDO_PRUEBA: "+sentencia);
     PreparedStatement pstm = con.prepareStatement(sentencia);
     pstm.executeUpdate();
     pstm.close();
@@ -746,7 +854,7 @@ public void tearDown() {
     gestor.openConnection();
     Connection con = gestor.getCon();    
     String sentencia = "INSERT INTO producto VALUES ('"+ID_PROD_PRUEBAS+"', 'Producto Prueba', null, 25, 10, 0, null, 0, null)";
-    System.out.println(sentencia);
+    System.out.println("DELETE_PEDIDO_PRUEBA: "+sentencia);
     PreparedStatement pstm = con.prepareStatement(sentencia);    
     if (pstm.executeUpdate()>0){
       System.out.println("SENTENCIA INTRODUCIDA");
