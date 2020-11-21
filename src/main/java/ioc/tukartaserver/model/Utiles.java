@@ -342,8 +342,7 @@ public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLExcep
   ret.setEmpleado(emp);
   Mesa mesa = new Mesa(result.getString("mesa"));
   ret.setMesa(mesa);
-  ret.setFecha(result.getDate("fecha"));
-  ret.setPrecio_final(result.getFloat("precio_final"));
+  ret.setFecha(Utiles.convertDateSQLtoJava(result.getDate("fecha")));  ret.setPrecio_final(result.getFloat("precio_final"));
   ret.setActivo(result.getBoolean("activo"));
   
   return ret;
