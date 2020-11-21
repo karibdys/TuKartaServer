@@ -64,6 +64,7 @@ public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String LIST_PROD_PENDIENTES = "SELECT * FROM pedido_estado WHERE id_pedido IN (SELECT id FROM pedido WHERE activo = true) AND estado != 'listo'";
 public static final String LIST_PRODUCTOS = "SELECT * FROM producto";
+public static final String LIST_PRODUCTOS_FROM_PEDIDO = "SELECT * FROM producto where id_pedido=?";
 public static final String DELETE_PRODUCTO = "DELETE FROM "+TABLA_PRODUCTO+" WHERE id = ?";
 
 
@@ -890,12 +891,19 @@ public MensajeRespuesta listProductosPendientes(){
  * @param peticion String con el nombre de la petición 
  * @return 
  */
-public MensajeRespuesta listProductos(String peticion) {
+public MensajeRespuesta listProductos(String peticion, String id) {
   MensajeRespuesta res = null;
   ArrayList<Producto> listado=new ArrayList<>();
   try{
     openConnection();
-    PreparedStatement pstm = con.prepareStatement(LIST_PRODUCTOS);
+    PreparedStatement pstm = null;
+    if (peticion.equals(Mensaje.FUNCION_LIST_PRODUCTOS)){
+      pstm = con.prepareStatement(LIST_PRODUCTOS);
+    }else if (peticion.equals(Mensaje.FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID)){
+      pstm = con.prepareStatement(LIST_PRODUCTOS_FROM_PEDIDO);
+      pstm.setString(1, id);
+    }
+    log("sentencia--> "+pstm);
     ResultSet result = pstm.executeQuery();
     while(result.next()){
       Producto producto = Utiles.createProductoFromResultSet(result, this);
@@ -914,6 +922,8 @@ public MensajeRespuesta listProductos(String peticion) {
   res.setData(arrayJSON);
   return res;
 }
+
+
 
 /*
 public MensajeRespuesta listProductosFromPedido (String idPedido, String peticion){

@@ -26,6 +26,7 @@ public static final String FUNCION_LIST_USERS_FROM_REST = "list_users_from_resta
 //gestión de Pedidos
 public static final String FUNCION_ADD_PEDIDO = "add_pedido";
 public static final String FUNCION_LIST_PEDIDO_FROM_USER = "list_pedido_from_user";
+public static final String FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID = "list_pedido_from_id";
 public static final String FUNCION_LIST_PEDIDO_FROM_OTHER_USER = "list_pedido_from_other_user";
 public static final String FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID = "list_pedido_completo_from_id";
 public static final String FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER = "list_pedido_completo_from_user";
@@ -35,6 +36,7 @@ public static final String FUNCION_UPDATE_PEDIDO = "update_pedido";
 //gestión de productos en pedidos
 public static final String FUNCION_ADD_PRODUCTO_TO = "add_producto_to";
 public static final String FUNCION_LIST_PRODUCTOS_FROM_PEDIDO = "list_productos_from_pedido";
+
 public static final String FUNCION_DELETE_PRODUCTO_FROM ="delete_producto_from";
 public static final String FUNCION_DELETE_PRODUCTO_FROM_ID ="delete_producto_from_id";
 public static final String FUNCION_UPDATE_PRODUCTO_FROM = "update_producto_from";

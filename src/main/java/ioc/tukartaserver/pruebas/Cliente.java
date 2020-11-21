@@ -326,9 +326,9 @@ public void startClient() {
      
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("ciqhRMkYff");        
+      token.setToken("kfFcDEWjKE");        
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PRODUCTOS, null,  token);
-      
+  
       
       
       /*******************FINAL DE PETICIÓN ************************/

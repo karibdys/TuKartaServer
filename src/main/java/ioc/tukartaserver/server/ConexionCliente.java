@@ -322,6 +322,10 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         //no necesita parámetros, solamente el token de sesion
         respuesta = gestorServer.procesarMensajeListProductos(token, Mensaje.FUNCION_LIST_PRODUCTOS);
         break;
+      case Mensaje.FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID:
+        String pedidoID = gson.fromJson(dataString, Pedido.class).getId();
+        respuesta = gestorServer.procesarMensajeListProductosFromId(token, pedidoID, Mensaje.FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID);
+        break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;

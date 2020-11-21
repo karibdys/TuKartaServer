@@ -356,15 +356,17 @@ public static Producto createProductoFromResultSet(ResultSet result, GestorDB ge
   //nombre
   producto.setNombre(result.getString("nombre"));
   //alergenos
-  if ((result.getArray("alergenos").toString().length()>2) && (result.getArray("alergenos")!=null)){
-    System.out.print("Añadiendo alérgenos");
-    String array = result.getArray("alergenos").toString();
-    HashSet<Alergeno> listado = createAlergenoFromArray(array);    
-    System.out.println("TAMAÑO 2: "+listado.size());    
-    for(Alergeno a: listado){
-      System.out.println(a.getTipo());
-      producto.addAlergeno(a);
-    }
+  if (result.getArray("alergenos")!=null){
+    if(result.getArray("alergenos").toString().length()>2){
+      System.out.print("Añadiendo alérgenos");
+      String array = result.getArray("alergenos").toString();
+      HashSet<Alergeno> listado = createAlergenoFromArray(array);    
+      System.out.println("TAMAÑO 2: "+listado.size());    
+      for(Alergeno a: listado){
+        System.out.println(a.getTipo());
+        producto.addAlergeno(a);
+      }
+    }    
   }  
   //precio
   producto.setPrecio(result.getFloat("precio"));  
@@ -373,15 +375,17 @@ public static Producto createProductoFromResultSet(ResultSet result, GestorDB ge
   //tiempo_elaboracion
   producto.setTiempo_elaboracion(result.getInt("tiempo_elaboracion"));  
   //contenido
-  if ((result.getArray("contenido").toString().length()>2) && (result.getArray("contenido")!=null)){
-    Array arrayTemp = result.getArray("contenido");        
-    String[] content = (String[])arrayTemp.getArray();
-    ArrayList<Producto> listadoProd = new ArrayList<>();
-    for (String idProd: content){
-      Producto prod = gestor.getProductoFromId(idProd);
-      listadoProd.add(prod);
+  if (result.getArray("contenido")!=null){
+    if(result.getArray("contenido").toString().length()>2){      
+      Array arrayTemp = result.getArray("contenido");        
+      String[] content = (String[])arrayTemp.getArray();
+      ArrayList<Producto> listadoProd = new ArrayList<>();
+      for (String idProd: content){
+        Producto prod = gestor.getProductoFromId(idProd);
+        listadoProd.add(prod);
+      }
+      producto.setContenido(listadoProd);      
     }
-    producto.setContenido(listadoProd);
   }
   //precio_real
   
