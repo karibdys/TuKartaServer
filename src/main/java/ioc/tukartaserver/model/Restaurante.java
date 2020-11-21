@@ -1,6 +1,6 @@
 package ioc.tukartaserver.model;
+import java.util.ArrayList;
 
-import java.util.HashSet;
 
 /**
  * Modelo que representa un Restaurante en la aplicación TuKarta
@@ -10,7 +10,7 @@ public class Restaurante {
 
 private String id;
 private String nombre;
-private HashSet<Mesa> mesas;
+private ArrayList<Mesa> mesas;
 private Provincia provincia;
 private String direccion;
 
@@ -19,6 +19,9 @@ private String direccion;
  ******************
  */
 
+public Restaurante(){
+  
+}
 /**
  * Constructor básico para un Restaurante. Necesita un ID y un nombre
  * @param id String ID del restaurante
@@ -69,7 +72,7 @@ public Restaurante (String id, String nombre, Provincia prov, String direccion){
   * Devuelve el listado de objetos Mesa del Restaurante
   * @return HashSet<Mesa> 
   */
-  public HashSet<Mesa> getMesas() {
+  public ArrayList<Mesa> getMesas() {
     return mesas;
   }
 
@@ -115,7 +118,7 @@ public Restaurante (String id, String nombre, Provincia prov, String direccion){
    * Establece un listado de objetos Mesa al restaurante
    * @param mesas HashSet<Mesa>
    */
-  public void setMesas(HashSet<Mesa> mesas) {
+  public void setMesas(ArrayList<Mesa> mesas) {
     this.mesas = mesas;
   }
 

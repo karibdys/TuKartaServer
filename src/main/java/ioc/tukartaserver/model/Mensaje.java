@@ -32,7 +32,7 @@ public static final String FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER = "list_pedido
 public static final String FUNCION_DELETE_PEDIDO = "delete_pedido";
 public static final String FUNCION_UPDATE_PEDIDO = "update_pedido";
 
-//gestión de productos
+//gestión de productos en pedidos
 public static final String FUNCION_ADD_PRODUCTO_TO = "add_producto_to";
 public static final String FUNCION_LIST_PRODUCTOS_FROM_PEDIDO = "list_productos_from_pedido";
 public static final String FUNCION_DELETE_PRODUCTO_FROM ="delete_producto_from";
@@ -41,6 +41,17 @@ public static final String FUNCION_UPDATE_PRODUCTO_FROM = "update_producto_from"
 public static final String FUNCION_UPDATE_PRODUCTO_FROM_ID = "update_producto_from_id";
 public static final String FUNCION_LIST_PRODUCTOS_PENDIENTES ="list_productos_pendientes";
 
+//gestión de restaurantes
+public static final String FUNCION_ADD_RESTAURANTE = "add_restaurante";
+//public static final String FUNCION_DELETE_RESTAURANTE = "delete_restaurante";
+//public static final String FUNCION_LIST_RESTAURANTES = "list_restaurantes";
+//public static final String FUNCIÓN_UPDATE_RESTAURANTE = "upsate_restaurante";
+
+//gestión de mesas
+public static final String FUNCION_ADD_MESA = "add_mesa";
+
+//gestión de productos
+public static final String FUNCION_ADD_PRODUCTO = "add_producto";
 
 //gestión de la conexión
 public static final String FUNCION_FIN_CON = "fin_conexion";

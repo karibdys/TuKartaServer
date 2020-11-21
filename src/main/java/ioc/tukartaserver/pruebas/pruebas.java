@@ -65,10 +65,16 @@ public static void main (String... args) throws SQLException, ClassNotFoundExcep
   } catch (SQLException ex) {
     System.err.println(ex.getMessage());
   }*/
-  String[] ids = {"1","2","3"};
-  String idUnico = "a";
-  System.out.println("prueba 1: "+devolver(ids));
-
+ Producto producto = new Producto();
+ producto.setId("B003");
+ producto.setNombre("Pepsi");
+ producto.setPrecio(1.20f);
+ producto.setDisponibles(500);
+ producto.setTiempo_elaboracion(0);
+ producto.addAlergeno(Alergeno.GLUTEN);
+ producto.addAlergeno(Alergeno.HUEVO);
+  String sent = Utiles.sentenciaProductoToInsertSQL(producto);
+ System.out.println(sent);
 
 
 }

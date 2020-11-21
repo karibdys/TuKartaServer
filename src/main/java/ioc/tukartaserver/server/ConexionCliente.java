@@ -3,10 +3,13 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Empleado;
+import ioc.tukartaserver.model.Gestor;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
+import ioc.tukartaserver.model.Mesa;
 import ioc.tukartaserver.model.Pedido;
+import ioc.tukartaserver.model.Producto;
 import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
@@ -132,7 +135,6 @@ public void run(){
     
     //si no ha habido ningún fallo en la recepción, tendremos un mensaje JSON.
     System.out.println(CONCLI+": JSON recibido\n  -->\n"+mensajeIn);   
-    solicitud = gson.fromJson(mensajeIn, MensajeSolicitud.class);
     try{      
       if(mensajeIn!=null){
         solicitud = gson.fromJson(mensajeIn, MensajeSolicitud.class);
@@ -171,7 +173,9 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
     Usuario userIn=null;
     Pedido pedidoIn=null;
     TokenSesion token = null;
+    Restaurante restIn = null;
     String[] datosString=null;
+    Mesa mesaIn=null;
     if (!mensaje.getPeticion().contains("login")){
       token = gson.fromJson(tokenString, TokenSesion.class);  
     }
@@ -234,24 +238,29 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         break;
       case Mensaje.FUNCION_LIST_USERS_FROM_GESTOR:
         System.out.println(CONCLI+"procesando petición de listar empleados asociados a un gestor");      
+        //no necesita datos adicionales, los coge del token
         respuesta = gestorServer.procesarMensajeListUsersFrom(token, null);
         break;    
       case Mensaje.FUNCION_LIST_USERS_FROM_REST:
         System.out.println(CONCLI+"procesando petición de listar empleados asociados a un restaurante");     
+        //sacamso el id del Restaurante
         String id = gson.fromJson(dataString, Restaurante.class).getId();
         respuesta = gestorServer.procesarMensajeListUsersFrom(token, id);
         break;   
       case Mensaje.FUNCION_ADD_PEDIDO:
         System.out.println(CONCLI+"procesando petición de añadir un nuevo pedido");
+        //sacamos el pedido a añadir
         pedidoIn = gson.fromJson(dataString, Pedido.class);
         respuesta = gestorServer.procesarMensajeAddPedido(token, pedidoIn);        
         break;   
       case Mensaje.FUNCION_LIST_PEDIDO_FROM_USER:
         System.out.println(CONCLI+"procesando petición de listar pedidos de usuario");
+        //no hace falta dato adicional porque lo toma del token
         respuesta = gestorServer.procesarMensajeListPedidoFrom(token, null, Mensaje.FUNCION_LIST_PEDIDO_FROM_USER);        
         break; 
       case Mensaje.FUNCION_LIST_PEDIDO_FROM_OTHER_USER:
         System.out.println(CONCLI+"procesando petición de listar pedidos de usuario");
+        //sacamos el string con el email
         id = gson.fromJson(dataString, Empleado.class).getEmail();
         respuesta = gestorServer.procesarMensajeListPedidoFrom(token, id, Mensaje.FUNCION_LIST_PEDIDO_FROM_USER);        
         break;   
@@ -273,6 +282,7 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
       case Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER:
         String idEmp = gson.fromJson(dataString, Empleado.class).getEmail();
         respuesta = gestorServer.procesarMensajeListPedidoCompletoFrom(token, idEmp, Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER);
+        break;
       case Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID:
         String idPedido = gson.fromJson(dataString, Pedido.class).getId();
         respuesta = gestorServer.procesarMensajeListPedidoCompletoFrom(token, idPedido, Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID);
@@ -291,6 +301,18 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         break;
       case Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES:
         respuesta = gestorServer.procesarMensajeListProductosPendientes(token);
+        break;
+      case Mensaje.FUNCION_ADD_RESTAURANTE:        
+        restIn = gson.fromJson(dataString, Restaurante.class);
+        respuesta = gestorServer.procesarMensajeAddRestaurante(token, restIn, Mensaje.FUNCION_ADD_RESTAURANTE);
+        break;
+      case Mensaje.FUNCION_ADD_MESA:
+        mesaIn = gson.fromJson(dataString, Mesa.class);
+        respuesta = gestorServer.procesarMensajeAddMesa(token, mesaIn, Mensaje.FUNCION_ADD_MESA);
+        break;
+      case Mensaje.FUNCION_ADD_PRODUCTO:
+        Producto prodIn = gson.fromJson(dataString, Producto.class);
+        respuesta = gestorServer.procesarMensajeAddProducto(token, prodIn, Mensaje.FUNCION_ADD_PRODUCTO);
         break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));

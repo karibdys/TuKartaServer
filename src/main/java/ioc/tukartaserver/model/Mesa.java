@@ -15,7 +15,8 @@ public class Mesa {
 
 private String id;
 private int num_comensales;
-private ArrayList<Pedido> listaPedidos;
+private ArrayList<Pedido> listaPedidos = new ArrayList<>();
+private String idRestaurante;
 
 
 /******************
@@ -23,6 +24,10 @@ private ArrayList<Pedido> listaPedidos;
  ******************
  */
 
+
+public Mesa(){
+  
+}
 /**
  * Crea un objeto de tipo mesa. Requiera su ID y el número de comensales
  * @param id String id de la mesa
@@ -68,6 +73,10 @@ public int getNum_comensales() {
  */
 public ArrayList<Pedido> getListaPedidos() {
   return listaPedidos;
+}
+
+public String getIdRestaurante(){
+  return this.idRestaurante;
 }
 
 /**
@@ -127,7 +136,9 @@ public void setNum_comensales(int num_comensales) {
 public void setListaPedidos(ArrayList<Pedido> listaPedidos) {
   this.listaPedidos = listaPedidos;
 }
-
+public void setIdRestaurante(String idRes){
+  this.idRestaurante=idRes;
+}
 /******************
  * MÉTODOS AUXILIARES
  ******************

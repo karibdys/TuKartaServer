@@ -124,10 +124,10 @@ INSERT INTO mesa VALUES ('mesa2CanMarc', 6, 'res1Marc');
 INSERT INTO mesa VALUES ('mesa1CanFortunata', 8, 'res1TuKarta');
 
 -- PEDIDOS
-INSERT INTO pedido VALUES('pedido1M', 'manu@tukarta.com', 'mesa1CanMarc', 0, true, '2020-11-20');
-INSERT INTO pedido VALUES('pedido2M', 'david@tukarta.com', 'mesa2CanMarc', 0, true,'2020-11-20');
-INSERT INTO pedido VALUES('pedido1T', 'manu@tukarta.com', 'mesa1CanFortunata', 0, false, '2020-11-20');
-INSERT INTO pedido VALUES('pedido2T', 'david@tukarta.com', 'mesa1CanFortunata', 0, true, '2020-11-20');
+INSERT INTO pedido VALUES('pedido1M', 'manu@tukarta.com', 'mesa1CanMarc', 0,'2020-11-20', true );
+INSERT INTO pedido VALUES('pedido2M', 'david@tukarta.com', 'mesa2CanMarc', 0,'2020-11-20', true);
+INSERT INTO pedido VALUES('pedido1T', 'manu@tukarta.com', 'mesa1CanFortunata', 0,'2020-11-20', false);
+INSERT INTO pedido VALUES('pedido2T', 'david@tukarta.com', 'mesa1CanFortunata', 0,'2020-11-20', true);
 
 -- pedido_estado
 INSERT INTO pedido_estado VALUES ('pedido1M-1', 'pedido1M', 'P001', 'preparando');

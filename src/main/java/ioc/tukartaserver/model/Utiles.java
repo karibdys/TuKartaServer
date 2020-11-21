@@ -409,49 +409,108 @@ public static HashSet<Alergeno> createAlergenoFromArray(String cadena){
 
  
  /***********************
-  * CONVERSORES A SQL DE PEDIDO
+  * CONVERSORES A SQL 
   ********************/
    /**
    * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Pedidoa la base de datos en función de sus parámetros definidos. 
    * @param pedido Pedido con los datos necesarios para insertarlo en la base de datos.
    * @return String con la sentencia INSERT SQL completa
    */
-  public static String sentenciaPedidoToInsertSQL (Pedido pedido){
-    StringBuilder builder = new StringBuilder();
-    builder.append("INSERT INTO "+GestorDB.TABLA_PEDIDO+" (\"id\", \"empleado\", \"mesa\", \"fecha\", \"activo\") VALUES (");
-    //le metemos los datos
-    builder.append("'"+ pedido.getId()+"'");
-    builder.append(", '"+ pedido.getEmpleado().getEmail()+"'");
-    builder.append(", '"+ pedido.getMesa().getId()+"'");
-    if (pedido.getFecha()!=null){
-      builder.append(", '"+Utiles.ParseDate(pedido.getFecha())+"'");
-    }else{
-      builder.append(", '"+Utiles.ParseDate(new Date())+"'");
-    }
-    
-    builder.append(", 'true'");
-    builder.append(")");
-    
-    return builder.toString();    
+public static String sentenciaPedidoToInsertSQL (Pedido pedido){
+  StringBuilder builder = new StringBuilder();
+  builder.append("INSERT INTO "+GestorDB.TABLA_PEDIDO+" (\"id\", \"empleado\", \"mesa\", \"fecha\", \"activo\") VALUES (");
+  //le metemos los datos
+  builder.append("'"+ pedido.getId()+"'");
+  builder.append(", '"+ pedido.getEmpleado().getEmail()+"'");
+  builder.append(", '"+ pedido.getMesa().getId()+"'");
+  if (pedido.getFecha()!=null){
+    builder.append(", '"+Utiles.ParseDate(pedido.getFecha())+"'");
+  }else{
+    builder.append(", '"+Utiles.ParseDate(new Date())+"'");
   }
+  builder.append(", 'true'");
+  builder.append(")");
   
-    public static  String sentenciaPedidoToUpdateSQL (Pedido pedido){
-    StringBuilder builder = new StringBuilder();
-    builder.append("UPDATE "+GestorDB.TABLA_PEDIDO+" SET ");
-    builder.append("\"id\" = '"+pedido.getId()+"'");
-    if (pedido.getEmpleado()!=null){
-      builder.append(", \"empleado\" = '"+pedido.getEmpleado().getEmail()+"'");
-    }
-    if (pedido.getMesa()!=null){
-      builder.append(", \"mesa\" = '"+pedido.getMesa().getId()+"'");
-    }
-    if (pedido.getPrecio_final()!=0){
-      builder.append(", \"precio_final\" = "+pedido.getPrecio_final());
-    }
-    builder.append(", \"activo\" = '"+pedido.isActivo()+"'");
-    builder.append(" WHERE id = '"+pedido.getId()+"'");
-    return builder.toString();
+  return builder.toString();    
+}
+  
+  public static  String sentenciaPedidoToUpdateSQL (Pedido pedido){
+  StringBuilder builder = new StringBuilder();
+  builder.append("UPDATE "+GestorDB.TABLA_PEDIDO+" SET ");
+  builder.append("\"id\" = '"+pedido.getId()+"'");
+  if (pedido.getEmpleado()!=null){
+    builder.append(", \"empleado\" = '"+pedido.getEmpleado().getEmail()+"'");
   }
+  if (pedido.getMesa()!=null){
+    builder.append(", \"mesa\" = '"+pedido.getMesa().getId()+"'");
+  }
+  if (pedido.getPrecio_final()!=0){
+    builder.append(", \"precio_final\" = "+pedido.getPrecio_final());
+  }
+  builder.append(", \"activo\" = '"+pedido.isActivo()+"'");
+  builder.append(" WHERE id = '"+pedido.getId()+"'");
+  return builder.toString();
+}   
+
+    
+  public static String sentenciaRestauranteToInsertSQL(Restaurante restaurante, String gestorEmail){
+  StringBuilder builder = new StringBuilder();
+  builder.append("INSERT INTO "+GestorDB.TABLA_RESTAURANTE+" (\"id\", \"nombre\", \"provincia\", \"direccion\", \"gestor\") VALUES (");
+  builder.append("'"+ restaurante.getId()+"'");
+  builder.append(", '"+ restaurante.getNombre()+"'");
+  if (restaurante.getProvincia()!=null){
+    builder.append(", '"+ restaurante.getProvincia().getNombre()+"'");
+  }      
+  if (restaurante.getDireccion()!=null){
+    builder.append(", '"+ restaurante.getDireccion()+"'");
+  }      
+  builder.append(", '"+ gestorEmail+"'");
+  builder.append(")");           
+  return builder.toString();
+}
+  
+public static String sentenciaMesaToInsertSQL(Mesa mesa){
+  StringBuilder builder = new StringBuilder();
+  builder.append("INSERT INTO "+GestorDB.TABLA_MESA+" (\"id\", \"num_comensales\", \"restaurante\") VALUES (");
+  builder.append("'"+mesa.getId()+"'");
+  builder.append(", '"+mesa.getNum_comensales()+"'");
+  builder.append(", '"+mesa.getIdRestaurante()+"'");
+  builder.append(")");     
+  return builder.toString();
+}
+
+public static String sentenciaProductoToInsertSQL(Producto producto){
+  StringBuilder builder = new StringBuilder();
+  builder.append("INSERT INTO "+GestorDB.TABLA_PRODUCTO+" (\"id\", \"nombre\", \"precio\", \"disponible\", \"tiempo_elaboracion\"");
+  //campos optativos
+  if (producto.getAlergenos().size()!=0){
+    builder.append(", \"alergenos\"");
+  }
+  //nota, nunca podrá tener ni contenido ni precio real porque eso es solo para menus
+    builder.append(") VALUES (");
+  builder.append("'"+producto.getId()+"'");
+  builder.append(", '"+producto.getNombre()+"'");
+  builder.append(", "+producto.getPrecio()+"");
+  builder.append(", "+producto.getDisponibles()+"");  
+  builder.append(", "+producto.getTiempo_elaboracion()+"");  
+  if (producto.getAlergenos().size()!=0){
+    //'{gluten, lacteos, huevo}'
+    builder.append(", '{");
+    int items = producto.getAlergenos().size()-1;
+    for (Alergeno a: producto.getAlergenos()){
+      builder.append(a.getTipo());
+      if (items>0){
+        builder.append(", ");
+        items--;
+      }      
+    }
+    builder.append("}'");
+  }  
+  builder.append(")");
+  
+  return builder.toString();
+  
+}
   
   /**
  * Método para construir fechas conrrectas para insertar en la base de datos. 

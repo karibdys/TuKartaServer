@@ -3,9 +3,13 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Gestor;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.Mesa;
 import ioc.tukartaserver.model.Pedido;
+import ioc.tukartaserver.model.Producto;
+import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
@@ -463,6 +467,53 @@ public MensajeRespuesta procesarMensajeListProductosPendientes(TokenSesion token
   }else{
     //si el código es 10, podemos continuar 
     respuesta  = gestorDB.listProductosPendientes();    
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeAddRestaurante(TokenSesion token, Restaurante rest, String peticion){
+  
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    //si el código es 10, podemos continuar 
+    System.out.println(SERVER+"Creando gestor");
+    Gestor gestor = new Gestor();
+    gestor.setEmail(token.getUsuario());
+    //truquito para tener el ID del restaurante a mano
+    gestor.setNombre(rest.getId());
+    gestor.addRestaurante(rest);
+    respuesta  = gestorDB.addData(gestor, peticion);    
+    System.out.println(SERVER+" llegamos a hacer la petición: "+respuesta);
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeAddMesa(TokenSesion token, Mesa mesa, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    respuesta = gestorDB.addData(mesa, peticion);
+  }
+  return respuesta;
+}
+
+
+public MensajeRespuesta procesarMensajeAddProducto(TokenSesion token, Producto producto, String peticion){
+  System.out.println(SERVER+"procesando peticion de add producto");
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    respuesta = gestorDB.addData(producto, peticion);
   }
   return respuesta;
 }

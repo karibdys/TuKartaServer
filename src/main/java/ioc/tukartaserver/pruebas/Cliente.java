@@ -15,6 +15,8 @@ import ioc.tukartaserver.model.MensajeSolicitud;
 import ioc.tukartaserver.model.Mesa;
 import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Producto;
+import ioc.tukartaserver.model.Provincia;
+import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
@@ -202,14 +204,14 @@ public void startClient() {
       
              
       /*******************PRUEBA DE LIST PEDIDO COMPLETO FROM ID************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedido_completo_from_user");   
       TokenSesion token = new TokenSesion(emp);
       Pedido idPedido = new Pedido();
       idPedido.setId("pedido1T");
       token.setToken("UYqlpCxkoN");  
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID, idPedido, token);        
-      
+      */
       
       /*******************PRUEBA DE DELETE DATA PEDIDO ************************/
       /*
@@ -285,6 +287,40 @@ public void startClient() {
       token.setToken("pmOLcVcTmU");        
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES, null, token);
       */
+      
+      /*******************PRUEBA DE ADD DATA REST ************************/
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("aZYVvPivsu");  
+      Restaurante rest = new Restaurante("res4Pepe", "Cam Pepe", Provincia.HUELVA, "Calle de Huelva mu bonita");
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_RESTAURANTE, rest, token);
+      */
+     
+      /*******************PRUEBA DE ADD DATA MESA ************************/
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("CVEyrJXncn");  
+      Mesa mesaNva = new Mesa();
+      mesaNva.setId("mesa8CanMarc");
+      mesaNva.setNum_comensales(8);
+      mesaNva.setIdRestaurante("res1Marc");      
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_MESA, mesaNva, token);
+      */
+       /*******************PRUEBA DE ADD DATA PRODUCTO ************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("KvNBWhNPdb");  
+      Producto producto = new Producto();
+      producto.setId("B003");
+      producto.setNombre("Pepsi");
+      producto.setPrecio(1.20f);
+      producto.setDisponibles(500);
+      producto.setTiempo_elaboracion(0);   
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PRODUCTO, producto, token);
+      
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         

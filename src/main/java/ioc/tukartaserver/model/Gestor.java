@@ -1,4 +1,5 @@
 package ioc.tukartaserver.model;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -7,7 +8,7 @@ import java.util.HashSet;
  */
 public class Gestor extends Usuario{
 
-private HashSet<Restaurante> restaurantes;
+private ArrayList<Restaurante> restaurantes = new ArrayList<>();
 private Rol rol;
 
 /******************
@@ -30,7 +31,7 @@ public Gestor (){
  * @param apellidoReal apellido real del empleado
  * @param restaurantes ArrayList de Restaurante que indica los restaurantes de los que es gestor
  */
-public Gestor (String nombreUser, String pass, String email, String nombreReal, String apellidoReal, HashSet<Restaurante> restaurantes){
+public Gestor (String nombreUser, String pass, String email, String nombreReal, String apellidoReal, ArrayList<Restaurante> restaurantes){
   super(nombreUser, pass, email, nombreReal, apellidoReal, true);
   this.restaurantes=restaurantes; 
   this.rol = Rol.GESTOR;
@@ -49,7 +50,7 @@ public Gestor(Usuario user){
  * @param user el usuario que se va a convertir en empleado
  * @param restaurantes ArrayList de Restaurante que indica los restaurantes de los que es gestor
  */
-public Gestor (Usuario user, HashSet<Restaurante> restaurantes){
+public Gestor (Usuario user, ArrayList<Restaurante> restaurantes){
   super(user.getUsuario(), user.getPwd(), user.getEmail(), user.getNombre(), user.getApellidos(), true);
   this.restaurantes=restaurantes; 
   this.rol = Rol.GESTOR;
@@ -65,7 +66,7 @@ public Gestor (Usuario user, HashSet<Restaurante> restaurantes){
  * Devuelve la lista de restaurantes de la que el usuario es gestor
  * @return Restarante[]
  */
-public HashSet<Restaurante> getRestaurantes() {
+public ArrayList<Restaurante> getRestaurantes() {
   return restaurantes;
 }
 
@@ -78,7 +79,7 @@ public HashSet<Restaurante> getRestaurantes() {
  * Establece el listado de restaurantes de los que el usuario es gestor
  * @param restaurantes 
  */
-public void setRestaurantes(HashSet<Restaurante> restaurantes) {
+public void setRestaurantes(ArrayList<Restaurante> restaurantes) {
   this.restaurantes = restaurantes;
 }
 

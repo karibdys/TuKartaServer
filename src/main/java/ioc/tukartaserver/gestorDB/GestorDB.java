@@ -16,9 +16,11 @@ import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Gestor;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.Mesa;
 import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Producto;
 import ioc.tukartaserver.model.ProductoEstado;
+import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
@@ -26,6 +28,7 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +46,8 @@ public static final String TABLA_USERS = "usuario";
 public static final String TABLA_PROD = "producto";
 public static final String TABLA_PEDIDO = "pedido";
 public static final String TABLA_RESTAURANTE = "restaurante";
+public static final String TABLA_MESA = "mesa";
+public static final String TABLA_PRODUCTO= "producto";
 public static final String TABLA_PEDIDO_ESTADO = "pedido_estado";
 
 //sentencias
@@ -61,6 +66,8 @@ public static final String LIST_PROD_PENDIENTES = "SELECT * FROM pedido_estado W
 
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
+public static final String COMPROBAR_RESTAURANTE= "SELECT * FROM restaurante WHERE id =?";
+public static final String COMPROBAR_MESA= "SELECT * FROM mesa WHERE id =?";
 
 
 //útiles para otros requisitos
@@ -297,13 +304,13 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
  * @return MensajeRespuesta con el código de confirmación o de error del proceso
  */
 public MensajeRespuesta addData(Object dato, String peticion){
+  log("Procesando añadido de dato");
   MensajeRespuesta ret = null;
   String sentencia = "";
   //primero tenemos que saber qué tipo de dato viene asociado
-  if (dato instanceof Usuario){
+  if (dato instanceof Empleado){
     //tipo empleado
     sentencia = Utiles.sentenciaUsuarioToInsertSQL((Empleado)dato);   
-    System.out.println(BD+"sentencia: "+sentencia); 
   }else if(dato instanceof Pedido){
     try {
       //tipo pedido
@@ -317,7 +324,46 @@ public MensajeRespuesta addData(Object dato, String peticion){
     }
     //si todo ha ido bien, continuamos con la petición
     sentencia = Utiles.sentenciaPedidoToInsertSQL((Pedido)dato);
-  }  
+  }else if(dato instanceof Gestor){
+    //si nos mandan un gestor, es que quiere que insertemos un restaurante
+    log("Iniciando peticion de restaurante");
+    ArrayList<Restaurante>listaRest = ((Gestor)dato).getRestaurantes();
+    Restaurante restaurante = listaRest.get(0);    
+    try{
+      if (comprobarRestaurante(restaurante.getId())){
+        //si el restaurante ya existe
+        return Utiles.mensajeErrorUserRep(peticion);
+      }else{
+        //si no, podemos crear la sentencia
+        sentencia = Utiles.sentenciaRestauranteToInsertSQL(restaurante, ((Gestor)dato).getEmail());
+      }
+    }catch (SQLException ex){
+      return Utiles.mensajeErrorDB(peticion);
+    }
+  }else if (dato instanceof Mesa){
+    try {
+      if(comprobarMesa(((Mesa)dato).getId())){
+        return Utiles.mensajeErrorUserRep(peticion);
+      }else{
+        sentencia = Utiles.sentenciaMesaToInsertSQL((Mesa)dato);
+      }      
+    } catch (SQLException ex) {
+      return Utiles.mensajeErrorDB(peticion);
+    }    
+  }else if(dato instanceof Producto){
+    try {
+      if(comprobarProducto(((Producto)dato).getId())){
+        return Utiles.mensajeErrorUserRep(peticion);
+      }else{
+        sentencia = Utiles.sentenciaProductoToInsertSQL((Producto)dato);
+      }      
+    } catch (SQLException ex) {
+      return Utiles.mensajeErrorDB(peticion);
+    }    
+  }else{
+    return Utiles.mensajeErrorFuncionNoSoportada(peticion);
+  }
+ log("sentencia--> "+sentencia);
   //si la sentencia creada no está vacía, procedemos a hacer la petición
   if(!sentencia.equals("")){
     try {
@@ -377,7 +423,7 @@ public MensajeRespuesta updateData(Object dato, String peticion){
       return ret = Utiles.mensajeErrorPKNotFound(peticion);
     }
     
-  }  
+  }   
   log("sentencia: "+sentencia);
   if(!sentencia.equals("")){
     try {
@@ -960,6 +1006,37 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    }      
    return prod; 
  }
+ 
+ /**
+   * Confirma si hay un Restaurante determinado en la base de datos o no
+   * @param idPedido String con el id del Pedido a comprobar
+   * @return true si el pedido existe y false si no
+   * @throws SQLException 
+   */
+ public boolean comprobarRestaurante(String idRestaurante) throws SQLException{
+    boolean prod = false;   
+   openConnection();
+   PreparedStatement pstm = con.prepareStatement(COMPROBAR_RESTAURANTE);
+   pstm.setString(1, idRestaurante);
+   ResultSet res= pstm.executeQuery();
+   if(res.next()){
+     prod=true;
+   }      
+   return prod; 
+ }
+ 
+ public boolean comprobarMesa(String idMesa)throws SQLException{
+    boolean prod = false;   
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(COMPROBAR_MESA);
+    pstm.setString(1, idMesa);
+    ResultSet res= pstm.executeQuery();
+    if(res.next()){
+      prod=true;
+    }      
+    return prod; 
+ }
+         
  
  public void openConnection(){
   try {    

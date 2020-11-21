@@ -112,6 +112,10 @@ public int getTiempo_elaboracion() {
   return tiempo_elaboracion;
 }
 
+public ArrayList<Producto> getContenido(){
+  return this.contenido;
+}
+
 /******************
  * SETTERS
  ******************
