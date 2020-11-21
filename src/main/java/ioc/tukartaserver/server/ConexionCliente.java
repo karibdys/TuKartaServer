@@ -133,14 +133,20 @@ public void run(){
     //si no ha habido ningún fallo en la recepción, tendremos un mensaje JSON.
     System.out.println(CONCLI+": JSON recibido\n  -->\n"+mensajeIn);   
     solicitud = gson.fromJson(mensajeIn, MensajeSolicitud.class);
-    if(mensajeIn!=null){
-      solicitud = gson.fromJson(mensajeIn, MensajeSolicitud.class);
-      //procesamos la petición
-      procesarPeticion(solicitud);
-    }else{
+    try{      
+      if(mensajeIn!=null){
+        solicitud = gson.fromJson(mensajeIn, MensajeSolicitud.class);
+        //procesamos la petición
+        procesarPeticion(solicitud);
+      }else{
+        endConnection();
+      }      
+    }catch (Exception ex){
+      System.out.println(ex.getMessage());
+    }finally{
       endConnection();
-    }      
-    endConnection();
+    }
+    
     System.out.println(CONCLI+"finalizando conexión");
 }
 
@@ -155,7 +161,7 @@ public void run(){
    * @param mensaje MensajeSolicitud un mensaje con la solicitud que se le envía desde un cliente. 
  */
 
-public void procesarPeticion(MensajeSolicitud mensaje){  
+public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{  
   //sacamos el tipo de petición
   if (mensaje==null){
     gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_DATOS_INCORRECTOS), mensaje.getPeticion()));
@@ -267,6 +273,10 @@ public void procesarPeticion(MensajeSolicitud mensaje){
       case Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER:
         String idEmp = gson.fromJson(dataString, Empleado.class).getEmail();
         respuesta = gestorServer.procesarMensajeListPedidoCompletoFrom(token, idEmp, Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER);
+      case Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID:
+        String idPedido = gson.fromJson(dataString, Pedido.class).getId();
+        respuesta = gestorServer.procesarMensajeListPedidoCompletoFrom(token, idPedido, Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID);
+        break;
       case Mensaje.FUNCION_DELETE_PRODUCTO_FROM:
         datosString = gson.fromJson(dataString, String[].class);
         respuesta = gestorServer.procesarMensajeDeleteProductoFrom(token, datosString, Mensaje.FUNCION_DELETE_PRODUCTO_FROM);

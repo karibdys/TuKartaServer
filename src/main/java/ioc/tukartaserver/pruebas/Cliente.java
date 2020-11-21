@@ -107,7 +107,7 @@ public void startClient() {
       String userJson = gson.toJson(emp);
       //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN, userJson, (String) null);
-     */
+      */
       
       /*******************PRUEBA DE LOGOFF************************/
       /*
@@ -200,6 +200,16 @@ public void startClient() {
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER, emp, token);        
       */
       
+             
+      /*******************PRUEBA DE LIST PEDIDO COMPLETO FROM ID************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedido_completo_from_user");   
+      TokenSesion token = new TokenSesion(emp);
+      Pedido idPedido = new Pedido();
+      idPedido.setId("pedido1T");
+      token.setToken("UYqlpCxkoN");  
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID, idPedido, token);        
+      
       
       /*******************PRUEBA DE DELETE DATA PEDIDO ************************/
       /*
@@ -269,12 +279,12 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE UPDATE FROM  PEDIDO sin id************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedidos_pendientes");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("pmOLcVcTmU");        
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES, null, token);
-      
+      */
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         

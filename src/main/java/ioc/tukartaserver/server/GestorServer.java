@@ -350,25 +350,25 @@ public MensajeRespuesta procesarMensajeUpdatePedido(TokenSesion token, Pedido pe
 /**
  * Procesa un mensaje de petición para listar los Pedidos activos pertenecientes a un usuario determinado
  * @param token TokenSesion con la información de la sesión del usuario
- * @param mail String con el id del Empleado del que queremos ver los pedidos
+ * @param idFiltro String con el id del Empleado del que queremos ver los pedidos
  * @param peticion String con el nombre de la petición que estamos realizando
  * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Incluye los datos de los pedidos listados. 
  */
-public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String mail, String peticion){
+public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String idFiltro, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
     respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
   }else{
-    String email ="";
+    String id ="";
     //si el código es un código 10, podemos seguir adelante.        
-    if (mail==null){
-      email = token.getUsuario();
+    if (idFiltro==null){
+      id = token.getUsuario();
     }else{
-      email = mail;
+      id = idFiltro;
     }
-    respuesta = gestorDB.listPedidoFrom(email, peticion);
+    respuesta = gestorDB.listPedidoFrom(id, peticion);
   }
   return respuesta;
 }

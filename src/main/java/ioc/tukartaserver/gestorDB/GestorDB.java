@@ -52,6 +52,7 @@ public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM "+TABLA_USERS
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.trabajadorde = ?";
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
 public static final String LIST_PEDIDO_COMPLETO_FROM_USER = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.empleado = ? AND pedido.activo = true";
+public static final String LIST_PEDIDO_COMPLETO_FROM_ID = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.id = ?";
 public static final String LIST_PRODUCTO_FROM_PEDIDO = "SELECT "+TABLA_PEDIDO_ESTADO+".id, "+TABLA_PEDIDO_ESTADO+".id_producto, "+TABLA_PROD+".nombre, "+TABLA_PROD+".alergenos, "+TABLA_PEDIDO_ESTADO+".estado FROM "+TABLA_PEDIDO_ESTADO+" LEFT JOIN producto ON "+TABLA_PEDIDO_ESTADO+".id_producto = "+TABLA_PROD+".id WHERE "+TABLA_PEDIDO_ESTADO+".id=?";
 public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
@@ -509,9 +510,18 @@ public MensajeRespuesta listPedidoFrom(String id, String peticion){
 public MensajeRespuesta listPedidoCompletoFrom (String id, String peticion){
   MensajeRespuesta ret = null;
   HashMap<String, Pedido> listado = new HashMap<>();
+  PreparedStatement pstm =null;
   try{
     openConnection();
-    PreparedStatement pstm = con.prepareStatement(LIST_PEDIDO_COMPLETO_FROM_USER);
+    if (peticion.equals(Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER)){
+      pstm = con.prepareStatement(LIST_PEDIDO_COMPLETO_FROM_USER);      
+    }else if (peticion.equals(Mensaje.FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID)){
+      pstm = con.prepareStatement(LIST_PEDIDO_COMPLETO_FROM_ID);
+    }else{
+      return Utiles.mensajeErrorDatosIncorrectos(peticion);
+    }
+    log(" sentencia --> "+pstm);
+    
     pstm.setString(1, id);
     ResultSet result = pstm.executeQuery();
     while(result.next()){
