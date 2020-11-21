@@ -41,12 +41,12 @@ CREATE TABLE producto (
 	-- Parte del producto
 	id			varchar(30) PRIMARY KEY,
 	nombre		varchar(30) NOT NULL,
-	alergenos	alergeno[],
+	alergenos	alergeno[] DEFAULT '{}',
 	precio		float DEFAULT 0,
 	disponible	integer,
 	tiempo_elaboracion	integer,
 	-- Parte del Menú
-	contenido  	TEXT[],
+	contenido  	TEXT[] DEFAULT '{}',
 	precio_real	float DEFAULT 0,
 	imagen BYTEA DEFAULT NULL
 );
