@@ -314,6 +314,14 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         Producto prodIn = gson.fromJson(dataString, Producto.class);
         respuesta = gestorServer.procesarMensajeAddProducto(token, prodIn, Mensaje.FUNCION_ADD_PRODUCTO);
         break;
+      case Mensaje.FUNCION_DELETE_PRODUCTO:
+        String prodId = gson.fromJson(dataString, Producto.class).getId();
+        respuesta = gestorServer.procesarMensajeDeleteProducto(token, prodId, Mensaje.FUNCION_DELETE_PRODUCTO);
+        break;
+      case Mensaje.FUNCION_LIST_PRODUCTOS:
+        //no necesita parámetros, solamente el token de sesion
+        respuesta = gestorServer.procesarMensajeListProductos(token, Mensaje.FUNCION_LIST_PRODUCTOS);
+        break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;

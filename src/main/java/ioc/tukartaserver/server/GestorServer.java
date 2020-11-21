@@ -3,6 +3,7 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
+import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Gestor;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
@@ -398,7 +399,7 @@ public MensajeRespuesta procesarMensajeAddProductoTo(TokenSesion token, String[]
     respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
   }else{
     //si el código es 10, podemos continuar    
-    respuesta  = gestorDB.addProductoEstado(datos[0], datos[1], datos[2], peticion);
+    respuesta  = gestorDB.addProductoEstado(datos[0], datos[1], Estado.PREPARANDO.getEstado(), peticion);
   }
   return respuesta;
 }
@@ -514,6 +515,32 @@ public MensajeRespuesta procesarMensajeAddProducto(TokenSesion token, Producto p
     respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
     respuesta = gestorDB.addData(producto, peticion);
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeDeleteProducto(TokenSesion token, String productoId, String peticion){
+   System.out.println(SERVER+"procesando peticion de delete producto");
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    respuesta = gestorDB.deleteData(productoId, peticion);
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeListProductos(TokenSesion token, String peticion){
+  System.out.println(SERVER+"procesando peticion de listar productos producto");
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    respuesta = gestorDB.listProductos(peticion);
   }
   return respuesta;
 }

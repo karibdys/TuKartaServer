@@ -309,7 +309,7 @@ public void startClient() {
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_MESA, mesaNva, token);
       */
        /*******************PRUEBA DE ADD DATA PRODUCTO ************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("KvNBWhNPdb");  
@@ -320,6 +320,15 @@ public void startClient() {
       producto.setDisponibles(500);
       producto.setTiempo_elaboracion(0);   
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_ADD_PRODUCTO, producto, token);
+      */
+      
+      /*******************PRUEBA DE LIST PRODUCTOS ************************/
+     
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("ciqhRMkYff");        
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PRODUCTOS, null,  token);
+      
       
       
       /*******************FINAL DE PETICIÓN ************************/

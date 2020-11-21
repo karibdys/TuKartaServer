@@ -350,13 +350,14 @@ public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLExcep
 }
 
 public static Producto createProductoFromResultSet(ResultSet result, GestorDB gestor) throws SQLException{
+  System.out.println("UTILES: añadiendo producto: "+result.getString("nombre"));
   Producto producto = new Producto();
   //id
   producto.setId(result.getString("id"));
   //nombre
   producto.setNombre(result.getString("nombre"));
   //alergenos
-  if (result.getArray("alergenos").toString().length()>2){
+  if ((result.getArray("alergenos").toString().length()>2) && (result.getArray("alergenos")!=null)){
     System.out.print("Añadiendo alérgenos");
     String array = result.getArray("alergenos").toString();
     HashSet<Alergeno> listado = createAlergenoFromArray(array);    
@@ -367,15 +368,13 @@ public static Producto createProductoFromResultSet(ResultSet result, GestorDB ge
     }
   }  
   //precio
-  producto.setPrecio(result.getFloat("precio"));
-  
+  producto.setPrecio(result.getFloat("precio"));  
   //disponible
   producto.setDisponibles(result.getInt("disponible"));
   //tiempo_elaboracion
-  producto.setTiempo_elaboracion(result.getInt("tiempo_elaboracion"));
-  
+  producto.setTiempo_elaboracion(result.getInt("tiempo_elaboracion"));  
   //contenido
-  if (result.getArray("contenido")!=null){
+  if ((result.getArray("contenido").toString().length()>2) && (result.getArray("contenido")!=null)){
     Array arrayTemp = result.getArray("contenido");        
     String[] content = (String[])arrayTemp.getArray();
     ArrayList<Producto> listadoProd = new ArrayList<>();
@@ -396,14 +395,11 @@ public static Producto createProductoFromResultSet(ResultSet result, GestorDB ge
 public static HashSet<Alergeno> createAlergenoFromArray(String cadena){
   HashSet<Alergeno> listadoAlerg = new HashSet<>();
   String cadena2 = cadena.substring(1, cadena.length()-1);
-  System.out.println("  CADENA: "+cadena2);
   String[] arrayString = cadena2.split(",");
   for (String alerg: arrayString){
-    System.out.println(alerg.toUpperCase());
     Alergeno alergeno = Alergeno.valueOf(alerg.toUpperCase());        
     listadoAlerg.add(alergeno);
   }
-  System.out.println("TAMAÑO: "+listadoAlerg.size());
   return listadoAlerg;
 }
 

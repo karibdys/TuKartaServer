@@ -63,6 +63,9 @@ public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE i
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String LIST_PROD_PENDIENTES = "SELECT * FROM pedido_estado WHERE id_pedido IN (SELECT id FROM pedido WHERE activo = true) AND estado != 'listo'";
+public static final String LIST_PRODUCTOS = "SELECT * FROM producto";
+public static final String DELETE_PRODUCTO = "DELETE FROM "+TABLA_PRODUCTO+" WHERE id = ?";
+
 
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
@@ -485,6 +488,19 @@ public MensajeRespuesta deleteData(String id, String peticion){
       sentencia = DELETE_PEDIDO;
       System.out.println(BD+"pedido preparado para eliminar: \n"+sentencia);
       break;
+    case Mensaje.FUNCION_DELETE_PRODUCTO:
+    {
+      try {
+        //comprobamos que el producto existe
+        if(!comprobarProducto(id)){
+          return Utiles.mensajeErrorPKNotFound(peticion);
+        }else{
+          sentencia = DELETE_PRODUCTO;
+        }
+      } catch (SQLException ex) {
+        return Utiles.mensajeErrorDB(peticion);
+      }
+    }
 
     default:
       return Utiles.mensajeErrorFuncionNoSoportada(peticion);      
@@ -866,6 +882,36 @@ public MensajeRespuesta listProductosPendientes(){
     log(ex.getMessage());
     res = Utiles.mensajeErrorDB(Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES);
   }
+  return res;
+}
+
+/**
+ * Lista todos los productos en la base de datos
+ * @param peticion String con el nombre de la petición 
+ * @return 
+ */
+public MensajeRespuesta listProductos(String peticion) {
+  MensajeRespuesta res = null;
+  ArrayList<Producto> listado=new ArrayList<>();
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(LIST_PRODUCTOS);
+    ResultSet result = pstm.executeQuery();
+    while(result.next()){
+      Producto producto = Utiles.createProductoFromResultSet(result, this);
+      listado.add(producto);
+      log("añadiendo producto: "+producto.getNombre());
+    }
+    log("todos los productos creados: "+listado.size());
+    pstm.close();
+    closeConnection();
+  }catch (SQLException ex){
+    return Utiles.mensajeErrorDB(peticion);
+  }
+  res = Utiles.mensajeOK(peticion);
+  Gson gson = new Gson();
+  String arrayJSON = gson.toJson(listado);
+  res.setData(arrayJSON);
   return res;
 }
 
