@@ -28,7 +28,6 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,15 +71,15 @@ public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?"
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
 public static final String COMPROBAR_RESTAURANTE= "SELECT * FROM restaurante WHERE id =?";
 public static final String COMPROBAR_MESA= "SELECT * FROM mesa WHERE id =?";
+public static final String COMPROBAR_GESTOR= "SELECT * FROM usuario WHERE email =? AND isgestor= true";
 
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
 
-/******************
+/*******************
  * CONSTRUCTOR
- ******************
- */
+ *******************/
 
 /**
  * Constructor básico del gestor de la base de datos
@@ -97,9 +96,23 @@ public Connection getCon(){
   return this.con;
 }
 
+/*******************
+ * SETTERS
+ *******************/
+
+/**
+ * Establece un objeto Connection que no es el que se crea con la construcción del gestor.
+ * @param con Connection
+ */
 public void setConnection(Connection con){
   this.con=con;
 }
+
+/*******************
+ * GETTERS
+ *******************/
+
+
 
 /******************
  * GESTIÓN DE USUARIOS
@@ -273,16 +286,32 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
     PreparedStatement stm =null;
     //preparamos la sentencia SQL:
     if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR)){
+      //comprobamos que el usuario existe:
+      if(!comprobarGestor(id)){
+        System.out.println("el gestor no existe");
+        //si el usuario no existe, entonces devolvemos una respuesta de error
+        return Utiles.mensajeErrorPKNotFound(peticion);
+      }
+      System.out.println("el gestor sí existe");
       stm = con.prepareStatement(LIST_USERS_FROM_GESTOR);
+                   
     }else if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_REST)){
+      //comprobamos que el restaurante existe:
+      if(!comprobarRestaurante(id)){
+        System.out.println("el gestor no existe");
+        //si el usuario no existe, entonces devolvemos una respuesta de error
+        return Utiles.mensajeErrorPKNotFound(peticion);
+      }
       stm = con.prepareStatement(LIST_USERS_FROM_REST);
     }    
+    
     //añadimos los parámetros
     stm.setString(1, id);
     System.out.println(BD+" sentencia --> "+stm);
     //ejecutamos la sentencia
     ResultSet resultSet = stm.executeQuery();
     //por cada resultado que haya en la lista creamos un usuario (básico) nuevo y lo añadimos al listdo
+    
     while (resultSet.next()){
       Empleado user = Utiles.createEmpleadoFromResultSet(resultSet, false);          
       listado.add(user);
@@ -1081,6 +1110,19 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    return prod; 
  }
  
+  public boolean comprobarGestor(String idGestor)throws SQLException{
+    boolean prod = false;   
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(COMPROBAR_GESTOR);
+    pstm.setString(1, idGestor);
+    ResultSet res= pstm.executeQuery();
+    if(res.next()){
+      prod=true;
+    }      
+    return prod; 
+ }
+  
+  
  public boolean comprobarMesa(String idMesa)throws SQLException{
     boolean prod = false;   
     openConnection();

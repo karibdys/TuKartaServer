@@ -112,6 +112,10 @@ public int getTiempo_elaboracion() {
   return tiempo_elaboracion;
 }
 
+/**
+ * Devuelve un ArrayList con todos los productos que hay en su interior
+ * @return ArrayList<Producto> con todos los productos que tiene asociado el pedido
+ */
 public ArrayList<Producto> getContenido(){
   return this.contenido;
 }
@@ -232,6 +236,10 @@ public void removeAlergeno(Alergeno alergeno){
   }
 }
 
+/**
+ * Devuelve una representación en String del contenido de este producto
+ * @return String
+ */
 @Override
 public String toString(){
   StringBuilder builder = new StringBuilder();  

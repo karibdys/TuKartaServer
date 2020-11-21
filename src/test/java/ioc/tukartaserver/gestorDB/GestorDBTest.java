@@ -7,12 +7,9 @@ import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Usuario;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,19 +23,22 @@ import static org.junit.Assert.*;
  */
 public class GestorDBTest {
 private static GestorDB gestor;
-private static String USER_CORRECTO="manu@tukarta.com";
-private static String USER_CORRECTO_ADMIN="marc@tukarta.com";
-private static String USER_INCORRECTO="random@tukarta.com";
-private static String PASS_CORRECTA="manuPass";
-private static String PASS_CORRECTA_ADMIN="marcPass";
-private static String PASS_INCORRECTA="randomPass";
-private static String MAIL_PRUEBAS = "prueba@tukarta.com";
+private static final String USER_CORRECTO="manu@tukarta.com";
+private static final String USER_CORRECTO_ADMIN="marc@tukarta.com";
+private static final String USER_INCORRECTO="random@tukarta.com";
+private static final String ID_REST_INCORRECTO="random@tukarta.com";
+private static final String PASS_CORRECTA="manuPass";
+private static final String PASS_CORRECTA_ADMIN="marcPass";
+private static final String PASS_INCORRECTA="randomPass";
+private static final String MAIL_PRUEBAS = "prueba@tukarta.com";
 
 private static final String ID_PEDIDO_PRUEBAS = "201120/2021-mesa1CanMarc";
 private static final String ID_PRODUCTO_PRUEBAS = "B001";
 private static final String ID_MESA_PRUEBAS = "mesa1CanMarc";
 private static final float PRECIO_FINAL_PRUEBAS =100;
 private static final String ID_PROD_PRUEBAS = "Prueba001";
+private static final String ID_REST_PRUEBAS="resPruebas";
+private static final String ID_GESTOR_PRUEBAS ="gestor@tukarta.com";
 private static final String ID_REG_PROD_PRUEBAS = "registro1";
 
 public GestorDBTest() {
@@ -473,9 +473,99 @@ public void tearDown() {
   }
   
   
+  /**************
+   LIST USER FROM GESTOR
+  ****************/
+  /**
+   * Comprueba que se lanza un mensaje de error de código 61 al introducir un gestor que no está en la base de datos
+   */
+  @Test
+  public void listUsersFrom_gestor_noBD(){
+    System.out.println("\n**********************\nPrueba LIST EMPLEADOS DE GESTOR (no está en la base de datos)\n");
+    MensajeRespuesta res = gestor.listUsersFrom(USER_INCORRECTO, Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;
+    assertEquals(expResult, res.getCode().getCode());
+  }
   
-    /*  
-  *************
+  /**
+   * Comprueba que se lanza un mensaje OK, ya que el gestor está en la base de datos, pero el array está vacío porque no hay empleados a su cargo
+   */
+  public void listUsersFrom_gestor_siBD_0(){
+    System.out.println("\n**********************\nPrueba LIST EMPLEADOS DE GESTOR (está en la base de datos sin empleados)\n");
+    MensajeRespuesta res = null;
+    try{
+      addGestorPrueba();
+      res = gestor.listUsersFrom(ID_GESTOR_PRUEBAS, Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);      
+    }catch(SQLException ex){
+      fail("no se ha podido acceder");
+    }finally{
+      try{
+        deleteGestorPrueba();
+      }catch(SQLException ex){
+        System.err.println(ex.getMessage());
+      }
+    }
+    String expResult = Codes.CODIGO_OK;
+    if (res.getCode().getCode().equals(expResult)){
+      //implementar captura de cantidad de usuarios
+      assertTrue(true);      
+    }
+  }
+  
+  /**
+   * Comprueba que se lanza un mensaje OK, ya que el gestor está en la base de datos, y hay campos de usuarios en la respuesta
+   */
+  public void listUsersFrom_gestor_siBD_1(){
+    
+  }
+  
+  /**************
+   LIST USER FROM RESTAURANTE
+  ****************/
+  /**
+   * Comprueba que se lanza un mensaje de error de código 61 al introducir un gestor que no está en la base de datos
+   */
+  @Test
+  public void listUsersFrom_restaurante_noBD(){
+    System.out.println("\n**********************\nPrueba LIST EMPLEADOS DE RESTAURANTE (no está en la base de datos)\n");
+    MensajeRespuesta res = gestor.listUsersFrom(ID_REST_INCORRECTO, Mensaje.FUNCION_LIST_USERS_FROM_REST);
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;
+    assertEquals(expResult, res.getCode().getCode());
+  }
+  
+  /**
+   * Comprueba que se lanza un mensaje OK, ya que el gestor está en la base de datos, pero el array está vacío porque no hay empleados a su cargo
+   */
+  public void listUsersFrom_restaurante_siBD_0(){
+    System.out.println("\n**********************\nPrueba LIST EMPLEADOS DE RESTAURANTE (está en la base de datos sin empleados)\n");
+    MensajeRespuesta res = null;
+    try{
+      addRestaurantePrueba();
+      res = gestor.listUsersFrom(ID_REST_PRUEBAS, Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);      
+    }catch(SQLException ex){
+      fail("no se ha podido acceder");
+    }finally{
+      try{
+        deleteRestaurantePrueba();
+      }catch(SQLException ex){
+        System.err.println(ex.getMessage());
+      }
+    }
+    String expResult = Codes.CODIGO_OK;
+    if (res.getCode().getCode().equals(expResult)){
+      //implementar captura de cantidad de usuarios
+      assertTrue(true);      
+    }
+  }
+  
+  /**
+   * Comprueba que se lanza un mensaje OK, ya que el gestor está en la base de datos, y hay campos de usuarios en la respuesta
+   */
+  public void listUsersFrom_restaurante_siBD_1(){
+    
+  }
+  
+  /**************
    UPDATE_PEDIDO
   ***************/
   @Test
@@ -895,4 +985,59 @@ public void tearDown() {
     pstm.close();
     gestor.closeConnection();
   }
+  
+  public void addGestorPrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();    
+    String sentencia = "INSERT INTO usuario VALUES ('Gestor', 'gestorPass', "+ID_GESTOR_PRUEBAS+", 'Gestor', 'Gestor', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, true);";
+    System.out.println(sentencia);
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    if (pstm.executeUpdate()>0){
+      System.out.println("Añadiendo gestor");
+    };
+    pstm.close();
+    gestor.closeConnection();
+  }
+  
+    public void deleteGestorPrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();    
+    String sentencia = "DELETE FROM usuario WHERE id = '"+ID_GESTOR_PRUEBAS+"'";
+    System.out.println(sentencia);
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    if (pstm.executeUpdate()>0){
+      System.out.println("Eliminando registro");
+    };
+    pstm.close();
+    gestor.closeConnection();
+    }
+   
+  public void addRestaurantePrueba()throws SQLException{
+    gestor.openConnection();
+    addGestorPrueba();    
+    Connection con = gestor.getCon();    
+    String sentencia = "insert into restaurante values ('"+ID_REST_PRUEBAS+"', 'Restaurante Prueba', 'Barcelona', 'Calle prueba', '"+ID_GESTOR_PRUEBAS+"')";
+    System.out.println(sentencia);
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    if (pstm.executeUpdate()>0){
+      System.out.println("Añadiendo gestor");
+    };
+    pstm.close();
+    gestor.closeConnection();
+  }
+  
+  public void deleteRestaurantePrueba() throws SQLException{
+    gestor.openConnection();
+    Connection con = gestor.getCon();    
+    String sentencia = "DELETE FROM restaurante WHERE id = '"+ID_REST_PRUEBAS+"'";
+    System.out.println(sentencia);
+    PreparedStatement pstm = con.prepareStatement(sentencia);
+    if (pstm.executeUpdate()>0){
+      System.out.println("Eliminando registro");
+    };
+    pstm.close();
+    gestor.closeConnection();
+    deleteGestorPrueba();
+  }
+    
 }

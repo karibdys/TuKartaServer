@@ -170,8 +170,6 @@ public void setDataUser(String dataUser) {
     this.data = gson.toJson(user);
   }
     
-  
-
 /******************
  * SETTERS
  ******************

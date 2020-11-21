@@ -1,6 +1,6 @@
 package ioc.tukartaserver.model;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Clase que extiende a Usuario y da forma a los gestores de restaurantes

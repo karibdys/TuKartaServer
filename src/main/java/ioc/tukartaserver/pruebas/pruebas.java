@@ -65,16 +65,23 @@ public static void main (String... args) throws SQLException, ClassNotFoundExcep
   } catch (SQLException ex) {
     System.err.println(ex.getMessage());
   }*/
- Producto producto = new Producto();
- producto.setId("B003");
- producto.setNombre("Pepsi");
- producto.setPrecio(1.20f);
- producto.setDisponibles(500);
- producto.setTiempo_elaboracion(0);
- producto.addAlergeno(Alergeno.GLUTEN);
- producto.addAlergeno(Alergeno.HUEVO);
-  String sent = Utiles.sentenciaProductoToInsertSQL(producto);
- System.out.println(sent);
+MensajeRespuesta res = Utiles.mensajeOK("HOL");
+ArrayList<Usuario> users = new ArrayList<>();
+users.add(new Usuario("id1"));
+users.add(new Usuario("id2"));
+users.add(new Usuario("id3"));
+Gson gson = new Gson();
+String arrayJSON = gson.toJson(users);
+res.setData(arrayJSON);
+
+String mensJSON = gson.toJson(res);
+
+MensajeRespuesta ret = gson.fromJson(mensJSON, MensajeRespuesta.class);
+String data = ret.getData();
+System.out.println(data);
+
+String[] datos = gson.fromJson(data, String[].class);
+System.out.println(datos.length);
 
 
 }

@@ -8,10 +8,10 @@ import java.util.Date;
  */
 public class Usuario {
 
+private String email;     // primary key
 private String usuario;
-private String pwd;
-private String email;
-private String nombre;
+private String pwd;       //si es nula es que el usuario está dado de baja
+private String nombre;    
 private String apellidos;
 private Date fecha_alta;
 private Date fecha_modificacion;
@@ -27,6 +27,10 @@ private boolean isGestor;
  * Constructor básico de un usuario sin parámetros.
  */
 public Usuario(){   
+}
+
+public Usuario(String id){
+  this.email=id;
 }
 
 /**

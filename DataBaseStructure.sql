@@ -28,8 +28,9 @@ CREATE TABLE Usuario(
 	trabajadorDe	varchar(30),
 	salario			float,
 	rol				rol,
+	active			boolean DEFAULT true,
 	-- datos del gestor
-	-- restaurantes TEXT[]
+	
 	
 	CONSTRAINT "FK_gestor_USUARIO" FOREIGN KEY (gestor) REFERENCES public.usuario (email) ON UPDATE CASCADE ON DELETE SET NULL,	
 	PRIMARY KEY (email)

@@ -24,7 +24,9 @@ private String idRestaurante;
  ******************
  */
 
-
+/**
+ * Constructor básico de la clase sin parámetros. 
+ */
 public Mesa(){
   
 }
@@ -136,6 +138,11 @@ public void setNum_comensales(int num_comensales) {
 public void setListaPedidos(ArrayList<Pedido> listaPedidos) {
   this.listaPedidos = listaPedidos;
 }
+
+/**
+ * Establece el ID del restaurante al que pertenece. Tiene funciones solamente de simplificar el trabajo en algunas peticiones. No se guarda en la base de datos
+ * @param idRes String con el id del Restaurante al que pertenece
+ */
 public void setIdRestaurante(String idRes){
   this.idRestaurante=idRes;
 }

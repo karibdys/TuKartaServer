@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: ioc.tukartaserver.gestorDB.GestorDBTest
 -------------------------------------------------------------------------------
-Tests run: 32, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.095 sec
+Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.381 sec

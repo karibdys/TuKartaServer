@@ -19,6 +19,9 @@ private String direccion;
  ******************
  */
 
+/**
+ * Constructor básico y sin parámetros de la clase
+ */
 public Restaurante(){
   
 }

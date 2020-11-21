@@ -36,7 +36,6 @@ public static final String FUNCION_UPDATE_PEDIDO = "update_pedido";
 //gestión de productos en pedidos
 public static final String FUNCION_ADD_PRODUCTO_TO = "add_producto_to";
 public static final String FUNCION_LIST_PRODUCTOS_FROM_PEDIDO = "list_productos_from_pedido";
-
 public static final String FUNCION_DELETE_PRODUCTO_FROM ="delete_producto_from";
 public static final String FUNCION_DELETE_PRODUCTO_FROM_ID ="delete_producto_from_id";
 public static final String FUNCION_UPDATE_PRODUCTO_FROM = "update_producto_from";
@@ -61,6 +60,7 @@ public static final String FUNCION_LIST_PRODUCTOS = "list_productos";
 //gestión de la conexión
 public static final String FUNCION_FIN_CON = "fin_conexion";
 
+//otros
 public static final String ATT_PETICION = "peticion";
 public static final String ATT_TOKEN = "token";
 public static final String ATT_PARAM = "parametro";
