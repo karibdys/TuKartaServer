@@ -242,13 +242,38 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE DELETE FROM  PEDIDO************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de delete_producto_from sin id registro");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("LbmuOOSErv");  
+      token.setToken("EUvsWxuAUA");  
       String[] datos = {"B001", "pedido1M", null};
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_DELETE_PRODUCTO_FROM, datos, token);
+      */
       
+      /*******************PRUEBA DE UPDATE FROM  PEDIDO con id************************/
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de update_pedido_from con id registro");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("EUvsWxuAUA");  
+      String[] datos = {"pedido1M-3", "listo"};
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_PRODUCTO_FROM, datos, token);
+      */
+      
+      /*******************PRUEBA DE UPDATE FROM  PEDIDO sin id************************/
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de update_pedido_from sin id registro");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("mbWlcWkxRI");  
+      String[] datos = {"B001", "pedido1M", "preparando", "listo"};
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_UPDATE_PRODUCTO_FROM, datos, token);
+      */
+      
+      /*******************PRUEBA DE UPDATE FROM  PEDIDO sin id************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de list_pedidos_pendientes");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("pmOLcVcTmU");        
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES, null, token);
       
       
       /*******************FINAL DE PETICIÓN ************************/

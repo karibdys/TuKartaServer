@@ -279,7 +279,8 @@ public void procesarPeticion(MensajeSolicitud mensaje){
         datosString = gson.fromJson(dataString, String[].class);
         respuesta = gestorServer.procesarMensajeUpdateProductoFrom(token, datosString, Mensaje.FUNCION_DELETE_PRODUCTO_FROM);
         break;
-      case Mensaje.FUNCION_UPDATE_PRODUCTO_FROM_ID:
+      case Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES:
+        respuesta = gestorServer.procesarMensajeListProductosPendientes(token);
         break;
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));

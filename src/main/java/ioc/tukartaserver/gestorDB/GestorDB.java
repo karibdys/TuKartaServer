@@ -18,6 +18,7 @@ import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Producto;
+import ioc.tukartaserver.model.ProductoEstado;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
@@ -55,6 +56,7 @@ public static final String LIST_PRODUCTO_FROM_PEDIDO = "SELECT "+TABLA_PEDIDO_ES
 public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
+public static final String LIST_PROD_PENDIENTES = "SELECT * FROM pedido_estado WHERE id_pedido IN (SELECT id FROM pedido WHERE activo = true) AND estado != 'listo'";
 
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
@@ -750,7 +752,7 @@ public MensajeRespuesta updateProductoFromPedido(String idRegistro, String idPro
     sentencia = "UPDATE pedido_estado SET estado = '"+estadoNew+"' WHERE id = '"+idRegistro+"'";
   }else{
     //si no, modificamos uno que coincida con las condiciones
-    sentencia = "UPDATE pedido_estado SET estado = '"+estadoNew+"' WHERE id = (SELECT id from pedido_estado WHERE id_pedido = '"+idPedido+"' AND id_producto = '"+idProducto+"' AND estado = '"+estadoOld+"')";
+    sentencia = "UPDATE pedido_estado SET estado = '"+estadoNew+"' WHERE id = (SELECT id from pedido_estado WHERE id_pedido = '"+idPedido+"' AND id_producto = '"+idProducto+"' AND estado = '"+estadoOld+"' FETCH FIRST 1 ROWS ONLY)";
   }
   log("sentencia --> "+sentencia);
   try{
@@ -763,7 +765,9 @@ public MensajeRespuesta updateProductoFromPedido(String idRegistro, String idPro
     }else{
       // si no, indicamos que no hay id con ese registro
       ret = Utiles.mensajeErrorPKNotFound(peticion);
-    }    
+    }   
+    pstm.close();
+    closeConnection();
   }catch (SQLException ex){
     //si ha habido algún otro error mandamos un error de DB
     ret = Utiles.mensajeErrorDB(peticion);    
@@ -771,7 +775,43 @@ public MensajeRespuesta updateProductoFromPedido(String idRegistro, String idPro
   return ret;
 }
 
-
+public MensajeRespuesta listProductosPendientes(){
+  MensajeRespuesta res = null;
+  ArrayList<ProductoEstado> listado=new ArrayList<>();
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(LIST_PROD_PENDIENTES);
+    log("sentencia creada --> "+pstm);
+    ResultSet result = pstm.executeQuery();
+    int i=1;
+    while(result.next()){
+      log("sacando productos_estados: "+i);
+      //1. sacamos el producto
+      Producto p = getProductoFromId(result.getString("id_producto"));
+      log("producto creado con la id "+p.getId());
+      log("producto creado: "+p.getNombre());
+      ProductoEstado prod = new ProductoEstado();
+      prod.setIdPedido(result.getString("id_pedido"));
+      prod.setIdProducto(result.getString("id_producto"));    
+      prod.setNombreProducto(p.getNombre());
+      prod.setIdRegistro(result.getString("id"));
+      prod.setEstado(Estado.valueOf(result.getString("estado").toUpperCase()));
+      listado.add(prod);
+      i++;
+    }
+    //cuando tenemos todos, creamos la respuesta y le añadimos el listado
+    res = Utiles.mensajeOK(Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES);
+    Gson gson = new Gson();
+    String listadoJSON = gson.toJson(listado);
+    res.setData(listadoJSON);
+    pstm.close();
+    closeConnection();
+  }catch (SQLException ex){
+    log(ex.getMessage());
+    res = Utiles.mensajeErrorDB(Mensaje.FUNCION_LIST_PRODUCTOS_PENDIENTES);
+  }
+  return res;
+}
 
 /*
 public MensajeRespuesta listProductosFromPedido (String idPedido, String peticion){

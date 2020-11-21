@@ -454,6 +454,19 @@ public MensajeRespuesta procesarMensajeUpdateProductoFrom(TokenSesion token, Str
   return respuesta;
 }
 
+public MensajeRespuesta procesarMensajeListProductosPendientes(TokenSesion token){  
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+  }else{
+    //si el código es 10, podemos continuar 
+    respuesta  = gestorDB.listProductosPendientes();    
+  }
+  return respuesta;
+}
+
 /******************
  * MÉTODOS AUXILIARES
  ******************

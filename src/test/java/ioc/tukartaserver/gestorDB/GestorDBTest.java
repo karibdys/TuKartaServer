@@ -713,7 +713,9 @@ public void tearDown() {
    UPDATE PEDIDO
    **********************/
   
-
+/**
+ * Comprueba que se actualiza un pedido correctamente y devuelve un mensaje 10 si se envía una petición con un ID correcto. 
+ */
   public void updateProductoFrom_id_ok(){
     System.out.println("\n**********************\nPrueba UPDATE PRODUCTO EN PEDIDO POR ID\n");
     MensajeRespuesta res=null;
@@ -724,7 +726,7 @@ public void tearDown() {
       addProductoPrueba();
       addProductoEnPedidoPrueba();
       //ahora comprobamos que todo funciona bien
-      res = gestor.updateProductoFromPedido(ID_REG_PROD_PRUEBAS, null, null, null, "preparando", Mensaje.FUNCION_DELETE_PRODUCTO_FROM_ID);                        
+      res = gestor.updateProductoFromPedido(ID_REG_PROD_PRUEBAS, null, null, null, "preparando", Mensaje.FUNCION_UPDATE_PRODUCTO_FROM);                        
     } catch (SQLException ex) {     
       System.out.print(ex.getMessage());
     }finally{
@@ -738,6 +740,24 @@ public void tearDown() {
     }
     assertEquals(expResult, res.getCode().getCode());
   }
+ 
+  
+  
+ /*  
+  *************
+  LIST PRODUCTOS PENDIENTES
+  ***************
+  */
+  @Test
+  public void listProductosPendientes(){
+    System.out.println("\n**********************\nPrueba LIST PRODUCTOS PENDIENTES\n");
+    MensajeRespuesta ret = null;
+    ret = gestor.listProductosPendientes();   
+    String expResult = Codes.CODIGO_OK;
+    assertEquals(expResult, ret.getCode().getCode());
+
+  }
+  
  /*  
   *************
    COMPROBAR PEDIDO
