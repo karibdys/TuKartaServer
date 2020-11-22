@@ -288,7 +288,7 @@ public MensajeRespuesta procesarMensajeGetEmpleadoFromId(TokenSesion token, Stri
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
-    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
     String userId = token.getUsuario();
     respuesta = gestorDB.getEmpleadoFromId(userId, peticion);    

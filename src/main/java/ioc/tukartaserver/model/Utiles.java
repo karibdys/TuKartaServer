@@ -333,58 +333,6 @@ public static String ParseDate(Date fecha){
    }
  }
  
- 
- public static Empleado createEmpleadoFromResultSet2(ResultSet result, boolean basic) throws SQLException{
-   Empleado user = new Empleado();   
-   if (user ==null){
-     //si el usuario es nulo, devolvemos un nulo
-     return user = null;
-   }else{
-     //si no es nulo, empezamos a crear el usuario a partir de los datos del ResultSet:
-     user.setUsuario(result.getString("usuario"));
-     user.setEmail(result.getString("email"));
-     user.setNombre(result.getString("nombre"));
-     user.setApellidos(result.getString("apellidos"));  
-     //si nos piden los datos completos:
-     if (!basic){       
-       if (result.getDate("fecha_alta")!=null){
-         user.setFecha_alta(Utiles.convertDateSQLtoJava(result.getDate("fecha_alta")));
-         System.out.println("    UTILES: "+user.getFecha_alta());
-       }
-       if (result.getDate("fecha_modificacion")!=null){
-         user.setFecha_modificacion(Utiles.convertDateSQLtoJava(result.getDate("fecha_modificacion")));
-         System.out.println("    UTILES: "+user.getFecha_modificacion());
-       }     
-       if (result.getDate("fecha_baja")!=null){
-         user.setFecha_baja(Utiles.convertDateSQLtoJava(result.getDate("fecha_baja")));
-         System.out.println("    UTILES: "+user.getFecha_baja());
-       }
-     }
-     //Si el usuario es de tipo Empleado, entonces crearemos el empleado
-     if (result.getString("trabajadorde")!=null){
-       //creamos el restaurante
-       String idRest = result.getString("trabajadorde");       
-       Restaurante rest = new Restaurante (idRest, null);
-       ((Empleado)user).setRestaurante(rest);
-     }
-     ((Empleado)user).setSalario(result.getFloat("salario"));                  
-     
-     if (result.getString("rol")!=null){
-       String rol = result.getString("rol");
-       switch (rol){
-         case ("camarero"):
-           ((Empleado)user).setRol(Rol.CAMARERO);
-           break;                 
-         case ("cocinero"):
-             ((Empleado)user).setRol(Rol.COCINERO);
-         default:           
-           break;                    
-       }    
-     }      
-     return user;
-   }
- }
- 
 public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLException {
   Pedido ret = new Pedido();
   ret.setId(result.getString("id"));
