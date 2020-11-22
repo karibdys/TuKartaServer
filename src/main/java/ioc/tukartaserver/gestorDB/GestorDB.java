@@ -54,6 +54,8 @@ public static final String SELECT_USER = "SELECT * FROM "+TABLA_USERS+" WHERE em
 public static final String BAJA_USER = "UPDATE "+TABLA_USERS+" SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
 public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.gestor = ?";
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.trabajadorde = ?";
+public static final String GET_EMPLEADO_FROM_ID = "SELECT * FROM usuario WHERE email = ?";
+
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
 public static final String LIST_PEDIDO_COMPLETO_FROM_USER = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.empleado = ? AND pedido.activo = true";
 public static final String LIST_PEDIDO_COMPLETO_FROM_ID = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.id = ?";
@@ -61,11 +63,14 @@ public static final String LIST_PRODUCTO_FROM_PEDIDO = "SELECT "+TABLA_PEDIDO_ES
 public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
+
+
 public static final String LIST_PROD_PENDIENTES = "SELECT * FROM pedido_estado WHERE id_pedido IN (SELECT id FROM pedido WHERE activo = true) AND estado != 'listo'";
 public static final String LIST_PRODUCTOS = "SELECT * FROM producto";
-public static final String LIST_PRODUCTOS_FROM_PEDIDO = "SELECT * FROM producto where id_pedido=?";
+public static final String LIST_PRODUCTOS_FROM_PEDIDO = "SELECT * FROM pedido_estado WHERE id_pedido=?";
 public static final String DELETE_PRODUCTO = "DELETE FROM "+TABLA_PRODUCTO+" WHERE id = ?";
 
+public static final String LIST_MESAS_FROM_REST = "SELECT * FROM mesa LEFT JOIN pedido ON pedido.mesa = mesa.id WHERE mesa.restaurante = ? AND pedido.activo = false";
 
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
@@ -326,6 +331,34 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
   return ret;
 }
 
+
+public MensajeRespuesta getEmpleadoFromId(String idUsuario, String peticion){
+  MensajeRespuesta res = null;
+  Empleado empleado = null;
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(GET_EMPLEADO_FROM_ID);
+    log("sentencia --> "+pstm);
+    pstm.setString(1, idUsuario);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      empleado = Utiles.createEmpleadoFromResultSet2(result, true);      
+      res = Utiles.mensajeOK(peticion);
+      Gson gson = new Gson();
+      String empleadoJson = gson.toJson(empleado);
+      res.setData(empleadoJson);
+    }else{
+      res = Utiles.mensajeErrorPKNotFound(peticion);
+    }
+    pstm.close();
+  }catch (SQLException ex){
+    log(ex.getMessage());
+    res = Utiles.mensajeErrorDB(peticion);
+  }finally{
+    closeConnection();            
+  }
+  return res;
+}
 /*****************
  * MÉTODOS GENERALES
  *****************/
@@ -944,6 +977,44 @@ public MensajeRespuesta listProductos(String peticion, String id) {
     closeConnection();
   }catch (SQLException ex){
     return Utiles.mensajeErrorDB(peticion);
+  }
+  res = Utiles.mensajeOK(peticion);
+  Gson gson = new Gson();
+  String arrayJSON = gson.toJson(listado);
+  res.setData(arrayJSON);
+  return res;
+}
+
+/**
+ * Lista las mesas de un restaurante
+ * @param peticion String con el nombre de la petición 
+ * @return 
+ * @param peticion
+ * @param restID
+ * @param Mesaid
+ * @return 
+ */
+public MensajeRespuesta listMesas(String peticion, String restID, String Mesaid){
+  MensajeRespuesta res = null;
+  ArrayList<Mesa> listado = new ArrayList<>();
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(LIST_MESAS_FROM_REST);
+    pstm.setString(1, restID);
+    log("sentencia --> "+pstm);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      do{
+        Mesa mesa = Utiles.createMesaFromResultSet(result);
+        listado.add(mesa);        
+      }while (result.next());
+    }else{
+      res = Utiles.mensajeErrorPKNotFound(peticion);
+    }
+    pstm.close();
+    closeConnection();
+  }catch (SQLException ex){
+    res = Utiles.mensajeErrorDB(peticion);
   }
   res = Utiles.mensajeOK(peticion);
   Gson gson = new Gson();

@@ -22,6 +22,7 @@ public static final String FUNCION_UPDATE_EMP ="update_user_empleado";
 public static final String FUNCION_UPDATE_GESTOR ="update_user_gestor";
 public static final String FUNCION_LIST_USERS_FROM_GESTOR = "list_users_from_gestor";
 public static final String FUNCION_LIST_USERS_FROM_REST = "list_users_from_restaurant";
+public static final String FUNCION_GET_EMPLEADO_FROM_ID = "get_empleado_from_id";
 
 //gestión de Pedidos
 public static final String FUNCION_ADD_PEDIDO = "add_pedido";
@@ -51,6 +52,7 @@ public static final String FUNCION_ADD_RESTAURANTE = "add_restaurante";
 
 //gestión de mesas
 public static final String FUNCION_ADD_MESA = "add_mesa";
+public static final String FUNCION_LIST_MESAS_LIBRES = "list_mesas_libres";
 
 //gestión de productos
 public static final String FUNCION_ADD_PRODUCTO = "add_producto";

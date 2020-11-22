@@ -323,12 +323,30 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE LIST PRODUCTOS ************************/
-     
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
       TokenSesion token = new TokenSesion(emp);
       token.setToken("kfFcDEWjKE");        
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_PRODUCTOS, null,  token);
-  
+      */
+      
+      /*******************PRUEBA DE LIST MESAS LIBRES ************************/
+      /*
+      System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("JZaaSDkUut");        
+      Restaurante rest = new Restaurante();
+      rest.setId("res1TuKarta");
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_MESAS_LIBRES, rest,  token);            
+      */
+      
+      
+      /*******************PRUEBA DE GET EMPLEADO ************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de get_empleado_from_id");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("DvSIBFTMUG");                    
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_GET_EMPLEADO_FROM_ID, null,  token);                        
       
       
       /*******************FINAL DE PETICIÓN ************************/
@@ -336,8 +354,7 @@ public void startClient() {
       //convertimos el mensajeRes en JSON     
       System.out.println(CLIENTE+" enviando JSON\n  -->"+mensajeOutJson);
       out.println(mensajeOutJson);          
-      out.flush();      
-    
+      out.flush();          
     }
     System.out.println(CLIENTE+"esperando al server..."); 
     String codigo="";
@@ -367,6 +384,7 @@ public void startClient() {
 }
 
 public void closeClient() throws IOException {
+
   cs.close();
 }
 

@@ -247,6 +247,9 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         String id = gson.fromJson(dataString, Restaurante.class).getId();
         respuesta = gestorServer.procesarMensajeListUsersFrom(token, id);
         break;   
+      case Mensaje.FUNCION_GET_EMPLEADO_FROM_ID:                
+        respuesta = gestorServer.procesarMensajeGetEmpleadoFromId(token, Mensaje.FUNCION_GET_EMPLEADO_FROM_ID);
+        break;
       case Mensaje.FUNCION_ADD_PEDIDO:
         System.out.println(CONCLI+"procesando petición de añadir un nuevo pedido");
         //sacamos el pedido a añadir
@@ -326,6 +329,11 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         String pedidoID = gson.fromJson(dataString, Pedido.class).getId();
         respuesta = gestorServer.procesarMensajeListProductosFromId(token, pedidoID, Mensaje.FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID);
         break;
+      case Mensaje.FUNCION_LIST_MESAS_LIBRES:
+        String restID = gson.fromJson(dataString, Restaurante.class).getId();
+        respuesta = gestorServer.procesarMensajeListMesas(token, restID, Mensaje.FUNCION_LIST_MESAS_LIBRES);        
+        break;
+
       default:    
         gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_FUNCION_ERR), mensaje.getPeticion()));
         break;
