@@ -345,7 +345,7 @@ public void startClient() {
       
       System.out.println(CLIENTE+"Procediendo a hacer petición de get_empleado_from_id");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("DvSIBFTMUG");                    
+      token.setToken("ZGvEEsWQzF");                    
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_GET_EMPLEADO_FROM_ID, null,  token);                        
       
       
