@@ -1005,6 +1005,7 @@ public MensajeRespuesta listProductosEstadoFromPedido(String peticion, String id
     PreparedStatement pstm = null;    
     pstm = con.prepareStatement(LIST_PRODUCTOS_FROM_PEDIDO);
     pstm.setString(1, idPedido);        
+    log("sentencia --> "+pstm);
     ResultSet result = pstm.executeQuery();
     while(result.next()){
       ProductoEstado producto = Utiles.createProductoEstadoFromResultSet(result, this);

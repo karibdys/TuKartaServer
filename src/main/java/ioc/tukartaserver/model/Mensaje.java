@@ -27,7 +27,7 @@ public static final String FUNCION_GET_EMPLEADO_FROM_ID = "get_empleado_from_id"
 //gestión de Pedidos
 public static final String FUNCION_ADD_PEDIDO = "add_pedido";
 public static final String FUNCION_LIST_PEDIDO_FROM_USER = "list_pedido_from_user";
-public static final String FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID = "list_pedido_from_id";
+public static final String FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID = "list_producto_estado_from_pedido";
 public static final String FUNCION_LIST_PEDIDO_FROM_OTHER_USER = "list_pedido_from_other_user";
 public static final String FUNCION_LIST_PEDIDO_COMPLETO_FROM_ID = "list_pedido_completo_from_id";
 public static final String FUNCION_LIST_PEDIDO_COMPLETO_FROM_USER = "list_pedido_completo_from_user";
