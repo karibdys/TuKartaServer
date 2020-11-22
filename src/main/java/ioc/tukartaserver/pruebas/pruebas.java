@@ -17,6 +17,7 @@ import ioc.tukartaserver.model.Mesa;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Pedido;
 import ioc.tukartaserver.model.Producto;
+import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Utiles;
 import java.sql.Connection;
@@ -65,29 +66,10 @@ public static void main (String... args) throws SQLException, ClassNotFoundExcep
   } catch (SQLException ex) {
     System.err.println(ex.getMessage());
   }*/
-MensajeRespuesta res = Utiles.mensajeOK("HOL");
-ArrayList<Usuario> users = new ArrayList<>();
-users.add(new Usuario("id1"));
-users.add(new Usuario("id2"));
-users.add(new Usuario("id3"));
-Gson gson = new Gson();
-String arrayJSON = gson.toJson(users);
-res.setData(arrayJSON);
+  
+  Rol rol = Rol.CAMARERO;
+  Rol rol2 = Rol.valueOf("camarero".toUpperCase());
 
-String mensJSON = gson.toJson(res);
-
-MensajeRespuesta ret = gson.fromJson(mensJSON, MensajeRespuesta.class);
-String data = ret.getData();
-System.out.println(data);
-
-String[] datos = gson.fromJson(data, String[].class);
-System.out.println(datos.length);
-
-
-}
-
-public static int devolver(String[] prod){
-  return prod.length;
 }
   
 }

@@ -102,14 +102,13 @@ ALTER TABLE mesa ADD CONSTRAINT "FK_mesa_restaurante" FOREIGN KEY (restaurante) 
 INSERT INTO usuario VALUES ('Marc', 'marcPass', 'marc@tukarta.com', 'Marc', 'Abad', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, true);
 INSERT INTO usuario VALUES ('TuKarta', 'TuKartaPass', 'tukarta@tukarta.com', 'Tu', 'Karta', '2020-11-05 12:10:00', '2020-11-05 12:10:00', null, true);
 
--- USUARIOS EMPLEADOS
-INSERT INTO usuario VALUES ('Manu', 'manuPass', 'manu@tukarta.com', 'Manuel', 'Mora', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, false, 'marc@tukarta.com', null, 1600);
-INSERT INTO usuario VALUES ('David', 'davidPass', 'david@tukarta.com', 'David', 'Domenech', '2020-10-22 12:10:00','2020-10-22 12:10:00', null, false, 'marc@tukarta.com', null, 1500);
-
 -- RESTAURANTES
 INSERT INTO restaurante VALUES ('res1Marc', 'Can Marc', 'Barcelona', 'Calle de la buena Suerte, 23', 'marc@tukarta.com');
 INSERT INTO restaurante VALUES ('res1TuKarta', 'Can Fortunata', 'Girona', 'Calle de Abajo, 05', 'tukarta@tukarta.com');
 
+-- USUARIOS EMPLEADOS
+INSERT INTO usuario VALUES ('Manu', 'manuPass', 'manu@tukarta.com', 'Manuel', 'Mora', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1600, 'camarero');
+INSERT INTO usuario VALUES ('David', 'davidPass', 'david@tukarta.com', 'David', 'Domenech', '2020-10-22 12:10:00','2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1500, 'cocinero');
 -- PRODUCTOS
 INSERT INTO producto VALUES ('P001', 'Patatas Bravas', '{gluten, lacteos}', 3.50, 15, 15);
 INSERT INTO producto VALUES ('P002', 'Patatas All i Oli', '{gluten, lacteos, huevo}', 4.50, 10, 15);

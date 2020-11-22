@@ -376,7 +376,7 @@ public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String 
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
-    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
     String id ="";
     //si el código es un código 10, podemos seguir adelante.        
@@ -390,25 +390,38 @@ public MensajeRespuesta procesarMensajeListPedidoFrom(TokenSesion token, String 
   return respuesta;
 }
 
-public MensajeRespuesta procesarMensajeListPedidoCompletoFrom(TokenSesion token, String mail, String peticion){
+/**
+ * Procesa un mensaje para devolver un listado de Pedido con todos los productos que tiene asociados
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param id String con el ID que diferenciará el pedido (puede ser un ID de empleado o un ID de pedido, la diferenciación se hará con el tipo de Petición hecha)
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Incluye los datos de los Pedidos solicitados
+ */
+public MensajeRespuesta procesarMensajeListPedidoCompletoFrom(TokenSesion token, String id, String peticion){
    //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
-    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
-    respuesta = gestorDB.listPedidoCompletoFrom(mail, peticion);
+    respuesta = gestorDB.listPedidoCompletoFrom(id, peticion);
   }
   return respuesta;
 }
 
-
+/**
+ * Procesa un mensaje de petición para añadir un producto a un pedido
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param datos String[] con los datos de un ProductoEstado
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeAddProductoTo(TokenSesion token, String[] datos, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
-    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
     //si el código es 10, podemos continuar    
     respuesta  = gestorDB.addProductoEstado(datos[0], datos[1], Estado.PREPARANDO.getEstado(), peticion);
@@ -416,12 +429,19 @@ public MensajeRespuesta procesarMensajeAddProductoTo(TokenSesion token, String[]
   return respuesta;
 }
 
+/**
+ * Peocesa un mensaje de petición para eliminar un producto de un pedido concreto sin us id de registro
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param datos String[] con los datos de un ProductoEstado
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeDeleteProductoFrom(TokenSesion token, String[] datos, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
-    respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
     //si el código es 10, podemos continuar 
     if (datos.length==2){
@@ -436,6 +456,13 @@ public MensajeRespuesta procesarMensajeDeleteProductoFrom(TokenSesion token, Str
   return respuesta;
 }
 
+/**
+ * Peocesa un mensaje de petición para eliminar un producto de un pedido concreto con su id de registro
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param datos String con el ID de registro
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeDeleteProductoFrom(TokenSesion token, String dato, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -449,6 +476,13 @@ public MensajeRespuesta procesarMensajeDeleteProductoFrom(TokenSesion token, Str
   return respuesta;
 }
 
+/**
+ * Peocesa un mensaje de petición para actualizar un producto de un pedido concreto
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param datos String[] con los datos de un ProductoEstado a actualizar
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeUpdateProductoFrom(TokenSesion token, String[] datos, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -471,6 +505,11 @@ public MensajeRespuesta procesarMensajeUpdateProductoFrom(TokenSesion token, Str
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición para listar los productos pendientes en cocina
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Incluye un listado de los ProductosEstado a procesar
+ */
 public MensajeRespuesta procesarMensajeListProductosPendientes(TokenSesion token){  
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -484,6 +523,13 @@ public MensajeRespuesta procesarMensajeListProductosPendientes(TokenSesion token
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición para añadir un Restaurante a la base de datos
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param rest  Restaurante con la información del restaurante a añadir
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeAddRestaurante(TokenSesion token, Restaurante rest, String peticion){
   
   //comprobamos si el token es válido o no
@@ -505,6 +551,13 @@ public MensajeRespuesta procesarMensajeAddRestaurante(TokenSesion token, Restaur
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición para añadir una Mesa a la base de datos
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param mesa  Mesa con la información de la mesa a añadir
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeAddMesa(TokenSesion token, Mesa mesa, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
@@ -517,7 +570,13 @@ public MensajeRespuesta procesarMensajeAddMesa(TokenSesion token, Mesa mesa, Str
   return respuesta;
 }
 
-
+/**
+ * Procesa un mensaje de petición para añadir un producto a la base de datos
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param producto Producto con la información del producto a añadir
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeAddProducto(TokenSesion token, Producto producto, String peticion){
   System.out.println(SERVER+"procesando peticion de add producto");
   //comprobamos si el token es válido o no
@@ -531,6 +590,13 @@ public MensajeRespuesta procesarMensajeAddProducto(TokenSesion token, Producto p
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición para eliominar un producto de  la base de datos
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param productoId String con el id del producto a eliminar
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
+ */
 public MensajeRespuesta procesarMensajeDeleteProducto(TokenSesion token, String productoId, String peticion){
    System.out.println(SERVER+"procesando peticion de delete producto");
   //comprobamos si el token es válido o no
@@ -544,6 +610,12 @@ public MensajeRespuesta procesarMensajeDeleteProducto(TokenSesion token, String 
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición de listar todos los productos 
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Devuelve un array con todos los Productos 
+ */
 public MensajeRespuesta procesarMensajeListProductos(TokenSesion token, String peticion){
   System.out.println(SERVER+"procesando peticion de listar productos producto");
   //comprobamos si el token es válido o no
@@ -557,6 +629,13 @@ public MensajeRespuesta procesarMensajeListProductos(TokenSesion token, String p
   return respuesta;
 }
 
+/**
+ * Procesa un mensaje de petición de listar todas las mesas de un restaurante
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param restID String con el ID del restaurante del que buscamos las mesas
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Devuelve un array con todas las mesas 
+ */
 public MensajeRespuesta procesarMensajeListMesas(TokenSesion token, String restID, String peticion){
   System.out.println(SERVER+"procesando peticion de listar productos producto");
   //comprobamos si el token es válido o no
@@ -570,7 +649,13 @@ public MensajeRespuesta procesarMensajeListMesas(TokenSesion token, String restI
   return respuesta;
 }
 
-
+/**
+ * Procesa un mensaje de petición de listar todos los ProductosEstado de un pedido concreto
+ * @param token TokenSesion con la información de la sesión del usuario
+ * @param pedidoId String con el ID del pedido del que queremos conocer los ProductoEstado
+ * @param peticion String con el nombre de la petición que estamos realizando
+ * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Devuelve un array con todos los ProductoEstado
+ */
 public MensajeRespuesta procesarMensajeListProductosFromId(TokenSesion token, String pedidoId, String peticion){
   System.out.println(SERVER+"procesando peticion de listar productos producto");
   //comprobamos si el token es válido o no
@@ -579,7 +664,7 @@ public MensajeRespuesta procesarMensajeListProductosFromId(TokenSesion token, St
   if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
     respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
-    respuesta = gestorDB.listProductos(peticion, pedidoId);
+    respuesta = gestorDB.listProductosEstadoFromPedido(peticion, pedidoId);
   }
   return respuesta;
 }

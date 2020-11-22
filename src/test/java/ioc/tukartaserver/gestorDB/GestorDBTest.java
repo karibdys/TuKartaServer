@@ -409,6 +409,30 @@ public void tearDown() {
     assertEquals(expResult, codeResult);    
   }  
   
+   /*  
+  *************
+  GET EMPLEADO FROM ID
+  ***************
+  */
+  
+  @Test
+  public void getEmpleadoFromId_empleadoOK(){
+    String expResult = Codes.CODIGO_OK;   
+    String email ="manu@tukarta.com";  
+    MensajeRespuesta res =gestor.getEmpleadoFromId(email, Mensaje.FUNCION_GET_EMPLEADO_FROM_ID);
+    String codeResult = res.getCode().getCode();
+    assertEquals(expResult, codeResult);    
+  }
+  
+   @Test
+  public void getEmpleadoFromId_empleadoNoOK(){
+    String expResult = Codes.CODIGO_ERR_PK_NOT_FOUND;   
+    String email ="notoy@tukarta.com";  
+    MensajeRespuesta res =gestor.getEmpleadoFromId(email, Mensaje.FUNCION_GET_EMPLEADO_FROM_ID);
+    String codeResult = res.getCode().getCode();
+    assertEquals(expResult, codeResult);    
+  }
+  
   
   /*  
   *************

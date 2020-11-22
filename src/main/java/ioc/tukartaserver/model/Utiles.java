@@ -2,7 +2,6 @@ package ioc.tukartaserver.model;
 
 import ioc.tukartaserver.gestorDB.GestorDB;
 import java.sql.Array;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -271,8 +270,7 @@ public static String ParseDate(Date fecha){
     builder.append(" WHERE email = '"+user.getEmail()+"'");
     return builder.toString();
   }
-  
-  
+    
   /**
   * Crea un usuario a partir de un ResultSet. Puede ser un usuario completo (con todos los datos) o simple (sin los datos menos importantes. Nunca llevará la contraseña.
   * @param result ResultSet que contiene el dato del Usuario
@@ -333,6 +331,12 @@ public static String ParseDate(Date fecha){
    }
  }
  
+  /**
+  * Crea un Pedido a partir de un ResultSet. 
+  * @param result ResultSet que contiene el dato del Pedido  
+  * @return Pedido creado a partir de la sentencia SQL ejecutada. 
+  * @throws SQLException Al acceder a la base de datos
+  */
 public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLException {
   Pedido ret = new Pedido();
   ret.setId(result.getString("id"));
@@ -347,6 +351,12 @@ public static Pedido createPedidoFromResultSet(ResultSet result) throws SQLExcep
   return ret;
 }
 
+  /**
+  * Crea un Producto a partir de un ResultSet. 
+  * @param result ResultSet que contiene el dato del Producto  
+  * @return Producto  creado a partir de la sentencia SQL ejecutada. 
+  * @throws SQLException Al acceder a la base de datos
+  */
 public static Producto createProductoFromResultSet(ResultSet result, GestorDB gestor) throws SQLException{
   System.out.println("UTILES: añadiendo producto: "+result.getString("nombre"));
   Producto producto = new Producto();
@@ -394,6 +404,28 @@ public static Producto createProductoFromResultSet(ResultSet result, GestorDB ge
   return producto;
 }
 
+  /**
+  * Crea un ProductoEstado a partir de un ResultSet. 
+  * @param result ResultSet que contiene el dato del ProductoEstado  
+  * @return ProductoEstado creado a partir de la sentencia SQL ejecutada. 
+  * @throws SQLException Al acceder a la base de datos
+  */
+public static ProductoEstado createProductoEstadoFromResultSet(ResultSet result, GestorDB gestor) throws SQLException{
+  ProductoEstado producto = new ProductoEstado(); 
+  producto.setIdRegistro(result.getString("id"));
+  producto.setIdPedido(result.getString("id_pedido"));
+  producto.setIdProducto(result.getString("id_producto"));
+  producto.setEstado(Estado.valueOf(result.getString("estado")));
+  producto.setNombreProducto(result.getString("nombre"));  
+  return producto;
+}
+
+  /**
+  * Crea un objeto Mesa a partir de un ResultSet. 
+  * @param result ResultSet que contiene el dato de la Mesa  
+  * @return Mesa creada a partir de la sentencia SQL ejecutada. 
+  * @throws SQLException Al acceder a la base de datos
+  */
 public static Mesa createMesaFromResultSet (ResultSet result) throws SQLException{
   Mesa mesa = new Mesa();
   mesa.setId(result.getString("id"));
@@ -402,6 +434,12 @@ public static Mesa createMesaFromResultSet (ResultSet result) throws SQLExceptio
   return mesa;
 }
 
+  /**
+  * Crea un set de Alérgeno a partir de una cadena que contiene los datos de un array JSON
+  * @param cadena String con una cadena que representa un Array de Alergeno en formato JSON --> [{alergeno}, {alergeno2},...]
+  * @return Pedido creado a partir de la sentencia SQL ejecutada. 
+  * @throws SQLException Al acceder a la base de datos
+  */
 public static HashSet<Alergeno> createAlergenoFromArray(String cadena){
   HashSet<Alergeno> listadoAlerg = new HashSet<>();
   String cadena2 = cadena.substring(1, cadena.length()-1);
@@ -439,7 +477,11 @@ public static String sentenciaPedidoToInsertSQL (Pedido pedido){
   
   return builder.toString();    
 }
-  
+   /**
+   * Crea una sentencia SQL con el comando UPDATE para poder actualizar un Pedido
+   * @param pedido Pedido con los datos necesarios para insertarlo en la base de datos.
+   * @return String con la sentencia UPDATE SQL completa
+   */
   public static  String sentenciaPedidoToUpdateSQL (Pedido pedido){
   StringBuilder builder = new StringBuilder();
   builder.append("UPDATE "+GestorDB.TABLA_PEDIDO+" SET ");
@@ -458,7 +500,11 @@ public static String sentenciaPedidoToInsertSQL (Pedido pedido){
   return builder.toString();
 }   
 
-    
+  /**
+   * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Restaurante la base de datos en función de sus parámetros definidos. 
+   * @param restaurante Restaurante con los datos necesarios para insertarlo en la base de datos.
+   * @return String con la sentencia INSERT SQL completa
+  */  
   public static String sentenciaRestauranteToInsertSQL(Restaurante restaurante, String gestorEmail){
   StringBuilder builder = new StringBuilder();
   builder.append("INSERT INTO "+GestorDB.TABLA_RESTAURANTE+" (\"id\", \"nombre\", \"provincia\", \"direccion\", \"gestor\") VALUES (");
@@ -475,6 +521,11 @@ public static String sentenciaPedidoToInsertSQL (Pedido pedido){
   return builder.toString();
 }
   
+/**
+ * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Mesa a la base de datos en función de sus parámetros definidos. 
+ * @param mesa Mesa con los datos necesarios para insertarlo en la base de datos.
+ * @return String con la sentencia INSERT SQL completa
+*/   
 public static String sentenciaMesaToInsertSQL(Mesa mesa){
   StringBuilder builder = new StringBuilder();
   builder.append("INSERT INTO "+GestorDB.TABLA_MESA+" (\"id\", \"num_comensales\", \"restaurante\") VALUES (");
@@ -485,6 +536,11 @@ public static String sentenciaMesaToInsertSQL(Mesa mesa){
   return builder.toString();
 }
 
+/**
+ * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Producto a la base de datos en función de sus parámetros definidos. 
+ * @param producto  Producto con los datos necesarios para insertarlo en la base de datos.
+ * @return String con la sentencia INSERT SQL completa
+*/ 
 public static String sentenciaProductoToInsertSQL(Producto producto){
   StringBuilder builder = new StringBuilder();
   builder.append("INSERT INTO "+GestorDB.TABLA_PRODUCTO+" (\"id\", \"nombre\", \"precio\", \"disponible\", \"tiempo_elaboracion\"");

@@ -49,13 +49,14 @@ public static final String TABLA_MESA = "mesa";
 public static final String TABLA_PRODUCTO= "producto";
 public static final String TABLA_PEDIDO_ESTADO = "pedido_estado";
 
-//sentencias
+//sentencias USUARIO
 public static final String SELECT_USER = "SELECT * FROM "+TABLA_USERS+" WHERE email = ?";
 public static final String BAJA_USER = "UPDATE "+TABLA_USERS+" SET pwd = null, fecha_baja = ?, gestor =null, trabajadorde = null, salario = 0, rol = null WHERE email = ?";
 public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.gestor = ?";
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.trabajadorde = ?";
 public static final String GET_EMPLEADO_FROM_ID = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE "+TABLA_USERS+".email= ?";
 
+//sentencias PEDIDOS
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
 public static final String LIST_PEDIDO_COMPLETO_FROM_USER = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.empleado = ? AND pedido.activo = true";
 public static final String LIST_PEDIDO_COMPLETO_FROM_ID = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.id = ?";
@@ -63,21 +64,22 @@ public static final String LIST_PRODUCTO_FROM_PEDIDO = "SELECT "+TABLA_PEDIDO_ES
 public static final String DELETE_PEDIDO = "DELETE FROM "+TABLA_PEDIDO+" WHERE id = ?";
 public static final String DELETE_PROD_FROM = "DELETE FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
 public static final String COUNT_PEDIDO = "SELECT count(id) FROM "+TABLA_PEDIDO_ESTADO+" WHERE id_pedido = ?";
-
-
 public static final String LIST_PROD_PENDIENTES = "SELECT * FROM pedido_estado WHERE id_pedido IN (SELECT id FROM pedido WHERE activo = true) AND estado != 'listo'";
+public static final String LIST_PRODUCTOS_FROM_PEDIDO = "SELECT pedido_estado.id, pedido_estado.id_pedido, pedido_estado.id_producto, producto.nombre, pedido_estado.estado FROM pedido_estado LEFT JOIN producto ON pedido_estado.id_producto = producto.id WHERE pedido_estado.id_pedido = ?";
+
+//sentencias PRODUCTOS
 public static final String LIST_PRODUCTOS = "SELECT * FROM producto";
-public static final String LIST_PRODUCTOS_FROM_PEDIDO = "SELECT * FROM pedido_estado WHERE id_pedido=?";
 public static final String DELETE_PRODUCTO = "DELETE FROM "+TABLA_PRODUCTO+" WHERE id = ?";
 
+//sentencias MESAS
 public static final String LIST_MESAS_FROM_REST = "SELECT * FROM mesa LEFT JOIN pedido ON pedido.mesa = mesa.id WHERE mesa.restaurante = ? AND pedido.activo = false";
 
+//sentencias CHECK
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
 public static final String COMPROBAR_PEDIDO = "SELECT * FROM pedido WHERE id =?";
 public static final String COMPROBAR_RESTAURANTE= "SELECT * FROM restaurante WHERE id =?";
 public static final String COMPROBAR_MESA= "SELECT * FROM mesa WHERE id =?";
 public static final String COMPROBAR_GESTOR= "SELECT * FROM usuario WHERE email =? AND isgestor= true";
-
 
 //útiles para otros requisitos
 private static final String BD ="GESTOR BD: ";
@@ -331,7 +333,12 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
   return ret;
 }
 
-
+/**
+ * Devuelve todos los datos de un Empleado concreto
+ * @param idUsuario String con el email del Empleado
+ * @param peticion String con el nombre de la petición que pide este método
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos del Empleado
+ */
 public MensajeRespuesta getEmpleadoFromId(String idUsuario, String peticion){
   MensajeRespuesta res = null;
   Empleado empleado = null;
@@ -627,10 +634,10 @@ public MensajeRespuesta listPedidoFrom(String id, String peticion){
 }
 
 /**
- * 
- * @param id
- * @param peticion
- * @return 
+ * Devuelve un Pedido concreto completo (con un ID)
+ * @param id String ID del pedido a buscar
+ * @param peticion Petición que llama este método
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del Pedido obtenido.
  */
 public MensajeRespuesta listPedidoCompletoFrom (String id, String peticion){
   MensajeRespuesta ret = null;
@@ -910,6 +917,10 @@ public MensajeRespuesta updateProductoFromPedido(String idRegistro, String idPro
   return ret;
 }
 
+/**
+ * Devuelve un listado de Productos asociados a un cualquier Pedido que no se han entregado al cliente aún
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del listado convertidos en Producto
+ */
 public MensajeRespuesta listProductosPendientes(){
   MensajeRespuesta res = null;
   ArrayList<ProductoEstado> listado=new ArrayList<>();
@@ -959,12 +970,8 @@ public MensajeRespuesta listProductos(String peticion, String id) {
   try{
     openConnection();
     PreparedStatement pstm = null;
-    if (peticion.equals(Mensaje.FUNCION_LIST_PRODUCTOS)){
-      pstm = con.prepareStatement(LIST_PRODUCTOS);
-    }else if (peticion.equals(Mensaje.FUNCION_LIST_PRODUCTOS_FROM_PEDIDO_ID)){
-      pstm = con.prepareStatement(LIST_PRODUCTOS_FROM_PEDIDO);
-      pstm.setString(1, id);
-    }
+    
+    pstm = con.prepareStatement(LIST_PRODUCTOS);
     log("sentencia--> "+pstm);
     ResultSet result = pstm.executeQuery();
     while(result.next()){
@@ -986,13 +993,41 @@ public MensajeRespuesta listProductos(String peticion, String id) {
 }
 
 /**
- * Lista las mesas de un restaurante
+ * Lista todos los productos en la base de datos
  * @param peticion String con el nombre de la petición 
  * @return 
- * @param peticion
- * @param restID
- * @param Mesaid
- * @return 
+ */
+public MensajeRespuesta listProductosEstadoFromPedido(String peticion, String idPedido) {
+  MensajeRespuesta res = null;
+  ArrayList<ProductoEstado> listado=new ArrayList<>();
+  try{
+    openConnection();
+    PreparedStatement pstm = null;    
+    pstm = con.prepareStatement(LIST_PRODUCTOS_FROM_PEDIDO);
+    pstm.setString(1, idPedido);        
+    ResultSet result = pstm.executeQuery();
+    while(result.next()){
+      ProductoEstado producto = Utiles.createProductoEstadoFromResultSet(result, this);
+      listado.add(producto);  
+    } 
+    pstm.close();
+    closeConnection();
+  }catch (SQLException ex){
+    return Utiles.mensajeErrorDB(peticion);
+  }
+  res = Utiles.mensajeOK(peticion);
+  Gson gson = new Gson();
+  String arrayJSON = gson.toJson(listado);
+  res.setData(arrayJSON);
+  return res;
+}
+
+/**
+ * Lista las mesas de un restaurante. 
+ * @param peticion String con el nombre de la petición  que llama a este método 
+ * @param restID String con el ID del Restaurante que contiene las mesas a buscar
+ * @param Mesaid String con el ID de la Mesa en el caso de que se quiera acceder a una Mesa concreta
+ * @return MensajeRepuesta con el código de confirmación o error al ejecutar la sentencia. Incluye los datos obtenidos del listado convertidos en Mesa
  */
 public MensajeRespuesta listMesas(String peticion, String restID, String Mesaid){
   MensajeRespuesta res = null;
@@ -1023,14 +1058,6 @@ public MensajeRespuesta listMesas(String peticion, String restID, String Mesaid)
   return res;
 }
 
-
-
-/*
-public MensajeRespuesta listProductosFromPedido (String idPedido, String peticion){
-  MensajeRespuesta res = null;
-  
-}
-*/
 
 /******************
  * MÉTODOS AUXILIARES
@@ -1125,6 +1152,8 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    return ret;
  }
  
+ 
+ 
 /**
  * Confirma si un producto está o no en la base de datos
  * @param idProd String id del producto a comprobar
@@ -1181,6 +1210,12 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    return prod; 
  }
  
+  /**
+   * Confirma si hay un Gestor  determinado en la base de datos o no
+   * @param idGestor String con el email del gestor a comprobar
+   * @return true si el gestor existe y false si no
+   * @throws SQLException 
+   */
   public boolean comprobarGestor(String idGestor)throws SQLException{
     boolean prod = false;   
     openConnection();
@@ -1193,7 +1228,12 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
     return prod; 
  }
   
-  
+ /**
+   * Confirma si hay una Mesa determinada en la base de datos o no
+   * @param idMesa String con el id de la Mesa a comprobar
+   * @return true si la mesa existe y false si no
+   * @throws SQLException 
+   */
  public boolean comprobarMesa(String idMesa)throws SQLException{
     boolean prod = false;   
     openConnection();
@@ -1206,7 +1246,9 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
     return prod; 
  }
          
- 
+ /**
+  * Abre la conexión a la base de datos
+  */
  public void openConnection(){
   try {    
     Class.forName(CLASE);
@@ -1217,6 +1259,9 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
   }    
  }
  
+ /**
+  * Cierra la conexión a la base de datos
+  */
  public void closeConnection(){
    try{ 
      if(con!=null && !con.isClosed()){
@@ -1228,6 +1273,10 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    }
  }
  
+ /**
+  * Método auxiliar para escribir en la pantalla del log de la consola
+  * @param texto 
+  */
  public static void log(String texto){
    System.out.println(BD+": "+texto);
  }
