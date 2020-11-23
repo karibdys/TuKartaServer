@@ -264,7 +264,7 @@ public MensajeRespuesta procesarMensajeUpdateUser(TokenSesion token, Object usua
  * @param id id 
  * @return MensajeRespuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. Incluye los datos de los usuarios listados
  */
-public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String id){
+public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String id, String peticion){
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
@@ -272,12 +272,12 @@ public MensajeRespuesta procesarMensajeListUsersFrom(TokenSesion token, String i
     respuesta = new MensajeRespuesta(codigoMens, Mensaje.FUNCION_ADD_EMP);
   }else{
     //si el código es un código 10, podemos seguir adelante.    
-    if (id.isEmpty()){
+    if (peticion.equals(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR)){
       //si el id es nulo, significa que el token tiene el id porque es una petición de GESTOR
-      respuesta = gestorDB.listUsersFrom(token.getUsuario(), Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);
+      respuesta = gestorDB.listUsersFrom(token.getUsuario(), peticion);
     }else{
       //si el id no es nulo es que es una petición de RESTAURANTE
-      respuesta = gestorDB.listUsersFrom(id, Mensaje.FUNCION_LIST_USERS_FROM_REST);
+      respuesta = gestorDB.listUsersFrom(id, peticion);
     }    
   }
   return respuesta;

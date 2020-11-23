@@ -327,6 +327,8 @@ public MensajeRespuesta listUsersFrom(String id, String peticion){
     String arrayJSON = gson.toJson(listado);
     ret = Utiles.mensajeOK(peticion);
     ret.setData(arrayJSON);   
+    stm.close();
+    closeConnection();
   } catch (SQLException ex) {
     ret = Utiles.mensajeErrorDB(peticion);
   }

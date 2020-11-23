@@ -238,13 +238,13 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
       case Mensaje.FUNCION_LIST_USERS_FROM_GESTOR:
         System.out.println(CONCLI+"procesando petición de listar empleados asociados a un gestor");      
         //no necesita datos adicionales, los coge del token
-        respuesta = gestorServer.procesarMensajeListUsersFrom(token, null);
+        respuesta = gestorServer.procesarMensajeListUsersFrom(token, null, Mensaje.FUNCION_LIST_USERS_FROM_GESTOR);
         break;    
       case Mensaje.FUNCION_LIST_USERS_FROM_REST:
         System.out.println(CONCLI+"procesando petición de listar empleados asociados a un restaurante");     
         //sacamso el id del Restaurante
         String id = gson.fromJson(dataString, Restaurante.class).getId();
-        respuesta = gestorServer.procesarMensajeListUsersFrom(token, id);
+        respuesta = gestorServer.procesarMensajeListUsersFrom(token, id, Mensaje.FUNCION_LIST_USERS_FROM_REST);
         break;   
       case Mensaje.FUNCION_GET_EMPLEADO_FROM_ID:                
         respuesta = gestorServer.procesarMensajeGetEmpleadoFromId(token, Mensaje.FUNCION_GET_EMPLEADO_FROM_ID);

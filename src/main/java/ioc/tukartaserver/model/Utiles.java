@@ -317,15 +317,7 @@ public static String ParseDate(Date fecha){
      
      if (result.getString("rol")!=null){
        String rol = result.getString("rol");
-       switch (rol){
-         case ("camarero"):
-           ((Empleado)user).setRol(Rol.CAMARERO);
-           break;                 
-         case ("cocinero"):
-             ((Empleado)user).setRol(Rol.COCINERO);
-         default:           
-           break;                    
-       }    
+       ((Empleado)user).setRol(Rol.valueOf(rol.toUpperCase()));
      }      
      return user;
    }
@@ -415,7 +407,7 @@ public static ProductoEstado createProductoEstadoFromResultSet(ResultSet result,
   producto.setIdRegistro(result.getString("id"));
   producto.setIdPedido(result.getString("id_pedido"));
   producto.setIdProducto(result.getString("id_producto"));
-  producto.setEstado(Estado.valueOf(result.getString("estado")));
+  producto.setEstado(Estado.valueOf(result.getString("estado").toUpperCase()));
   producto.setNombreProducto(result.getString("nombre"));  
   return producto;
 }

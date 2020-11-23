@@ -169,14 +169,14 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE LIST USER************************/
-      /*
+      
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_data_users");   
       TokenSesion token = new TokenSesion(user);
-      token.setToken("REzEklFEEQ");      
+      token.setToken("dxQRyasKLT");      
       Restaurante rest = new Restaurante ("res1Marc", "CanMarc");
-      //MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
-      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_REST, rest, token);
-      */      
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
+      //MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_REST, rest, token);
+      
       
       /*******************PRUEBA DE ADD DATA PEDIDO ************************/
       /*
@@ -342,12 +342,12 @@ public void startClient() {
       
       
       /*******************PRUEBA DE GET EMPLEADO ************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de get_empleado_from_id");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("ZGvEEsWQzF");                    
+      token.setToken("VjxDIpQWAj");                    
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_GET_EMPLEADO_FROM_ID, null,  token);                        
-      
+      */
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = gson.toJson(mensajeOut);         
