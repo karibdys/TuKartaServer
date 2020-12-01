@@ -1,6 +1,7 @@
 package ioc.tukartaserver.security;
 
-import static ioc.tukartaserver.pruebas.pruebas.log;
+import com.google.gson.Gson;
+import ioc.tukartaserver.model.MensajeRespuesta;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,28 +9,33 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+
 
 /**
  * Clase que se encarga de la criotografía y la seguridad 
- * @author Manu
+ * @author Manu Mora
  */
 public class GestorCrypto {
 
-private static String KEY_STORE = "tukarta_keystore.jks";
+//datos necesarios
+private static String KEY_STORE = "tukarta_keystore.ks";
 private static String PASS_STORE = "tukartaPass";
 private static String ALIAS_KEY = "tukarta";
 
+//constructor de JSON
+private final static Gson gson = new Gson();
+
+//Parámetros del objeto
 private KeyStore keyStore;
-private PrivateKey clavePrivada;
-private PublicKey clavePublica;
-private Certificate certificado;
+private SecretKey clavePublica;
+
+/****************
+ CONSTRUCTORES
+****************/
 
 /**
  * Constructor básico del gestor de seguridad y criptografía
@@ -52,7 +58,7 @@ public GestorCrypto() throws KeyStoreException, IOException, FileNotFoundExcepti
  * @throws CertificateException si se da un error en la obtención del certificado. 
  */
 public void loadKeyStore() throws KeyStoreException, FileNotFoundException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException {
-  keyStore= KeyStore.getInstance("JKS");
+  keyStore= KeyStore.getInstance("JCEKS");
   File f = new File(KEY_STORE);
   if(f.isFile()){
     FileInputStream in = new FileInputStream(f);
@@ -61,10 +67,12 @@ public void loadKeyStore() throws KeyStoreException, FileNotFoundException, IOEx
     log("Error al acceder al almacén de claves");
   }
   log("Almacén iniciado. Extrayendo claves");
-  if (keyStore!=null){   
-    clavePrivada = (PrivateKey)keyStore.getKey("tukarta", "tukartaPass".toCharArray());
-    certificado = keyStore.getCertificate("tukarta");
-    clavePublica = certificado.getPublicKey();  
+  if (keyStore!=null){      
+    /*SecretKey skey = keyGenerator(128);
+    
+    keyStore.setKeyEntry(ALIAS_KEY+3, skey.getEncoded(), keyStore.getCertificateChain(ALIAS_KEY));
+    */
+    clavePublica = (SecretKey)keyStore.getKey(ALIAS_KEY, PASS_STORE.toCharArray());  
   }  
 }
 
@@ -76,13 +84,68 @@ public void loadKeyStore() throws KeyStoreException, FileNotFoundException, IOEx
  * Devuelve la clave pública del servidor
  * @return PublicKey con la clave del servidor. 
  */
-public PublicKey getPublicKey (){
+public SecretKey getPublicKey (){
   return clavePublica;
 }
 
+
+/****************
+ ENCRIPTADORES
+****************/
+
+/**
+ * Encrypta un mensaje con clave simétrica a partir de un objeto MensajeRespuesta
+ * @param respuesta MensajeRespuesta a encriptar
+ * @return String en formato JSON listo para enviar al cliente/servidor
+ */
+public String encryptData (MensajeRespuesta respuesta){
+   String dataJSON = gson.toJson(respuesta);
+   byte[] data = dataJSON.getBytes();
+   byte[] encryptedData= null;
+   try{
+      Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+      cipher.init(Cipher.ENCRYPT_MODE, clavePublica);
+      encryptedData = cipher.doFinal(data);
+   }catch(Exception ex){
+      System.err.println("Error cifrando los datos");
+      System.err.println(ex.getMessage());
+   }
+   String JSONFinal = gson.toJson(encryptedData);
+   return JSONFinal;
+}
+
+/**
+ * Desencripta un mensaje con clave simétrica a partir de una cadena String en formato JSON
+ * @param mensajeJSON String con el mensaje encriptado
+ * @return MensajeRespuesta con el mensaje descifrado
+ */
+public MensajeRespuesta decryptData (String mensajeJSON){
+  byte[] data = gson.fromJson(mensajeJSON, byte[].class);
+  byte[] originalData = null;
+  try{
+     Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+     cipher.init(Cipher.DECRYPT_MODE, clavePublica);
+     originalData= cipher.doFinal(data);
+  }catch(Exception ex){
+     System.err.println("Error cifrando los datos");
+     System.err.println(ex.getMessage());
+  }
+  String JSONFinal = new String(originalData);
+  MensajeRespuesta respuesta = gson.fromJson(JSONFinal, MensajeRespuesta.class);
+  return respuesta;
+}
+
+
+/****************
+ AUXILIARES
+****************/
+
+/**
+ * Método auxiliar para mostrar parámetros por consola
+ * @param texto String texto a mostrar
+ */
 public static void log(String texto){
   System.out.println("CRYPTO: "+texto);
 }
-
   
 }

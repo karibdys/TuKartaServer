@@ -133,11 +133,7 @@ public void run(){
       //Enviamos el primer mensaje de respuesta
       System.out.println(CONCLI+"Enviando confirmación de conexión con el cliente.");      
       MensajeRespuesta respuesta = Utiles.mensajeOK("Conexión");
-      //TODO obtener modulos
-      PublicKey pubKey = crypto.getPublicKey();
-      BigInteger[] datosKey = getPublicKeyData(pubKey);
-      String datosKeyJSON = gson.toJson(datosKey);
-      respuesta.setData(datosKeyJSON);      
+     
       gestorServer.sendMensaje(respuesta);                
       System.out.println(CONCLI+"Esperando petición de cliente.");
       
@@ -146,17 +142,14 @@ public void run(){
       
     } catch (IOException ex) {     
       gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_ERR), "conexion"));
-      System.out.println(CONCLI+"Enviando código de error");
-    } catch (InvalidKeySpecException ex) {
-      gestorServer.sendMensaje(Utiles.mensajeErrorKey("conexion"));
-    } catch (NoSuchAlgorithmException ex) {
-      gestorServer.sendMensaje(Utiles.mensajeErrorKey("conexion"));
+      System.out.println(CONCLI+"Enviando código de error");  
     }
     
     //si no ha habido ningún fallo en la recepción, tendremos un mensaje JSON.
     System.out.println(CONCLI+": JSON recibido\n  -->\n"+mensajeIn);   
     try{      
       if(mensajeIn!=null){
+        //TODO desencriptar mensaje
         solicitud = gson.fromJson(mensajeIn, MensajeSolicitud.class);
         //procesamos la petición
         procesarPeticion(solicitud);
@@ -196,6 +189,7 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
     Restaurante restIn = null;
     String[] datosString=null;
     Mesa mesaIn=null;
+    //mensaje desencriptado
     if (!mensaje.getPeticion().contains("login")){
       token = gson.fromJson(tokenString, TokenSesion.class);  
     }

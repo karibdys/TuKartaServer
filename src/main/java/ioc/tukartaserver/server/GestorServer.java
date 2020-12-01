@@ -678,6 +678,7 @@ public MensajeRespuesta procesarMensajeListProductosFromId(TokenSesion token, St
  */
 public void sendMensaje (Mensaje mensaje){
   String mensajeJSON = gson.toJson(mensaje);
+  //TODO meter la encriptación
   out.println(mensajeJSON);
   out.flush();
 }
