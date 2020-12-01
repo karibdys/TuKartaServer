@@ -14,6 +14,9 @@ public static final String KEY_CODE = "codigo";
 public static final String KEY_MESS = "mensaje";
 //petición completada con éxito
 public static final String CODIGO_OK ="10";
+
+//errores de seguridad
+public static final String CODIGO_ERROR_KEY ="20";
 //errores de input
 public static final String CODIGO_DATOS_INCORRECTOS = "40";
 public static final String CODIGO_FUNCION_ERR = "41";
@@ -60,6 +63,8 @@ public static void initMap () {
   System.out.println(CODES+"Iniciando listado de códigos");
   codigos = new HashMap<String, String>();
   codigos.put(CODIGO_OK,  "Petición completada con éxito");
+  //errores de seguridad
+  codigos.put(CODIGO_ERROR_KEY,  "Error al obtener los datos de seguridad necesarios");
   //errores de input
   codigos.put(CODIGO_DATOS_INCORRECTOS, "Los datos enviados no son correctos o están incompletos");
   codigos.put(CODIGO_FUNCION_ERR, "La petición solicitada no está soportada por el sistema");

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.security.GestorCrypto;
 import ioc.tukartaserver.security.GestorSesion;
 
 
@@ -23,6 +24,7 @@ private ServerSocket ss;
 private GestorSesion sesiones;
 private GestorServer gestorMensajes;
 private MensajeRespuesta respuesta;
+private GestorCrypto crypto;
 
 /**
  * Constructor básico del servidor. Crea el canal de escucha en el sistema, el gestor de sesiones, el de la base de datos y el builder de JSON
@@ -31,8 +33,13 @@ public Server() {
   try {
     ss= new ServerSocket(PORT);     
     sesiones=new GestorSesion();
+    crypto = new GestorCrypto();
   } catch (IOException e) {
     System.out.println(SERVER+"ERROR AL CREAR EL SERVER: "+e.getMessage());
+    respuesta = new MensajeRespuesta(new Codes(Codes.CODIGO_ERR), "conexión");
+    gestorMensajes.sendMensaje(respuesta);
+  } catch (Exception ex){
+    System.out.println(SERVER+"ERROR DE SEGURIDAD: "+ex.getMessage());
     respuesta = new MensajeRespuesta(new Codes(Codes.CODIGO_ERR), "conexión");
     gestorMensajes.sendMensaje(respuesta);
   }
@@ -47,7 +54,7 @@ public void startServer() {
   while (!endServer) {    
     try {
       System.out.println("Esperando petición de algún cliente...");
-      cc=new ConexionCliente(ss.accept(), sesiones);
+      cc=new ConexionCliente(ss.accept(), sesiones, crypto);
       cc.start();
     } catch (IOException ex) {
       System.out.println(SERVER+"PETE CERRANDO EL SERVER");

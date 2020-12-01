@@ -53,6 +53,15 @@ public static String ParseDate(Date fecha){
    return new MensajeRespuesta(new Codes(Codes.CODIGO_OK), peticion);  
  }
  
+ /**
+  * Construye un mensaje genérico de error debido al sistema de seguridad del servidor: CÓDIGO 20
+  * @param peticion String nombre de la petición a responder
+  * @return MensajeRespuesta con el código 20 y la petición a respondida. 
+  */
+ public static MensajeRespuesta mensajeErrorKey(String peticion){
+   return new MensajeRespuesta(new Codes(Codes.CODIGO_ERROR_KEY), peticion);  
+ }
+ 
   /**
   * construye un mensaje genérico de error de datos incorrectos: CÓDIGO 40
   * @param peticion String nombre de la petición a responder

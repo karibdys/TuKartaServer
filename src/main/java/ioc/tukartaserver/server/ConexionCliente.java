@@ -12,12 +12,23 @@ import ioc.tukartaserver.model.Producto;
 import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
+import ioc.tukartaserver.model.Utiles;
+import ioc.tukartaserver.pruebas.pruebas;
+import ioc.tukartaserver.security.GestorCrypto;
 import ioc.tukartaserver.security.GestorSesion;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *  Clase que procesa los mensajes recibidos y responde en función de lo que le pide el cliente.
@@ -32,6 +43,7 @@ private static final Gson gson = new Gson();
 private String mensajeIn;
 private MensajeSolicitud solicitud;
 private MensajeRespuesta respuesta;
+private GestorCrypto crypto;
 
 private static final String CONCLI="CON_CLI: ";
 
@@ -46,10 +58,11 @@ private static final String CONCLI="CON_CLI: ";
  * @param gestorsesion GestorSesion que controla el acceso de los usuarios a la plataforma. 
  * @throws IOException Si los canales no se pueden recuperar o son nulos. 
  */
-public ConexionCliente (Socket socket, GestorSesion gestorsesion) throws IOException {  
+public ConexionCliente (Socket socket, GestorSesion gestorsesion, GestorCrypto gCrypto) throws IOException {  
   out = new PrintStream(socket.getOutputStream());
   in = new BufferedReader(new InputStreamReader(socket.getInputStream()));  
   gestorSesion=gestorsesion;
+  crypto = gCrypto;  
 }
 
 /******************
@@ -116,20 +129,28 @@ public void run(){
       System.out.println(CONCLI+"Petición de cliente aceptada.");	           
       //crea el gestor de mensajes    
       gestorServer = new GestorServer(in, out, gestorSesion);  
-      System.out.println(CONCLI+"Canales abiertos.");
-      //sacamos el mensaje que nos envían
-      
+      System.out.println(CONCLI+"Canales abiertos.");      
       //Enviamos el primer mensaje de respuesta
-      System.out.println(CONCLI+"Enviando confirmación de conexión con el cliente.");
-      gestorServer.sendMensaje(new MensajeRespuesta (new Codes (Codes.CODIGO_OK), "Conexión"));                
+      System.out.println(CONCLI+"Enviando confirmación de conexión con el cliente.");      
+      MensajeRespuesta respuesta = Utiles.mensajeOK("Conexión");
+      //TODO obtener modulos
+      PublicKey pubKey = crypto.getPublicKey();
+      BigInteger[] datosKey = getPublicKeyData(pubKey);
+      String datosKeyJSON = gson.toJson(datosKey);
+      respuesta.setData(datosKeyJSON);      
+      gestorServer.sendMensaje(respuesta);                
       System.out.println(CONCLI+"Esperando petición de cliente.");
       
       //esperamos la petición del cliente  
       mensajeIn = in.readLine();
       
     } catch (IOException ex) {     
-      gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_ERR), "conexión"));
+      gestorServer.sendMensaje(new MensajeRespuesta (new Codes(Codes.CODIGO_ERR), "conexion"));
       System.out.println(CONCLI+"Enviando código de error");
+    } catch (InvalidKeySpecException ex) {
+      gestorServer.sendMensaje(Utiles.mensajeErrorKey("conexion"));
+    } catch (NoSuchAlgorithmException ex) {
+      gestorServer.sendMensaje(Utiles.mensajeErrorKey("conexion"));
     }
     
     //si no ha habido ningún fallo en la recepción, tendremos un mensaje JSON.
@@ -343,6 +364,16 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
   
 }
 
+
+public static BigInteger[] getPublicKeyData (PublicKey pKey) throws InvalidKeySpecException, NoSuchAlgorithmException{
+  BigInteger[] datos = new BigInteger[2];
+  KeyFactory fact = KeyFactory.getInstance("RSA");
+  RSAPublicKeySpec pub = fact.getKeySpec(pKey ,RSAPublicKeySpec.class);   
+  datos[0]= pub.getModulus();
+  datos[1]= pub.getPublicExponent();
+  
+  return datos;
+}
 /**
  * Envía un mensaje de fin de sesión y cierra el canal entre ambos.
  */

@@ -103,13 +103,13 @@ public void startClient() {
       
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       /*******************PRUEBA DE LOGIN************************/          
-      /*
+  
       System.out.println(CLIENTE+"Procediendo a hacer petición de login"); 
       //lo convertimos en JSON
       String userJson = gson.toJson(emp);
       //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN, userJson, (String) null);
-      */
+  
       
       /*******************PRUEBA DE LOGOFF************************/
       /*
@@ -169,14 +169,14 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE LIST USER************************/
-      
+      /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de list_data_users");   
       TokenSesion token = new TokenSesion(user);
       token.setToken("dxQRyasKLT");      
       Restaurante rest = new Restaurante ("res1Marc", "CanMarc");
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_GESTOR, null, token);
       //MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_USERS_FROM_REST, rest, token);
-      
+      */
       
       /*******************PRUEBA DE ADD DATA PEDIDO ************************/
       /*
