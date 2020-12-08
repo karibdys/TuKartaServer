@@ -20,12 +20,18 @@ import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
+import ioc.tukartaserver.security.GestorCrypto;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 import java.net.Socket;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -40,12 +46,13 @@ private final String CLIENTE="CLIENTE: ";
 private Socket cs;
 private PrintStream  out;	
 private Gson gson;
-
+private GestorCrypto crypto;
 private TokenSesion tokenUser;
 
 BufferedReader in;
 
-public Cliente() throws IOException{
+public Cliente() throws IOException, KeyStoreException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException{
+  crypto = new GestorCrypto();
   gson = new Gson();
   try{ 
     cs = new Socket(LOCAL_HOST, LOCAL_PORT);
@@ -63,10 +70,10 @@ public void startClient() {
     //leemos
     System.out.println(CLIENTE+"preparado para leer");
     String mensajeString=in.readLine();    
-    System.out.println(CLIENTE+"mensaje recibido: \n  -->"+mensajeString);
-    MensajeRespuesta mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);    
-    Codes code=mensajeRes.getCode();
-    System.out.println("SERVER: código "+code.getCode()); 
+    log("Mensaje Encriptado recibido: \n  -->"+mensajeString);    
+    MensajeRespuesta mensajeRes = (MensajeRespuesta)crypto.decryptData(mensajeString, Mensaje.MENSAJE_RESPUESTA);
+    log("Mensaje recibido desencriptado: \n  -->"+mensajeRes);    
+    Codes code=mensajeRes.getCode();  
     
     if (code.getCode().equals(Codes.CODIGO_OK)) {
       
@@ -102,15 +109,15 @@ public void startClient() {
       pedido.setEstado_productos(listaEstados);
       
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
+      
       /*******************PRUEBA DE LOGIN************************/          
-  
-      System.out.println(CLIENTE+"Procediendo a hacer petición de login"); 
+      /*
+      log("Procediendo a hacer petición de login"); 
       //lo convertimos en JSON
       String userJson = gson.toJson(emp);
       //creamos el mensajeRes      
-      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN, userJson, (String) null);
-  
-      
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN, userJson, (String) null);  
+      */
       /*******************PRUEBA DE LOGOFF************************/
       /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de logout");            
@@ -331,14 +338,14 @@ public void startClient() {
       */
       
       /*******************PRUEBA DE LIST MESAS LIBRES ************************/
-      /*
+    
       System.out.println(CLIENTE+"Procediendo a hacer petición de add_empleado");   
       TokenSesion token = new TokenSesion(emp);
-      token.setToken("JZaaSDkUut");        
+      token.setToken("gTvTMnTPkw");        
       Restaurante rest = new Restaurante();
       rest.setId("res1TuKarta");
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LIST_MESAS_LIBRES, rest,  token);            
-      */
+      
       
       
       /*******************PRUEBA DE GET EMPLEADO ************************/
@@ -350,9 +357,10 @@ public void startClient() {
       */
       
       /*******************FINAL DE PETICIÓN ************************/
-      String mensajeOutJson = gson.toJson(mensajeOut);         
+      String mensajeOutJson = crypto.encryptData(mensajeOut);
       //convertimos el mensajeRes en JSON     
-      System.out.println(CLIENTE+" enviando JSON\n  -->"+mensajeOutJson);
+      log("Mensaje original: \n"+mensajeRes);
+      log("Mensaje encriptado: \n"+ mensajeOutJson);      
       out.println(mensajeOutJson);          
       out.flush();          
     }
@@ -360,9 +368,11 @@ public void startClient() {
     String codigo="";
     do{                
       mensajeString = in.readLine();  
-      System.out.println(CLIENTE+"Mensaje en formato Mensaje:");
-      mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);
-      System.out.println(mensajeRes);
+      MensajeRespuesta respuestaC = (MensajeRespuesta) crypto.decryptData(mensajeString, Mensaje.MENSAJE_RESPUESTA);
+      //System.out.println(CLIENTE+"Mensaje en formato Mensaje:");
+      //mensajeRes = gson.fromJson(mensajeString, MensajeRespuesta.class);
+      System.out.println("Mensaje encriptado: "+mensajeString);
+      System.out.println("Mensaje desencriptado: "+respuestaC);
       codigo = mensajeRes.getCode().getCode();
       tokenUser = gson.fromJson(mensajeRes.getData(), TokenSesion.class);
       System.out.println(CLIENTE+"SACANDO TOKEN: "+tokenUser.getToken());
@@ -397,6 +407,10 @@ public void sendCode(Codes codigo){
   JSONObject jsonCode= codigo.parseCode();
   out.println(jsonCode);
   out.flush();  
+}
+
+public void log(String texto){
+  System.out.println(CLIENTE+": "+texto);
 }
 }
 

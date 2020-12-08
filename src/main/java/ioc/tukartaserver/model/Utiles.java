@@ -58,7 +58,7 @@ public static String ParseDate(Date fecha){
   * @param peticion String nombre de la petición a responder
   * @return MensajeRespuesta con el código 20 y la petición a respondida. 
   */
- public static MensajeRespuesta mensajeErrorKey(String peticion){
+ public static MensajeRespuesta mensajeErrorSeguridad(String peticion){
    return new MensajeRespuesta(new Codes(Codes.CODIGO_ERROR_KEY), peticion);  
  }
  

@@ -1,6 +1,5 @@
 package ioc.tukartaserver.server;
 
-import com.google.gson.Gson;
 import ioc.tukartaserver.gestorDB.GestorDB;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Estado;
@@ -15,8 +14,6 @@ import ioc.tukartaserver.model.TokenSesion;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
 import ioc.tukartaserver.security.GestorSesion;
-import java.io.BufferedReader;
-import java.io.PrintStream;
 import java.sql.SQLException;
 
 /**
@@ -25,17 +22,13 @@ import java.sql.SQLException;
  */
 public class GestorServer {
 
-private static final String SERVER ="GESTOR SERVER: ";
-
-private PrintStream out;
-private BufferedReader in;
+//variables del objeto
 private GestorDB gestorDB;
 private GestorSesion gestorSesion;
-private Codes code = null;
-private Gson gson;
-
 private MensajeRespuesta respuesta;
 
+//otros
+private static final String SERVER ="GESTOR SERVER: ";
 /******************
  * CONSTRUCTOR  
  ******************
@@ -46,25 +39,9 @@ private MensajeRespuesta respuesta;
  * @param in BufferedReader que gestiona la entrada de mensajes en el Socket del servidor desde el cliente
  * @param out PrintStream que gestiona la salida de mensajes del Socket del servidor hacia el cliente
  */
-public GestorServer(BufferedReader in, PrintStream out, GestorSesion gestorsesion){
-  this.in=in;
-  this.out=out;
-  gestorSesion=gestorsesion;
-  try{
-    gestorDB = new GestorDB();
-  } catch (SQLException ex) {
-    respuesta = new MensajeRespuesta(new Codes(Codes.CODIGO_ERR_BD), "conexión");
-    sendMensaje(respuesta);
-    System.out.println("GESTOR DB: ERROR AL CONECTAR CON LA BASE DE DATOS");
-  } catch (ClassNotFoundException ex) {
-    respuesta = new MensajeRespuesta(new Codes(Codes.CODIGO_ERR), "conexión");
-    sendMensaje(respuesta);
-    System.out.println(ex.getMessage());
-  }
-  gson = new Gson();
-  if(in==null || out==null){
-    System.out.println(SERVER+"LOS CANALES NO SE HAN ABIERTO CORRECTAMENTE");
-  }
+public GestorServer(GestorSesion gestorsesion) throws SQLException, ClassNotFoundException{
+  gestorSesion=gestorsesion; 
+  gestorDB = new GestorDB(); 
 }
 
 /******************
@@ -87,22 +64,6 @@ public void setGestorSesion(GestorSesion gestorSesion) {
   this.gestorSesion = gestorSesion;
 }
 
-/**
- * Establece un canal de entrada distinto al original
- * @param in BufferedReader 
- */
-public void setIn(BufferedReader in) {
-  this.in = in;
-}
-
-/**
- * Establece un canal del salida distinto al original creado por el constructor. 
- * @param out PrintStream
- */
-public void setOut(PrintStream out) {
-  this.out = out;
-}
-  
 /******************
  * GESTIÓN DE USUARIOS
  ******************
@@ -668,28 +629,14 @@ public MensajeRespuesta procesarMensajeListProductosFromId(TokenSesion token, St
   }
   return respuesta;
 }
+
+
 /******************
  * MÉTODOS AUXILIARES
  ******************
  */
-/**
- * Envía un mensaje, ya sea de tipo respuesta o solicitud
- * @param mensaje MensajeRepuesta completo 
- */
-public void sendMensaje (Mensaje mensaje){
-  String mensajeJSON = gson.toJson(mensaje);
-  //TODO meter la encriptación
-  out.println(mensajeJSON);
-  out.flush();
-}
 
-/**
- * Envía un mensaje de fin de sesión al cliente y cierra el canal entre ambos.
- */
-public void endConnection(){
-  respuesta = new MensajeRespuesta (new Codes(Codes.END_CONNECTION), "fin conexión");
-  sendMensaje(respuesta);
-}
+
 
 /**
  * Comprueba si una sesión está activa o no

@@ -6,7 +6,14 @@ package ioc.tukartaserver.pruebas;
  */
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainClient {
     public static void main (String [] args) {
@@ -19,6 +26,14 @@ public class MainClient {
         System.out.println("MAIN: Cliente cerrado");
       } catch (IOException e) {
         System.out.println("MAIN: ERROR: "+e.getMessage());
+      } catch (KeyStoreException ex) {
+        Logger.getLogger(MainClient.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (NoSuchAlgorithmException ex) {
+        Logger.getLogger(MainClient.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (CertificateException ex) {
+        Logger.getLogger(MainClient.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (UnrecoverableKeyException ex) {
+        Logger.getLogger(MainClient.class.getName()).log(Level.SEVERE, null, ex);
       }
 
     }

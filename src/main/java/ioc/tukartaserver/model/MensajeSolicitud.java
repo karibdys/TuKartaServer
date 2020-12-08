@@ -133,11 +133,15 @@ public void setData(Object data){
 @Override
 public String toString(){
   StringBuilder builder = new StringBuilder();
-  builder.append("FUNCIÓN: ").append(this.peticion);
-  builder.append("\nOBJETO: ").append(this.data);
+  builder.append("------\nMENSAJE:");
+  builder.append("\nFunción Solicitada: ").append(this.peticion);
+  if (this.data!=null){
+    builder.append("\nDatos: ").append(this.data);
+  }
   if (token!=null){
-    builder.append("\nTOKEN: "+this.data);
+    builder.append("\nToken de Sesión: "+this.data);
   }    
+  builder.append("\n------");
   return builder.toString();
 }
 }

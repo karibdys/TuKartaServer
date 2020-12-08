@@ -56,9 +56,6 @@ public static void main (String... args)  {
     String dataToSend =crypto.encryptData(res);
     log(dataToSend);
     
-    MensajeRespuesta res2 = crypto.decryptData(dataToSend);
-    log(res2.toString());
-    
   }
 }
 

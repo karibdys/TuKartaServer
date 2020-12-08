@@ -6,6 +6,9 @@ package ioc.tukartaserver.model;
  */
 public interface  Mensaje {
 
+public static final int MENSAJE_RESPUESTA =1;
+public static final int MENSAJE_SOLICITUD =2;
+
 //gestión de Usuarios
 public static final String FUNCION_LOGIN = "login";
 public static final String FUNCION_LOGIN_ADMIN = "loginAdmin";

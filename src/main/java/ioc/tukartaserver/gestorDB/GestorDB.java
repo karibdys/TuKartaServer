@@ -28,8 +28,6 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class GestorDB {
 
@@ -150,32 +148,26 @@ public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
     }    
   }else{
     //preparamos la sentencia en función de si es gestor o no un requisito  
-    String sentencia = constructorSentenciaLogin(mail, isGestor);
-    System.out.println(BD+" SENTENCIA\n  --> "+sentencia);
-    
+    String sentencia = constructorSentenciaLogin(mail, isGestor);     
     //hacemos la petición a la base de datos
     try {             
       openConnection();
       Statement statement = con.createStatement();    
       ResultSet result = statement.executeQuery(sentencia);
-      if (result.next()) {
-        System.out.println(BD+"Usuario encontrado");
+      if (result.next()) {       
         if(pass.equals(result.getString("pwd"))) {
-          codigoRet= new Codes(Codes.CODIGO_OK);				 
-          System.out.println(BD+"Contraseña correcta");
-
+          codigoRet= new Codes(Codes.CODIGO_OK);
+          
           //pasamos a procesar el usuario
           userRes.setUsuario(result.getString("usuario"));
           userRes.setNombre(result.getString("nombre"));
           userRes.setApellidos(result.getString("apellidos"));
           userRes.setEmail(result.getString("email"));
           userRes.setIsGestor(result.getBoolean("isGestor"));
-        }else {
-          System.out.println(BD+"Contraseña incorrecta");
+        }else {          
           codigoRet = new Codes(Codes.CODIGO_ERR_PWD);
         }
       }else {
-        System.out.println(BD+"El resultset es nulo");
         codigoRet = new Codes(Codes.CODIGO_ERR_PK_NOT_FOUND);
       }
       //preparamos el mensaje con los datos
@@ -187,13 +179,10 @@ public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
       }
       result.close();
       statement.close();
-      System.out.println (BD+"conexión finalizada");
-      statement.close();
       closeConnection();
     } catch (Exception ex) {
       codigoRet = new Codes(Codes.CODIGO_ERR);
       System.out.println(BD+ex.getMessage());
-      System.out.println (BD+"se devuelve el mensaje:\n"+mensajeRes);
     } 
   }    
   return mensajeRes;
@@ -1258,7 +1247,7 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
     con = DriverManager.getConnection(LOCAL_URL,USER,PASS);      
     System.out.println(BD+"conexión abierta");
   } catch (Exception ex) {
-    Logger.getLogger(GestorDB.class.getName()).log(Level.SEVERE, null, ex);
+    log("error --> "+ex.getMessage());
   }    
  }
  
@@ -1269,10 +1258,10 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
    try{ 
      if(con!=null && !con.isClosed()){
        con.close();
-       System.out.println(BD+"conexión cerrada");
+       log("conexión cerrada");
      }
    }catch (SQLException e){
-    System.out.println(e.getMessage());
+    log("error --> "+e.getMessage());
    }
  }
  
@@ -1283,8 +1272,4 @@ public static String constructorSentenciaLogin(String mail, boolean isGestor){
  public static void log(String texto){
    System.out.println(BD+": "+texto);
  }
- 
-
- 
- 
 }

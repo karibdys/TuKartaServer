@@ -27,7 +27,6 @@ private static final String GESTOR = "GESTOR SESIÓN: ";
  */
 public GestorSesion(){
   sesiones = new HashMap<>();
-  System.out.println(GESTOR+"Registro se sesiones iniciado con éxito");
 }
 
 /******************
@@ -65,8 +64,7 @@ public boolean addSesion (TokenSesion token){
   if (token!=null){
     try{    
       this.sesiones.put(token.getUsuario(), token);
-      System.out.println(GESTOR+"sesión añadida con éxito");
-      System.out.println(GESTOR+"tamaño del listado: "+sesiones.size());
+      System.out.println(GESTOR+"sesión añadida con éxito");   
       ret = true;      
     }catch (Exception ex){
       System.out.println(GESTOR+"sesión no añadida con éxito");  

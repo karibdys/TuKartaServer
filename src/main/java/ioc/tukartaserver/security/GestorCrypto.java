@@ -1,7 +1,9 @@
 package ioc.tukartaserver.security;
 
 import com.google.gson.Gson;
+import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
+import ioc.tukartaserver.model.MensajeSolicitud;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -98,8 +100,9 @@ public SecretKey getPublicKey (){
  * @param respuesta MensajeRespuesta a encriptar
  * @return String en formato JSON listo para enviar al cliente/servidor
  */
-public String encryptData (MensajeRespuesta respuesta){
+public String encryptData (Mensaje respuesta){
    String dataJSON = gson.toJson(respuesta);
+   //log("Mensaje sin encriptar: "+dataJSON);
    byte[] data = dataJSON.getBytes();
    byte[] encryptedData= null;
    try{
@@ -111,6 +114,7 @@ public String encryptData (MensajeRespuesta respuesta){
       System.err.println(ex.getMessage());
    }
    String JSONFinal = gson.toJson(encryptedData);
+   //log("Mensaje encriptado: "+JSONFinal);
    return JSONFinal;
 }
 
@@ -119,7 +123,7 @@ public String encryptData (MensajeRespuesta respuesta){
  * @param mensajeJSON String con el mensaje encriptado
  * @return MensajeRespuesta con el mensaje descifrado
  */
-public MensajeRespuesta decryptData (String mensajeJSON){
+public Mensaje decryptData (String mensajeJSON, int tipoMens){
   byte[] data = gson.fromJson(mensajeJSON, byte[].class);
   byte[] originalData = null;
   try{
@@ -130,9 +134,19 @@ public MensajeRespuesta decryptData (String mensajeJSON){
      System.err.println("Error cifrando los datos");
      System.err.println(ex.getMessage());
   }
-  String JSONFinal = new String(originalData);
-  MensajeRespuesta respuesta = gson.fromJson(JSONFinal, MensajeRespuesta.class);
-  return respuesta;
+  String JSONFinal = new String(originalData);  
+  MensajeRespuesta respuesta = null;
+  MensajeSolicitud solicitud = null;
+  switch (tipoMens){
+    case Mensaje.MENSAJE_RESPUESTA:
+      respuesta = gson.fromJson(JSONFinal, MensajeRespuesta.class);
+      break;
+    case Mensaje.MENSAJE_SOLICITUD:
+      solicitud = gson.fromJson(JSONFinal, MensajeSolicitud.class);
+      break;
+  }
+  
+  return (tipoMens==Mensaje.MENSAJE_RESPUESTA)? respuesta:solicitud;
 }
 
 
