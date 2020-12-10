@@ -1,6 +1,8 @@
 package ioc.tukartaserver.model;
 
 import ioc.tukartaserver.gestorDB.GestorDB;
+import ioc.tukartaserver.security.GestorCrypto;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -170,7 +172,7 @@ public static String ParseDate(Date fecha){
    * @param user Usuario o Empleado con los campos necesarios para construir un registro válido en la BBDD, es decir, con nombre de usuario, password, email, fecha de alta, fecha de modificación y el indicativo de si es gestor.
    * @return String con la sentencia INSERT SQL completa
    */
-  public static String sentenciaUsuarioToInsertSQL (Object user){
+  public static String sentenciaUsuarioToInsertSQL (Object user) throws NoSuchAlgorithmException{
     StringBuilder builder = new StringBuilder();
     builder.append("INSERT INTO "+GestorDB.TABLA_USERS+" (");
     //primero ponemos los campos obligatorios
@@ -202,8 +204,12 @@ public static String ParseDate(Date fecha){
     //hasta aquí construimos la primera parte de la sentencia.    
     //ahora toca meter los datos
     builder.append("'"+ ((Usuario)user).getUsuario()+"'");
-    builder.append(", '"+ ((Usuario)user).getPwd()+"'");
-    builder.append(", '"+ ((Usuario)user).getEmail()+"'");
+    //para la pass tenemos que encriptar
+    String dato1 = ((Usuario)user).getPwd();
+    String dato2 = ((Usuario)user).getEmail();
+    String passEnc = GestorCrypto.encriptarPass(dato1, dato2);
+    builder.append(", '"+ passEnc);
+    builder.append(", '"+ dato2);
     builder.append(", '"+ convertDateJavaToSQL(((Usuario)user).getFecha_alta())+"'");
     builder.append(", '"+ convertDateJavaToSQL(((Usuario)user).getFecha_modificacion())+"'");
     //pasamos a comprobar los campos aleatorios:

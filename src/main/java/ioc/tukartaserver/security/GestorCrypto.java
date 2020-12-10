@@ -10,9 +10,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
@@ -147,6 +149,19 @@ public Mensaje decryptData (String mensajeJSON, int tipoMens){
   }
   
   return (tipoMens==Mensaje.MENSAJE_RESPUESTA)? respuesta:solicitud;
+}
+
+/****************
+ PASS BASE DE DATOS
+****************/
+
+public static String encriptarPass(String pass, String salt) throws NoSuchAlgorithmException{
+  String passFinal = pass+" "+salt;
+  MessageDigest digestor = MessageDigest.getInstance("SHA-512"); 
+  byte[] mensajeByte = passFinal.getBytes();
+  byte[] mensajeHash= digestor.digest(mensajeByte);
+  String mensajeDigest = Base64.getEncoder().encodeToString(mensajeHash);
+  return mensajeDigest;    
 }
 
 

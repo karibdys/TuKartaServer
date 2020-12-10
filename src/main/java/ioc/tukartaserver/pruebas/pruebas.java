@@ -32,54 +32,23 @@ public static Gson gson = new Gson();
 
 
 public static void main (String... args)  {  
-  SecretKey skey=null;
-  GestorCrypto crypto =null;
+  String comprobar = "2r0ZCHoK/nVyMniIr2L3kXklx0X+hHO5+vLneaG36x+ucY+m0nzjMpNbqvWc722axohnsuZWQc8/tfbfyUYMfA==";
+  String pass = "marcPass";
+  String salt = "marc@tukarta.com";
+  String mensajeFinal ="";
   try {
-    crypto = new GestorCrypto();
-    skey = crypto.getPublicKey();
-    
-  } catch (KeyStoreException ex) {
-    Logger.getLogger(pruebas.class.getName()).log(Level.SEVERE, null, ex);
-  } catch (IOException ex) {
-    Logger.getLogger(pruebas.class.getName()).log(Level.SEVERE, null, ex);
+    mensajeFinal = GestorCrypto.encriptarPass(pass, salt);
   } catch (NoSuchAlgorithmException ex) {
-    Logger.getLogger(pruebas.class.getName()).log(Level.SEVERE, null, ex);
-  } catch (CertificateException ex) {
-    Logger.getLogger(pruebas.class.getName()).log(Level.SEVERE, null, ex);
-  } catch (UnrecoverableKeyException ex) {
-    Logger.getLogger(pruebas.class.getName()).log(Level.SEVERE, null, ex);
+    log("ERROR");
   }
-  if (skey!=null){
-    log("tenemos clave");
-    MensajeRespuesta res = Utiles.mensajeOK("pruebas");
-    res.setData("WAI");
-    String dataToSend =crypto.encryptData(res);
-    log(dataToSend);
+  log(mensajeFinal);
+  log(comprobar.equals(mensajeFinal)? "WAI": "NO WAI");
     
-  }
+
 }
 
 public static void log(String text){
   System.out.println(text);
 }
 
-public static SecretKey keyGenerator(int size){
-   SecretKey skey = null;
-  
-   if ((size==128)||(size==192)||(size==256)){
-       try{
-         //instanciamos el generador con el algoritmo
-         KeyGenerator kgen = KeyGenerator.getInstance("AES");
-         //iniciamos el generador con el tamaño de la clave
-         kgen.init(size);
-         //creamos la clave
-         skey=kgen.generateKey();
-      }catch (NoSuchAlgorithmException ex){
-         System.err.println("Generador no disponible");
-      }
-   }
-   return skey;
-}
-
-  
 }

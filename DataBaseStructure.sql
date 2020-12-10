@@ -15,7 +15,7 @@ ENUM('preparando', 'listo', 'pendiente');
 CREATE TABLE Usuario(	
 	-- Usuario base
 	usuario 		varchar(30) NOT NULL,
-	pwd				varchar(30) NOT NULL,	
+	pwd				varchar(100) NOT NULL,	
 	email 			varchar(30),
 	nombre 			varchar(30),
 	apellidos 		varchar(30),
@@ -99,16 +99,16 @@ ALTER TABLE mesa ADD CONSTRAINT "FK_mesa_restaurante" FOREIGN KEY (restaurante) 
 
 
 -- USUARIOS GESTORES
-INSERT INTO usuario VALUES ('Marc', 'marcPass', 'marc@tukarta.com', 'Marc', 'Abad', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, true);
-INSERT INTO usuario VALUES ('TuKarta', 'TuKartaPass', 'tukarta@tukarta.com', 'Tu', 'Karta', '2020-11-05 12:10:00', '2020-11-05 12:10:00', null, true);
+INSERT INTO usuario VALUES ('Marc', '2r0ZCHoK/nVyMniIr2L3kXklx0X+hHO5+vLneaG36x+ucY+m0nzjMpNbqvWc722axohnsuZWQc8/tfbfyUYMfA==', 'marc@tukarta.com', 'Marc', 'Abad', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, true);
+INSERT INTO usuario VALUES ('TuKarta', 'E2GjRghCs8lhWV8Ut+Qm2shRQW9PbpyzHnauu3by2r6sgAayfUa3LL1BYSl16VuS37+cYru4naIi9NK9sb2bZQ==', 'tukarta@tukarta.com', 'Tu', 'Karta', '2020-11-05 12:10:00', '2020-11-05 12:10:00', null, true);
 
 -- RESTAURANTES
 INSERT INTO restaurante VALUES ('res1Marc', 'Can Marc', 'Barcelona', 'Calle de la buena Suerte, 23', 'marc@tukarta.com');
 INSERT INTO restaurante VALUES ('res1TuKarta', 'Can Fortunata', 'Girona', 'Calle de Abajo, 05', 'tukarta@tukarta.com');
 
 -- USUARIOS EMPLEADOS
-INSERT INTO usuario VALUES ('Manu', 'manuPass', 'manu@tukarta.com', 'Manuel', 'Mora', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1600, 'camarero');
-INSERT INTO usuario VALUES ('David', 'davidPass', 'david@tukarta.com', 'David', 'Domenech', '2020-10-22 12:10:00','2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1500, 'cocinero');
+INSERT INTO usuario VALUES ('Manu', 'QjdUDyUFjoqeCLUVbD7t7o9C6vtdI83WXBK/uujjJZ1ixh9yKm/VZc9w7dUseSi3kgX3oyoh2YquL0uYlAutbg==', 'manu@tukarta.com', 'Manuel', 'Mora', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1600, 'camarero');
+INSERT INTO usuario VALUES ('David', '+Qm2shRQW9PbpyzHnauu3by2r6sgAayfUa3LL1BYSl16VuS37+cYru4naIi9NK9sb2bZQ==', 'david@tukarta.com', 'David', 'Domenech', '2020-10-22 12:10:00','2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1500, 'cocinero');
 -- PRODUCTOS
 INSERT INTO producto VALUES ('P001', 'Patatas Bravas', '{gluten, lacteos}', 3.50, 15, 15);
 INSERT INTO producto VALUES ('P002', 'Patatas All i Oli', '{gluten, lacteos, huevo}', 4.50, 10, 15);

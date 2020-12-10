@@ -24,10 +24,14 @@ import ioc.tukartaserver.model.Restaurante;
 import ioc.tukartaserver.model.Rol;
 import ioc.tukartaserver.model.Usuario;
 import ioc.tukartaserver.model.Utiles;
+import ioc.tukartaserver.security.GestorCrypto;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GestorDB {
 
@@ -154,15 +158,19 @@ public MensajeRespuesta loginMens(String mail, String pass, boolean isGestor){
       openConnection();
       Statement statement = con.createStatement();    
       ResultSet result = statement.executeQuery(sentencia);
-      if (result.next()) {       
-        if(pass.equals(result.getString("pwd"))) {
+      if (result.next()) {     
+        String passDB = result.getString("pwd");
+        String salt = result.getString("email");
+        String datoF = GestorCrypto.encriptarPass(pass, salt);        
+        log("Dato de pass encriptado: "+datoF);
+        if(datoF.equals(passDB)) {
           codigoRet= new Codes(Codes.CODIGO_OK);
           
           //pasamos a procesar el usuario
           userRes.setUsuario(result.getString("usuario"));
           userRes.setNombre(result.getString("nombre"));
           userRes.setApellidos(result.getString("apellidos"));
-          userRes.setEmail(result.getString("email"));
+          userRes.setEmail(salt);
           userRes.setIsGestor(result.getBoolean("isGestor"));
         }else {          
           codigoRet = new Codes(Codes.CODIGO_ERR_PWD);
@@ -373,8 +381,12 @@ public MensajeRespuesta addData(Object dato, String peticion){
   String sentencia = "";
   //primero tenemos que saber qué tipo de dato viene asociado
   if (dato instanceof Empleado){
-    //tipo empleado
-    sentencia = Utiles.sentenciaUsuarioToInsertSQL((Empleado)dato);   
+    try {
+      //tipo empleado
+      sentencia = Utiles.sentenciaUsuarioToInsertSQL((Empleado)dato);
+    } catch (NoSuchAlgorithmException ex) {
+      return Utiles.mensajeErrorDB(peticion);
+    }
   }else if(dato instanceof Pedido){
     try {
       //tipo pedido
