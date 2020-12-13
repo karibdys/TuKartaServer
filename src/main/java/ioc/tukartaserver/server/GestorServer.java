@@ -633,6 +633,24 @@ public MensajeRespuesta procesarMensajeListProductosFromId(TokenSesion token, St
 
 /******************
  * MÉTODOS AUXILIARES
+ ******************/
+
+public MensajeRespuesta procesarInformeVentas (TokenSesion token, String peticion, String restauranteId){
+  System.out.println(SERVER+"procesando peticion de informe de ventas");
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    respuesta = gestorDB.informeVentasPorRestaurante(peticion, restauranteId);
+  }
+  return respuesta;
+}
+
+
+/******************
+ * MÉTODOS AUXILIARES
  ******************
  */
 

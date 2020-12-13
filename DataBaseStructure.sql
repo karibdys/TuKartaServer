@@ -100,7 +100,7 @@ ALTER TABLE mesa ADD CONSTRAINT "FK_mesa_restaurante" FOREIGN KEY (restaurante) 
 
 -- USUARIOS GESTORES
 INSERT INTO usuario VALUES ('Marc', '2r0ZCHoK/nVyMniIr2L3kXklx0X+hHO5+vLneaG36x+ucY+m0nzjMpNbqvWc722axohnsuZWQc8/tfbfyUYMfA==', 'marc@tukarta.com', 'Marc', 'Abad', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, true);
-INSERT INTO usuario VALUES ('TuKarta', 'E2GjRghCs8lhWV8Ut+Qm2shRQW9PbpyzHnauu3by2r6sgAayfUa3LL1BYSl16VuS37+cYru4naIi9NK9sb2bZQ==', 'tukarta@tukarta.com', 'Tu', 'Karta', '2020-11-05 12:10:00', '2020-11-05 12:10:00', null, true);
+INSERT INTO usuario VALUES ('TuKarta', 'zdrfj7AO1FvDUwNTPzfRBWxjvqFEvChvesMdU3vYkH0et9hvN3iO1uUqaF9FAXp6RWHVhc6bG0BmAVflVyCWnA==', 'tukarta@tukarta.com', 'Tu', 'Karta', '2020-11-05 12:10:00', '2020-11-05 12:10:00', null, true);
 
 -- RESTAURANTES
 INSERT INTO restaurante VALUES ('res1Marc', 'Can Marc', 'Barcelona', 'Calle de la buena Suerte, 23', 'marc@tukarta.com');
@@ -108,7 +108,7 @@ INSERT INTO restaurante VALUES ('res1TuKarta', 'Can Fortunata', 'Girona', 'Calle
 
 -- USUARIOS EMPLEADOS
 INSERT INTO usuario VALUES ('Manu', 'QjdUDyUFjoqeCLUVbD7t7o9C6vtdI83WXBK/uujjJZ1ixh9yKm/VZc9w7dUseSi3kgX3oyoh2YquL0uYlAutbg==', 'manu@tukarta.com', 'Manuel', 'Mora', '2020-10-22 12:10:00', '2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1600, 'camarero');
-INSERT INTO usuario VALUES ('David', '+Qm2shRQW9PbpyzHnauu3by2r6sgAayfUa3LL1BYSl16VuS37+cYru4naIi9NK9sb2bZQ==', 'david@tukarta.com', 'David', 'Domenech', '2020-10-22 12:10:00','2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1500, 'cocinero');
+INSERT INTO usuario VALUES ('David', 'E2GjRghCs8lhWV8Ut+Qm2shRQW9PbpyzHnauu3by2r6sgAayfUa3LL1BYSl16VuS37+cYru4naIi9NK9sb2bZQ==', 'david@tukarta.com', 'David', 'Domenech', '2020-10-22 12:10:00','2020-10-22 12:10:00', null, false, 'marc@tukarta.com', 'res1Marc', 1500, 'cocinero');
 -- PRODUCTOS
 INSERT INTO producto VALUES ('P001', 'Patatas Bravas', '{gluten, lacteos}', 3.50, 15, 15);
 INSERT INTO producto VALUES ('P002', 'Patatas All i Oli', '{gluten, lacteos, huevo}', 4.50, 10, 15);
@@ -124,15 +124,29 @@ INSERT INTO mesa VALUES ('mesa2CanMarc', 6, 'res1Marc');
 INSERT INTO mesa VALUES ('mesa1CanFortunata', 8, 'res1TuKarta');
 
 -- PEDIDOS
-INSERT INTO pedido VALUES('pedido1M', 'manu@tukarta.com', 'mesa1CanMarc', 0,'2020-11-20', true );
-INSERT INTO pedido VALUES('pedido2M', 'david@tukarta.com', 'mesa2CanMarc', 0,'2020-11-20', true);
-INSERT INTO pedido VALUES('pedido1T', 'manu@tukarta.com', 'mesa1CanFortunata', 0,'2020-11-20', false);
-INSERT INTO pedido VALUES('pedido2T', 'david@tukarta.com', 'mesa1CanFortunata', 0,'2020-11-20', true);
+INSERT INTO pedido VALUES('pedido1M', 'manu@tukarta.com', 'mesa1CanMarc', 5,'2020-11-20', true );
+INSERT INTO pedido VALUES('pedido2M', 'david@tukarta.com', 'mesa2CanMarc', 1.5,'2020-11-20', true);
+INSERT INTO pedido VALUES('pedido1T', 'manu@tukarta.com', 'mesa1CanFortunata', 2,'2020-11-20', false);
+INSERT INTO pedido VALUES('pedido2T', 'david@tukarta.com', 'mesa1CanFortunata', 3,'2020-11-20', true);
+INSERT INTO pedido VALUES('pedido3M', 'manu@tukarta.com', 'mesa1CanMarc', 16,'2020-11-20', false);
+INSERT INTO pedido VALUES('pedido4M', 'manu@tukarta.com', 'mesa1CanMarc', 6,'2020-11-20', false);
+INSERT INTO pedido VALUES('pedido5M', 'manu@tukarta.com', 'mesa1CanMarc', 6,'2020-11-20', false);
 
 -- pedido_estado
 INSERT INTO pedido_estado VALUES ('pedido1M-1', 'pedido1M', 'P001', 'preparando');
 INSERT INTO pedido_estado VALUES ('pedido1M-2', 'pedido1M', 'B001', 'listo');
 INSERT INTO pedido_estado VALUES ('pedido2M-1', 'pedido2M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido3M-1', 'pedido3M', 'P001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido3M-2', 'pedido3M', 'P002', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido3M-3', 'pedido3M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido3M-4', 'pedido3M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido3M-5', 'pedido3M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido3M-6', 'pedido3M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido4M-1', 'pedido4M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido4M-2', 'pedido4M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido5M-1', 'pedido5M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido5M-2', 'pedido5M', 'B001', 'listo');
+INSERT INTO pedido_estado VALUES ('pedido5M-3', 'pedido5M', 'P001', 'listo');
 
 INSERT INTO pedido_estado VALUES ('pedido1T-1','pedido1T', 'P002', 'preparando');
 INSERT INTO pedido_estado VALUES ('pedido2T-1','pedido2T', 'B001', 'preparando');

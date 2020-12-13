@@ -99,11 +99,11 @@ public SecretKey getPublicKey (){
 
 /**
  * Encrypta un mensaje con clave simétrica a partir de un objeto MensajeRespuesta
- * @param respuesta MensajeRespuesta a encriptar
+ * @param mensaje MensajeRespuesta a encriptar
  * @return String en formato JSON listo para enviar al cliente/servidor
  */
-public String encryptData (Mensaje respuesta){
-   String dataJSON = gson.toJson(respuesta);
+public String encryptData (Mensaje mensaje){
+   String dataJSON = gson.toJson(mensaje);
    //log("Mensaje sin encriptar: "+dataJSON);
    byte[] data = dataJSON.getBytes();
    byte[] encryptedData= null;
@@ -155,6 +155,13 @@ public Mensaje decryptData (String mensajeJSON, int tipoMens){
  PASS BASE DE DATOS
 ****************/
 
+/**
+ * Método que encripta una constraseña con el método HASH a partir 
+ * @param pass
+ * @param salt
+ * @return
+ * @throws NoSuchAlgorithmException 
+ */
 public static String encriptarPass(String pass, String salt) throws NoSuchAlgorithmException{
   String passFinal = pass+" "+salt;
   MessageDigest digestor = MessageDigest.getInstance("SHA-512"); 

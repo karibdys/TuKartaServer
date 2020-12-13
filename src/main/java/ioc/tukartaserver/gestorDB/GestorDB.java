@@ -14,6 +14,7 @@ import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Empleado;
 import ioc.tukartaserver.model.Estado;
 import ioc.tukartaserver.model.Gestor;
+import ioc.tukartaserver.model.InformeVentas;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.Mesa;
@@ -30,8 +31,7 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class GestorDB {
 
@@ -1062,6 +1062,99 @@ public MensajeRespuesta listMesas(String peticion, String restID, String Mesaid)
   return res;
 }
 
+
+/******************
+ * INFORMES
+ *******************/
+
+public MensajeRespuesta informeVentasPorRestaurante(String peticion, String restId){
+  MensajeRespuesta res = null;
+  InformeVentas informe = new InformeVentas();
+  //necesitamos el nombre del restaurante:
+  String peticionSQL = "SELECT * FROM pedido WHERE id =?";
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(peticionSQL);
+    pstm.setString(1, restId);
+    log("sentencia --> "+pstm);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      informe.setNomRestaurante(result.getString(1));
+    }    
+    pstm.close();
+    closeConnection();    
+  }catch(SQLException ex){
+    res = Utiles.mensajeErrorDB(peticion);
+  }  
+  //necesitamos tb el nombre del gestor
+  peticionSQL = "SELECT nombre, apellidos FROM usuario WHERE email = (SELECT gestor FROM restaurante WHERE id=?)";
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(peticionSQL);
+    pstm.setString(1, restId);
+    log("sentencia --> "+pstm);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      informe.setNomGestor(result.getString(1)+" "+result.getString(2));
+    }    
+    pstm.close();
+    closeConnection();    
+  }catch(SQLException ex){
+    res = Utiles.mensajeErrorDB(peticion);
+  }  
+  
+  //necesitamos también el listado de trabajadores
+  peticionSQL = "SELECT nombre, apellidos, email FROM usuario WHERE trabajadorde =?";
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(peticionSQL);
+    pstm.setString(1, restId);
+    log("sentencia --> "+pstm);
+    ResultSet result = pstm.executeQuery();
+    if (result.next()){
+      do{
+        Usuario nuevoUser = new Usuario();
+        nuevoUser.setNombre(result.getString(1));
+        nuevoUser.setApellidos(result.getString(2));
+        nuevoUser.setEmail(result.getString(3));
+        informe.addEmpleado(nuevoUser);
+      }while (result.next());      
+    }    
+    pstm.close();
+    closeConnection();    
+  }catch(SQLException ex){
+    res = Utiles.mensajeErrorDB(peticion);
+  }  
+  
+  //necesitamos la cantidad de pedidos de cada trabajador y el precio total de los mismos:
+  peticionSQL = "SELECT count(id), sum(precio_final) FROM pedido WHERE mesa IN (SELECT id FROM mesa WHERE restaurante =?) AND empleado = ?";
+  for(int i=0; i<informe.getTrabajadores().size(); i++){
+    Usuario user = informe.getTrabajadores().get(i);
+    try{
+      openConnection();
+      PreparedStatement pstm = con.prepareStatement(peticionSQL);
+      pstm.setString(1, restId);
+      pstm.setString(2, user.getEmail());
+      log("sentencia --> "+pstm);
+      ResultSet result = pstm.executeQuery();
+      if (result.next()){
+        informe.getPedidos().add(i, result.getInt(1));
+        informe.getPrecios().add(i, result.getFloat(2));
+      }    
+      pstm.close();
+      closeConnection();    
+    }catch(SQLException ex){
+      res = Utiles.mensajeErrorDB(peticion);
+    }  
+  }
+  
+  //una vez están todos los datos básicos, cerramos el informe para sacar el resto de pedidos.
+  informe.cerrarPedido();  
+  
+  res = Utiles.mensajeOK(peticion);
+  res.setData(informe);
+  return res;
+}
 
 /******************
  * MÉTODOS AUXILIARES

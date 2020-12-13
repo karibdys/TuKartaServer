@@ -377,7 +377,14 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
       case Mensaje.FUNCION_LIST_PRODUCTOS:
         log("procesando petición para listar productos de un restaurante");
         respuesta = gestorServer.procesarMensajeListProductos(token, Mensaje.FUNCION_LIST_PRODUCTOS);
-        break;     
+        break;    
+        
+      //INFORMES
+      case Mensaje.FUNCION_INFORME_VENTAS:
+        log("procesando petición de informe de ventas de un restaurante");
+        String restId = gson.fromJson(dataString, Restaurante.class).getId();
+        respuesta = gestorServer.procesarInformeVentas(token, Mensaje.FUNCION_INFORME_VENTAS, restId);
+        break;
       
       //FUNCIONES NO SOPORTADAS*************
       default:    

@@ -62,6 +62,9 @@ public static final String FUNCION_ADD_PRODUCTO = "add_producto";
 public static final String FUNCION_DELETE_PRODUCTO = "delete_producto";
 public static final String FUNCION_LIST_PRODUCTOS = "list_productos";
 
+//informed
+public static final String FUNCION_INFORME_VENTAS = "get_informe_ventas";
+
 //gestión de la conexión
 public static final String FUNCION_FIN_CON = "fin_conexion";
 

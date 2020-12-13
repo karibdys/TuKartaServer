@@ -111,13 +111,13 @@ public void startClient() {
       //Usuario user = new Usuario("karibdys", "manuPass", "manu@tukarta.com", null, null, false);
       
       /*******************PRUEBA DE LOGIN************************/          
-
+      /*
       log("Procediendo a hacer petición de login"); 
       //lo convertimos en JSON
       String userJson = gson.toJson(emp);
       //creamos el mensajeRes      
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_LOGIN, userJson, (String) null);  
-
+      */  
       /*******************PRUEBA DE LOGOFF************************/
       /*
       System.out.println(CLIENTE+"Procediendo a hacer petición de logout");            
@@ -355,6 +355,17 @@ public void startClient() {
       token.setToken("VjxDIpQWAj");                    
       MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_GET_EMPLEADO_FROM_ID, null,  token);                        
       */
+      
+      /*******************PRUEBA DE GET INFORME ************************/
+      
+      System.out.println(CLIENTE+"Procediendo a hacer petición de get_empleado_from_id");   
+      TokenSesion token = new TokenSesion(emp);
+      token.setToken("YfFxakghmG");     
+      Restaurante rest = new Restaurante();
+      rest.setId("res1Marc");
+      MensajeSolicitud mensajeOut = new MensajeSolicitud(Mensaje.FUNCION_INFORME_VENTAS, rest,  token);                        
+      
+ 
       
       /*******************FINAL DE PETICIÓN ************************/
       String mensajeOutJson = crypto.encryptData(mensajeOut);

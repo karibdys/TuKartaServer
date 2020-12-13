@@ -21,6 +21,7 @@ ioc\tukartaserver\model\MensajeSolicitud.class
 ioc\tukartaserver\main\InitServer.class
 ioc\tukartaserver\model\Mensaje.class
 ioc\tukartaserver\model\Usuario.class
+ioc\tukartaserver\model\InformeVentas.class
 ioc\tukartaserver\security\GestorCrypto.class
 ioc\tukartaserver\main\InitServer$3.class
 ioc\tukartaserver\pruebas\Cliente.class
