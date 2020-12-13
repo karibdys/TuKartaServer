@@ -338,6 +338,18 @@ public static String ParseDate(Date fecha){
    }
  }
  
+ public static Restaurante createRestauranteFromResultSet(ResultSet result) throws SQLException{
+   Restaurante ret = new Restaurante();
+   ret.setId(result.getString("id"));
+   ret.setNombre(result.getString("nombre"));
+   ret.setProvincia(Provincia.valueOf(result.getString("provincia").toUpperCase()));
+   ret.setDireccion(result.getString("direccioN"));
+   Gestor gestor = new Gestor();
+   gestor.setEmail(result.getString("gestor"));
+   
+   return ret;
+ }
+ 
   /**
   * Crea un Pedido a partir de un ResultSet. 
   * @param result ResultSet que contiene el dato del Pedido  
@@ -506,6 +518,8 @@ public static String sentenciaPedidoToInsertSQL (Pedido pedido){
   builder.append(" WHERE id = '"+pedido.getId()+"'");
   return builder.toString();
 }   
+  
+
 
   /**
    * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Restaurante la base de datos en función de sus parámetros definidos. 
@@ -527,7 +541,35 @@ public static String sentenciaPedidoToInsertSQL (Pedido pedido){
   builder.append(")");           
   return builder.toString();
 }
+
+ /**
+ * Crea una sentencia SQL con el comando UPDATE para poder actualizar un Restaurante
+ * @param restaurante Restaurante con los datos necesarios para insertarlo en la base de datos.
+ * @param gestor Gestor con, al menos, el email, para poder vincularlo al restaurante en la base de datos
+ * @return String con la sentencia UPDATE SQL completa
+ */
+public static String sentenciaRestauranteToUpdateSQL(Restaurante restaurante, Gestor gestor){
+  StringBuilder builder = new StringBuilder();
+  builder.append("UPDATE "+GestorDB.TABLA_RESTAURANTE+" SET ");
+  builder.append("\"id\" = '"+restaurante.getId()+"'");
+  if (restaurante.getNombre()!=null){
+    builder.append(", \"nombre\" = '"+restaurante.getNombre()+"'");
+  }
+  if(restaurante.getDireccion()!=null){
+    builder.append(", \"direccion\" = '"+restaurante.getDireccion()+"'");
+  }
+  if (restaurante.getProvincia()!=null){
+    builder.append(", \"provincia\" = '"+restaurante.getProvincia()+"'");
+  }
+  if (gestor!=null){
+    builder.append(", \"gestor\" = '"+gestor.getEmail()+"'");
+  }
+  builder.append("WHERE id = '"+restaurante.getId()+"'");
+  builder.append(")");           
   
+  return builder.toString();  
+}
+
 /**
  * Crea una sentencia SQL con el comando INSERT INTO para poder añadir un objeto de tipo Mesa a la base de datos en función de sus parámetros definidos. 
  * @param mesa Mesa con los datos necesarios para insertarlo en la base de datos.
@@ -579,6 +621,54 @@ public static String sentenciaProductoToInsertSQL(Producto producto){
   
   return builder.toString();
   
+}
+
+/**
+ * Crea una sentencia SQL con el comando UPDATE para poder actualizar un Restaurante
+ * @param restaurante Restaurante con los datos necesarios para insertarlo en la base de datos.
+ * @param gestor Gestor con, al menos, el email, para poder vincularlo al restaurante en la base de datos
+ * @return String con la sentencia UPDATE SQL completa
+ */
+public static String sentenciaProductoToUpdateSQL(Producto producto){
+  StringBuilder builder = new StringBuilder();
+  builder.append("UPDATE "+GestorDB.TABLA_PRODUCTO+" SET ");
+  builder.append("\"id\" = '"+producto.getId()+"'");
+  if (producto.getNombre()!=null){
+    builder.append(", \"nombre\" = '"+producto.getNombre()+"'");
+  }
+  if(producto.getPrecio()!=0){
+    builder.append(", \"precio\" = '"+producto.getPrecio()+"'");
+  }
+  if (producto.getDisponibles()!=0){
+    builder.append(", \"disponibles\" = '"+producto.getDisponibles()+"'");
+  }
+  if (producto.getTiempo_elaboracion()!=0){
+    builder.append(", \"tiempo_elaboracion\" = '"+producto.getTiempo_elaboracion()+"'");
+  }  
+  builder.append("WHERE id = '"+producto.getId()+"'");
+  builder.append(")");           
+  return builder.toString();  
+}
+
+/**
+ * Crea una sentencia SQL con el comando UPDATE para poder actualizar una mesa
+ * @param mesa  Mesa con los datos necesarios para insertarlo en la base de datos.
+ * @return String con la sentencia UPDATE SQL completa
+ */
+public static String sentenciaMesaToUpdateSQL(Mesa mesa){
+  StringBuilder builder = new StringBuilder();
+  builder.append("UPDATE "+GestorDB.TABLA_MESA+" SET ");
+  builder.append("\"id\" = '"+mesa.getId()+"'");
+  if (mesa.getNum_comensales()!=0){
+    builder.append(", \"num_comensales\" = '"+mesa.getNum_comensales()+"'");
+  }
+  if(mesa.getIdRestaurante()!=null){
+    builder.append(", \"restaurante\" = '"+mesa.getIdRestaurante()+"'");
+    
+  builder.append("WHERE id = '"+mesa.getId()+"'");
+  builder.append(")");           
+  }
+  return builder.toString();  
 }
   
   /**

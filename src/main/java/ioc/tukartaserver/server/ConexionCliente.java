@@ -3,6 +3,7 @@ package ioc.tukartaserver.server;
 import com.google.gson.Gson;
 import ioc.tukartaserver.model.Codes;
 import ioc.tukartaserver.model.Empleado;
+import ioc.tukartaserver.model.Gestor;
 import ioc.tukartaserver.model.Mensaje;
 import ioc.tukartaserver.model.MensajeRespuesta;
 import ioc.tukartaserver.model.MensajeSolicitud;
@@ -350,6 +351,16 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         restIn = gson.fromJson(dataString, Restaurante.class);
         respuesta = gestorServer.procesarMensajeAddRestaurante(token, restIn, Mensaje.FUNCION_ADD_RESTAURANTE);
         break;
+      case Mensaje.FUNCION_LIST_RESTAURANTES:
+        log("procesando función para listar restaurantes de un gestor");
+        Gestor gestorIn = gson.fromJson(dataString, Gestor.class);  
+        respuesta = gestorServer.procesarMensajeListRestaurante(token, gestorIn, Mensaje.FUNCION_ADD_RESTAURANTE);
+        break;        
+      case Mensaje.FUNCION_UPDATE_RESTAURANTE:
+        log("procesando función para actualizar un restaurante de un gestor");
+        restIn = gson.fromJson(dataString, Restaurante.class);
+        respuesta = gestorServer.procesarMensajeUpdateRestaurante(token, restIn, Mensaje.FUNCION_ADD_RESTAURANTE);
+        break;     
       
       //GESTIÓN DE MESAS ********************************
       case Mensaje.FUNCION_ADD_MESA:
@@ -361,7 +372,12 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         log("procesando petición para listar mesas sin pedidos");
         String restID = gson.fromJson(dataString, Restaurante.class).getId();
         respuesta = gestorServer.procesarMensajeListMesas(token, restID, Mensaje.FUNCION_LIST_MESAS_LIBRES);        
-        break;        
+        break;      
+      case Mensaje.FUNCION_UPDATE_MESA:
+        log("procesando petición para actualizar mesas");
+        mesaIn = gson.fromJson(dataString, Mesa.class);
+        respuesta = gestorServer.procesarMensajeUpdateMesa(token, mesaIn, Mensaje.FUNCION_LIST_MESAS_LIBRES);        
+        break; 
         
       //GESTIÓN DE PRODUCTOS
       case Mensaje.FUNCION_ADD_PRODUCTO:
@@ -378,6 +394,11 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
         log("procesando petición para listar productos de un restaurante");
         respuesta = gestorServer.procesarMensajeListProductos(token, Mensaje.FUNCION_LIST_PRODUCTOS);
         break;    
+      case Mensaje.FUNCION_UPDATE_PRODUCTO:
+        log("procesando petición para actualizar un producto");
+        prodIn = gson.fromJson(dataString, Producto.class);
+        respuesta = gestorServer.procesarMensajeUpdateProducto(token, prodIn, Mensaje.FUNCION_LIST_PRODUCTOS);
+        break;  
         
       //INFORMES
       case Mensaje.FUNCION_INFORME_VENTAS:

@@ -49,18 +49,19 @@ public static final String FUNCION_LIST_PEDIDO_FROM_ID ="list_pedido_from_id";
 
 //gestión de restaurantes
 public static final String FUNCION_ADD_RESTAURANTE = "add_restaurante";
-//public static final String FUNCION_DELETE_RESTAURANTE = "delete_restaurante";
-//public static final String FUNCION_LIST_RESTAURANTES = "list_restaurantes";
-//public static final String FUNCIÓN_UPDATE_RESTAURANTE = "upsate_restaurante";
+public static final String FUNCION_LIST_RESTAURANTES = "list_restaurantes";
+public static final String FUNCION_UPDATE_RESTAURANTE = "update_restaurante";
 
 //gestión de mesas
 public static final String FUNCION_ADD_MESA = "add_mesa";
+public static final String FUNCION_UPDATE_MESA = "update_mesa";
 public static final String FUNCION_LIST_MESAS_LIBRES = "list_mesas_libres";
 
 //gestión de productos
 public static final String FUNCION_ADD_PRODUCTO = "add_producto";
 public static final String FUNCION_DELETE_PRODUCTO = "delete_producto";
 public static final String FUNCION_LIST_PRODUCTOS = "list_productos";
+public static final String FUNCION_UPDATE_PRODUCTO = "update_producto";
 
 //informed
 public static final String FUNCION_INFORME_VENTAS = "get_informe_ventas";

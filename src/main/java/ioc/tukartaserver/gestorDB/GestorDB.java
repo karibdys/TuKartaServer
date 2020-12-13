@@ -31,6 +31,8 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class GestorDB {
@@ -58,6 +60,8 @@ public static final String LIST_USERS_FROM_GESTOR = "SELECT * FROM "+TABLA_USERS
 public static final String LIST_USERS_FROM_REST = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE usuario.trabajadorde = ?";
 public static final String GET_EMPLEADO_FROM_ID = "SELECT * FROM "+TABLA_USERS+" LEFT JOIN "+TABLA_RESTAURANTE+" ON "+TABLA_USERS+".trabajadorde = "+TABLA_RESTAURANTE+".id WHERE "+TABLA_USERS+".email= ?";
 
+//sentencias RESTAURANTES
+public static final String LIST_RESTAURANTES = "SELECT * FROM "+TABLA_RESTAURANTE+" WHERE GESTOR = ?";
 //sentencias PEDIDOS
 public static final String LIST_PEDIDO_FROM_USER = "SELECT* from "+TABLA_PEDIDO+" WHERE empleado = ? AND activo = ?";
 public static final String LIST_PEDIDO_COMPLETO_FROM_USER = "SELECT * FROM pedido LEFT JOIN pedido_estado ON pedido_estado.id_pedido = pedido.id where pedido.empleado = ? AND pedido.activo = true";
@@ -497,9 +501,47 @@ public MensajeRespuesta updateData(Object dato, String peticion){
     }catch (SQLException ex){
       //si no existe, lanzamos el error
       return ret = Utiles.mensajeErrorPKNotFound(peticion);
-    }
-    
-  }   
+    }    
+  }else if (dato instanceof Gestor){
+    //comprobamos que el pedido existe
+    Restaurante restaurante = ((Gestor) dato).getRestaurantes().get(0);
+    try{      
+      if(comprobarRestaurante(restaurante.getId())){
+        //si existe, creamos la sentencia
+        sentencia = Utiles.sentenciaRestauranteToUpdateSQL(restaurante, ((Gestor)dato));
+      }else{
+        throw new SQLException();
+      }
+    }catch (SQLException ex){
+      //si no existe, lanzamos el error
+      return ret = Utiles.mensajeErrorPKNotFound(peticion);
+    }    
+  }else if(dato instanceof Producto){
+    try{      
+      if(comprobarProducto(((Producto)dato).getId())){
+        //si existe, creamos la sentencia
+        sentencia = Utiles.sentenciaProductoToUpdateSQL(((Producto)dato));
+      }else{
+        throw new SQLException();
+      }
+    }catch (SQLException ex){
+      //si no existe, lanzamos el error
+      return ret = Utiles.mensajeErrorPKNotFound(peticion);
+    }    
+  }else if (dato instanceof Mesa){
+    try{      
+      if(comprobarMesa(((Mesa)dato).getId())){
+        //si existe, creamos la sentencia
+        sentencia = Utiles.sentenciaMesaToUpdateSQL(((Mesa)dato));
+      }else{
+        throw new SQLException();
+      }
+    }catch (SQLException ex){
+      //si no existe, lanzamos el error
+      return ret = Utiles.mensajeErrorPKNotFound(peticion);
+    }    
+  }
+  
   log("sentencia: "+sentencia);
   if(!sentencia.equals("")){
     try {
@@ -595,6 +637,34 @@ public MensajeRespuesta deleteData(String id, String peticion){
   
   return ret;
 }
+
+/******************
+ GESTIÓN DE RESTAURANTES
+*******************/
+
+public MensajeRespuesta listRestaurantes(String idGestor, String peticion){
+  MensajeRespuesta ret = null;
+  ArrayList<Restaurante> listado = new ArrayList<>();
+  try{
+    openConnection();
+    PreparedStatement pstm = con.prepareStatement(LIST_RESTAURANTES);
+    pstm.setString(1, idGestor);
+    log(" sentencia --> "+pstm);
+    ResultSet resultSet = pstm.executeQuery();
+    while (resultSet.next()){
+      Restaurante restaurante = Utiles.createRestauranteFromResultSet(resultSet);
+      listado.add(restaurante);
+    }   
+    Gson gson = new Gson();
+    String arrayJSON = gson.toJson(listado);
+    ret = Utiles.mensajeOK(peticion);
+    ret.setData(arrayJSON);   
+  } catch (SQLException ex) {
+    ret = Utiles.mensajeErrorDB(peticion);    
+  }  
+  return ret;  
+}
+
 
 /******************
  * GESTIÓN DE PEDIDOS

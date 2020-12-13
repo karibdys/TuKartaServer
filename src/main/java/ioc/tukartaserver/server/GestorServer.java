@@ -491,8 +491,7 @@ public MensajeRespuesta procesarMensajeListProductosPendientes(TokenSesion token
  * @param peticion String con el nombre de la petición que estamos realizando
  * @return MensajeRepuesta con el código 10 si todo ha ido bien o un código de error si ha habido algún fallo. No tiene datos asociados
  */
-public MensajeRespuesta procesarMensajeAddRestaurante(TokenSesion token, Restaurante rest, String peticion){
-  
+public MensajeRespuesta procesarMensajeAddRestaurante(TokenSesion token, Restaurante rest, String peticion){  
   //comprobamos si el token es válido o no
   Codes codigoMens = comprobarSesion(token);
   //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
@@ -508,6 +507,35 @@ public MensajeRespuesta procesarMensajeAddRestaurante(TokenSesion token, Restaur
     gestor.addRestaurante(rest);
     respuesta  = gestorDB.addData(gestor, peticion);    
     System.out.println(SERVER+" llegamos a hacer la petición: "+respuesta);
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeListRestaurante(TokenSesion token, Gestor gestor, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    String idGestor = gestor.getEmail();
+    respuesta  = gestorDB.listRestaurantes(idGestor, peticion);      
+  }
+  return respuesta;
+}
+
+
+public MensajeRespuesta procesarMensajeUpdateRestaurante(TokenSesion token, Restaurante rest, String peticion){
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{    
+    Gestor gestor = new Gestor();
+    gestor.setEmail(token.getUsuario());
+    gestor.addRestaurante(rest);
+    respuesta  = gestorDB.updateData(gestor, peticion);      
   }
   return respuesta;
 }
@@ -590,6 +618,19 @@ public MensajeRespuesta procesarMensajeListProductos(TokenSesion token, String p
   return respuesta;
 }
 
+public MensajeRespuesta procesarMensajeUpdateProducto(TokenSesion token, Producto producto, String peticion){
+  System.out.println(SERVER+"procesando peticion de listar productos producto");
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    respuesta = gestorDB.updateData(producto, peticion);
+  }
+  return respuesta;
+}
+
 /**
  * Procesa un mensaje de petición de listar todas las mesas de un restaurante
  * @param token TokenSesion con la información de la sesión del usuario
@@ -606,6 +647,19 @@ public MensajeRespuesta procesarMensajeListMesas(TokenSesion token, String restI
     respuesta = new MensajeRespuesta(codigoMens, peticion);
   }else{
     respuesta = gestorDB.listMesas(peticion, restID, null);
+  }
+  return respuesta;
+}
+
+public MensajeRespuesta procesarMensajeUpdateMesa(TokenSesion token, Mesa mesa, String peticion){
+  System.out.println(SERVER+"procesando peticion de listar productos producto");
+  //comprobamos si el token es válido o no
+  Codes codigoMens = comprobarSesion(token);
+  //si el código NO ES un código OK, mandamos un mensaje de error con lo que nos devuelva el token
+  if (!codigoMens.getCode().equals(Codes.CODIGO_OK)){
+    respuesta = new MensajeRespuesta(codigoMens, peticion);
+  }else{
+    respuesta = gestorDB.updateData(mesa, peticion);
   }
   return respuesta;
 }
