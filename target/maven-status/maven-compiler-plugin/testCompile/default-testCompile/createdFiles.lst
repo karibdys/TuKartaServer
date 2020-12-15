@@ -1,4 +1,4 @@
-ioc\tukartaserver\server\GestorServerTest.class
 ioc\tukartaserver\gestorDB\GestorDBTest.class
+ioc\tukartaserver\security\GestorCryptoTest.class
 ioc\tukartaserver\security\GestorSesionTest.class
 ioc\tukartaserver\model\RestauranteTest.class

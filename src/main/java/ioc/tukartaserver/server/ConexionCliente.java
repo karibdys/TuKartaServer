@@ -223,6 +223,7 @@ public void procesarPeticion(MensajeSolicitud mensaje) throws Exception{
       case Mensaje.FUNCION_LOGOFF:
         log("procesando logout");            
         respuesta = gestorServer.procesarMensajeLogout(token); 
+        break;
       
       //GESTIÓN DE USUARIOS ******************************
       case Mensaje.FUNCION_DATOS_USER:

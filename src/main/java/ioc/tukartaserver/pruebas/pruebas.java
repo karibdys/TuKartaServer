@@ -34,13 +34,11 @@ public static Gson gson = new Gson();
 
 
 public static void main (String... args) throws ClassNotFoundException, SQLException  {  
-  GestorDB gestor = new GestorDB();
-  MensajeRespuesta res = gestor.informeVentasPorRestaurante("informe pruebas", "res1Marc");
-  log(res.toString());
-  /*
-  String comprobar = "cAOjaGWjiCUcVBpMDeAjhqkRUGDiQsT9bJNTTOE0t/japVbDqxdUmJ826X21Utyc1hbEdAFmYTa+VaDCgkRxNQ==";
-  String pass = "TuKartaPass";
-  String salt = "tukarta@tukarta.com";
+
+
+  String comprobar = "/QdAldVWIsSbmYVM5sCgyA7fqhtIfhsZTTtQ5fUSo+0zBPK5kUkFsxB45ohqjfO4zaBjR8Yel8qiXuY3iO6dCw==";
+  String pass = "passPrueba"; 
+  String salt = "email@email.com";
   String mensajeFinal ="";
   try {
     mensajeFinal = GestorCrypto.encriptarPass(pass, salt);
@@ -49,7 +47,7 @@ public static void main (String... args) throws ClassNotFoundException, SQLExcep
   }
   log(mensajeFinal);
   log(comprobar.equals(mensajeFinal)? "WAI": "NO WAI");
-    */
+
 
 }
 

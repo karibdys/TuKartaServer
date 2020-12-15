@@ -78,7 +78,8 @@ public static final String LIST_PRODUCTOS = "SELECT * FROM producto";
 public static final String DELETE_PRODUCTO = "DELETE FROM "+TABLA_PRODUCTO+" WHERE id = ?";
 
 //sentencias MESAS
-public static final String LIST_MESAS_FROM_REST = "SELECT * FROM mesa LEFT JOIN pedido ON pedido.mesa = mesa.id WHERE mesa.restaurante = ? AND pedido.activo = false";
+public static final String LIST_MESAS_FROM_REST = "SELECT * FROM mesa WHERE mesa.restaurante = ? AND mesa.id NOT IN (SELECT pedido.mesa FROM pedido WHERE pedido.activo=true)";
+public static final String LIST_MESAS_FROM_REST2 = "SELECT * FROM mesa LEFT JOIN pedido ON pedido.mesa = mesa.id WHERE mesa.restaurante = ? AND pedido.activo = false";
 
 //sentencias CHECK
 public static final String COMPROBAR_PROD = "SELECT * FROM producto WHERE id =?";
